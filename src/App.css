@@ -204,10 +204,34 @@ body {
   color: black;
 }
 
-.p-inputtext{
-  border-radius: 20px !important;
-}
-
 .border-solid {
   border: 0;
+}
+
+.section-point-product {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  grid-template-columns: repeat(4, 1fr);
+}
+/* 
+.lable-login {
+  top: 1.25rem;
+} */
+
+.product-list {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.section-point-product  a {
+  text-decoration: none;
+  color: black;
+}
+
+.product-list a {
+  text-decoration: none;
+  color: black;
 }

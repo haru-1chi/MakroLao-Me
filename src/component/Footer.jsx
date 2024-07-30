@@ -2,7 +2,7 @@ import React from "react";
 
 function Footer() {
   return (
-    <div className="footer-data-list bg-white">
+    <div className="footer-data-list bg-white mt-2">
       <div className="border-solid">
         <ul>
           <li>
