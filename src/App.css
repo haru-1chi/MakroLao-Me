@@ -235,3 +235,18 @@ body {
   text-decoration: none;
   color: black;
 }
+
+.category-title {
+  font-weight: 500;
+  font-size: 16px;
+  padding-top: 8px;
+  line-height: 22.4px;
+  text-align: center;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-wrap: break-word;
+  white-space: break-spaces;
+}
