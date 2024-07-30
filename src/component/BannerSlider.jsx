@@ -51,7 +51,7 @@ function BannerSlider() {
         <div className="mb-3">
           <img
             src={product.imgURL}
-            className="w-full shadow-2"
+            className="w-full border-round-lg"
           />
         </div>
       </div>
