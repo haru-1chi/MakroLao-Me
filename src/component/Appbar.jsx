@@ -165,6 +165,8 @@ function Appbar() {
                     <span><b>ย้อนกลับ</b></span>
                   </a>
                 </div>
+
+                
     
                 <div className="box-menu mt-5">
                   <Link to="List-Product" className="flex justify-content-between" onClick={() => setVisible4(false)}><span><i className="pi pi-hashtag mr-2" />สินค้าทุกหมวดหมู่</span> <i className="pi pi-angle-right mr-2"></i></Link>
@@ -179,7 +181,7 @@ function Appbar() {
                 <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />ผักและผลไม้</span> <i className="pi pi-angle-right mr-2"></i></a>
                 </div>
                 <div className="box-menu mt-5">
-                <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />ครื่องดื่มและนม</span> <i className="pi pi-angle-right mr-2"></i></a>
+                <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />เครื่องดื่มและนม</span> <i className="pi pi-angle-right mr-2"></i></a>
                 </div>
                 <div className="box-menu mt-5">
                 <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />อาหารและเครื่องปรุง</span> <i className="pi pi-angle-right mr-2"></i></a>

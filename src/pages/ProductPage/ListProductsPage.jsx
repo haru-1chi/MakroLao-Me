@@ -1,82 +1,117 @@
-import React from 'react'
-import { Button } from 'primereact/button';
+import { Button } from "primereact/button";
 import { Outlet, Link } from "react-router-dom";
-import Footer from '../../component/Footer';
+import Footer from "../../component/Footer";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Paginator } from 'primereact/paginator';
 
 function ListProductsPage() {
 
-    const data = [
-        {
-            id : '1',
-            imgURL : 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F074fc00deace464ba94af3b81fe4ec78&w=384&q=75',
-            name : 'product',
-            price : '999.00'
-        },
-        {
-            id : '2',
-            imgURL : 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F074fc00deace464ba94af3b81fe4ec78&w=384&q=75',
-            name : 'product',
-            price : '999.00'
-        },
-        {
-            id : '3',
-            imgURL : 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F074fc00deace464ba94af3b81fe4ec78&w=384&q=75',
-            name : 'product',
-            price : '999.00'
-        },
-        {
-            id : '4',
-            imgURL : 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F074fc00deace464ba94af3b81fe4ec78&w=384&q=75',
-            name : 'product',
-            price : '999.00'
-        }
-        ,
-        {
-            id : '5',
-            imgURL : 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F074fc00deace464ba94af3b81fe4ec78&w=384&q=75',
-            name : 'product',
-            price : '999.00'
-        }
-        ,
-        {
-            id : '6',
-            imgURL : 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F074fc00deace464ba94af3b81fe4ec78&w=384&q=75',
-            name : 'product',
-            price : '999.00'
-        }
-        
-    ];
+    const [first, setFirst] = useState(0);
+    const [rows, setRows] = useState(10);
 
+    const onPageChange = (event) => {
+        setFirst(event.first);
+        setRows(event.rows);
+    };
+
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    axios({
+      method: "post",
+      url: "https://api.tossaguns.online/tossagun-shop/product/api_product",
+      headers: {
+        "auth-token":
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb3ciOiJQYXJ0bmVyIiwiaWF0IjoxNzIxODgzMDI0fQ.MbtGRD3wn1ejaYfdtUvxuke4FLSSB-5_uybIuWozvPg",
+      },
+    })
+      .then(function (response) {
+        setData(response.data.slice(0, 20));
+        // setData(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }, []);
 
   return (
     <>
-    <div className='p-3'>
-    <div>
-        <h1>Product List</h1>
-    </div>
-    <div className='product-list'>
-            {data.map((product) => (
-                <Link to="Product">
-                <div className="border-1 surface-border border-round py-5 px-3 bg-white border-round-mb">
+      {/* <div className="p-3">
+        <div>
+          <h1>Product List</h1>
+        </div>
+        <div className="product-list">
+          {data.map((product) => (
+            <Link to="Product">
+              <div className="border-1 surface-border border-round py-5 px-3 bg-white border-round-mb">
                 <div className="mb-3">
-                    <img src={product.imgURL} alt={product.name} className="w-12" />
+                  <img
+                    src={product.imgURL}
+                    alt={product.name}
+                    className="w-12"
+                  />
                 </div>
                 <div>
-                    <h4 className="mb-1">{product.name}</h4>
-                    <hr />
-                    <div className="flex align-items-center justify-content-between p-2 mt-2 bg-product">
-                        <div className='font-bold'>{product.price} ฿</div>
-                        <Button className='btn-plus-product' icon="pi pi-plus" rounded/>
-                    </div>
+                  <h4 className="mb-1">{product.name}</h4>
+                  <hr />
+                  <div className="flex align-items-center justify-content-between p-2 mt-2 bg-product">
+                    <div className="font-bold">{product.price} ฿</div>
+                    <Button
+                      className="btn-plus-product"
+                      icon="pi pi-plus"
+                      rounded
+                    />
+                  </div>
                 </div>
-            </div>
+              </div>
             </Link>
+          ))}
+        </div>
+      </div>
+      <Footer /> */}
+
+      <div className="p-3">
+        <div>
+          <h1>Product List</h1>
+        </div>
+
+        {data ? (
+          <div className="product-list">
+            {data.map((product, index) => (
+              <div key={index} className="flex">
+                <div className="border-1 surface-border border-round py-5 px-3 bg-white border-round-mb flex flex-column justify-content-between">
+                  <div className="mb-3">
+                    <img
+                      src={product.product_image}
+                      alt={product.product_name}
+                      className="w-12"
+                    />
+                  </div>
+                  <h4 className="mb-1">{product.product_name}</h4>
+                  <hr />
+                  <div className="flex align-items-center justify-content-between p-2 mt-2 bg-product">
+                    <div className="font-bold">{product.product_price} ฿</div>
+                    <Button
+                      className="btn-plus-product"
+                      icon="pi pi-plus"
+                      rounded
+                    />
+                  </div>
+                </div>
+              </div>
             ))}
-            </div>
-    </div>
-    <Footer />
+          </div>
+        ) : (
+          ""
+        )}
+      </div>
+      <div className="card">
+            <Paginator first={first} rows={rows} totalRecords={100} onPageChange={onPageChange} />
+        </div>
+      <Footer />
     </>
-  )
+  );
 }
 
-export default ListProductsPage
+export default ListProductsPage;

@@ -14,68 +14,63 @@ function HomePage() {
       id: "1",
       imgURL:
         "https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FMakro_35th_Anniversary_Cate_Icon_Fresh_bd262901a8.png&w=750&q=90",
-      title: "Organic",
+      title: "ของสด",
     },
     {
       id: "2",
       imgURL:
         "https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FMakro_35th_Anniversary_Cate_Icon_Fresh_bd262901a8.png&w=750&q=90",
-      title: "Fresh Fruits",
+      title: "เครื่องดื่ม",
     },
     {
       id: "3",
       imgURL:
         "https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FMakro_35th_Anniversary_Cate_Icon_Fresh_bd262901a8.png&w=750&q=90",
-      title: "Organic Veggies",
+      title: "อาหารและเครื่องดื่ม",
     },
     {
       id: "4",
       imgURL:
         "https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FMakro_35th_Anniversary_Cate_Icon_Fresh_bd262901a8.png&w=750&q=90",
-      title: "Dairy Products",
+      title: "ห้องครัวและห้องอาหาร",
     },
     {
       id: "5",
       imgURL:
         "https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FMakro_35th_Anniversary_Cate_Icon_Fresh_bd262901a8.png&w=750&q=90",
-      title: "Fresh Meat",
+      title: "เครื่องใช้ไฟฟ้า",
     },
     {
       id: "6",
       imgURL:
         "https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FMakro_35th_Anniversary_Cate_Icon_Fresh_bd262901a8.png&w=750&q=90",
-      title: "Bakery Goods",
+      title: "บ้านและไลฟ์สไตล์",
     },
     {
       id: "7",
       imgURL:
         "https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FMakro_35th_Anniversary_Cate_Icon_Fresh_bd262901a8.png&w=750&q=90",
-      title: "Seafood",
+      title: "สุขภาพและความงาม",
     },
     {
       id: "8",
       imgURL:
         "https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FMakro_35th_Anniversary_Cate_Icon_Fresh_bd262901a8.png&w=750&q=90",
-      title: "Frozen Foods",
+      title: "อุปกรณ์สำนักงาน",
     },
     {
       id: "9",
       imgURL:
         "https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FMakro_35th_Anniversary_Cate_Icon_Fresh_bd262901a8.png&w=750&q=90",
-      title: "Snacks & Drinks",
+      title: "ผลิตภัณฑ์สำหรับสัตว์เลี้ยง",
     },
     {
       id: "10",
       imgURL:
         "https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FMakro_35th_Anniversary_Cate_Icon_Fresh_bd262901a8.png&w=750&q=90",
-      title: "Grocery Items",
+      title: "แม่และเด็ก",
     },
-    {
-      id: "11",
-      imgURL:
-        "https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FMakro_35th_Anniversary_Cate_Icon_Fresh_bd262901a8.png&w=750&q=90",
-      title: "Cleaning Supplies",
-    },
+    
   ];
 
   const newBrabd = [
@@ -126,7 +121,7 @@ function HomePage() {
     <div className="banner">
         <img className="w-full" src={topBanner} alt="" />
       </div>
-      <div class="flex category-scrllo w-full border-solid mt-2">
+      <div class="flex category-scrllo w-full border-solid p-3">
         <div className="flex text-center sm:col-12 gap-2">
           {categories.map((item) => (
             <Category data={item} />
