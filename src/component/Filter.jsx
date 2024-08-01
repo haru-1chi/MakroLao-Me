@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { RadioButton } from 'primereact/radiobutton';
+import { Checkbox } from 'primereact/checkbox';
 
-function Filter({ onFilterChange, products, selectedSubCategories, setSelectedSubCategories, selectedBrands, setSelectedBrands }) {
+function Filter({ onFilterChange, products }) {
     const generatePriceRanges = (products) => {
         const prices = products.map(product => product.product_price);
         const maxPrice = Math.max(...prices);
         const step = 500;
-        const ranges = [{ key: 'all', value: 'ดูเพิ่มเติม' }];
+        const ranges = [{ key: 'allRange', value: 'ดูเพิ่มเติม' }];
 
         for (let i = 0; i <= maxPrice; i += step) {
             ranges.push({
@@ -29,6 +30,7 @@ function Filter({ onFilterChange, products, selectedSubCategories, setSelectedSu
 
         return ranges;
     };
+
     const getUniqueValues = (products, key) => {
         return [...new Set(products.map(item => item[key]))];
     };
@@ -48,77 +50,60 @@ function Filter({ onFilterChange, products, selectedSubCategories, setSelectedSu
     };
 
     const getInitialFilters = () => ({
-        priceRate: { key: 'all', value: 'ดูเพิ่มเติม' },
-        stock: { key: 'all', value: 'ดูเพิ่มเติม', inStock: null },
+        priceRate: { key: 'allRange', value: 'ดูเพิ่มเติม' },
+        stock: { key: 'allStock', value: 'ดูเพิ่มเติม', inStock: null },
         selectedSubCategories: [],
         selectedBrands: [],
-        promotion: { key: 'all', value: 'ดูเพิ่มเติม', onSale: null }
+        promotion: { key: 'allPromotion', value: 'ดูเพิ่มเติม', onSale: null }
     });
 
     const priceRanges = generatePriceRanges(products);
     const stocks = [
-        { key: 'all', value: 'ดูเพิ่มเติม', inStock: null },
+        { key: 'allStock', value: 'ดูเพิ่มเติม', inStock: null },
         { key: 'inStock', value: 'มีสินค้า', inStock: true }
     ];
     const { subCategoryOptions, brandOptions } = generateFiltersFromData(products);
     const promotions = [
-        { key: 'all', value: 'ดูเพิ่มเติม', onSale: null },
+        { key: 'allPromotion', value: 'ดูเพิ่มเติม', onSale: null },
         { key: 'onSale', value: 'ลดราคา', onSale: true }
     ];
 
     const [filters, setFilters] = useState(getInitialFilters());
 
-    const handlePriceRangeChange = (priceRate) => {
-        setFilters(prevFilters => ({ ...prevFilters, priceRate }));
+    const clearFilters = () => {
+        setFilters(getInitialFilters());
     };
 
-    const handleStockChange = (stock) => {
-        setFilters(prevFilters => ({ ...prevFilters, stock }));
+    const handleFilterChange = (key, value) => {
+        setFilters(prevFilters => ({ ...prevFilters, [key]: value }));
     };
 
-    const handlePromotionChange = (promotion) => {
-        setFilters(prevFilters => ({ ...prevFilters, promotion }));
+    const handleCheckboxChange = (key, value, checked) => {
+        setFilters(prevFilters => {
+            const updatedList = checked
+                ? [...prevFilters[key], value]
+                : prevFilters[key].filter(item => item !== value);
+            return { ...prevFilters, [key]: updatedList };
+        });
     };
-
-    const handleSubCategoryChange = (event) => {
-        const { value, checked } = event.target;
-        let updatedSubCategories = [...selectedSubCategories];
-        if (checked) {
-            updatedSubCategories.push(value);
-        } else {
-            updatedSubCategories = updatedSubCategories.filter(subCategory => subCategory !== value);
-        }
-        setSelectedSubCategories(updatedSubCategories);
-    };
-
-    const handleBrandChange = (event) => {
-        const { value, checked } = event.target;
-        let updatedBrands = [...selectedBrands];
-        if (checked) {
-            updatedBrands.push(value);
-        } else {
-            updatedBrands = updatedBrands.filter(brand => brand !== value);
-        }
-        setSelectedBrands(updatedBrands);
-    };
-    
 
     useEffect(() => {
         onFilterChange(filters);
-    }, [filters, selectedSubCategories, selectedBrands]);
+    }, [filters]);
 
-    const clearFilters = () => {
-        setFilters(getInitialFilters());
-        setSelectedSubCategories([])
-        setSelectedBrands([])
+    const sectionLabels = {
+        priceRate: 'ช่วงราคา',
+        stock: 'สต๊อก',
+        selectedSubCategories: 'หมวดหมู่ย่อย',
+        selectedBrands: 'แบรนด์',
+        promotion: 'โปรโมชั่น'
     };
-
 
     const [expandedSections, setExpandedSections] = useState({
         priceRate: true,
         stock: true,
-        subCategory: true,
-        brand: true,
+        selectedSubCategories: true,
+        selectedBrands: true,
         promotion: true,
     });
 
@@ -128,7 +113,6 @@ function Filter({ onFilterChange, products, selectedSubCategories, setSelectedSu
             [section]: !prevState[section],
         }));
     };
-
 
     return (
         <div className='filter-card border-1 surface-border border-round py-5 px-3 bg-white border-round-mb flex flex-column justify-content-between'>
@@ -141,91 +125,33 @@ function Filter({ onFilterChange, products, selectedSubCategories, setSelectedSu
                     <i className="pi pi-refresh"></i> ล้างตัวกรอง
                 </button>
             </div>
-            <div>
-                <div className='flex justify-content-between' onClick={() => toggleSection('priceRate')}>
-                    <p>ช่วงราคา</p>
-                    <p><i className={`pi ${expandedSections.priceRate ? 'pi-minus' : 'pi-plus'}`}></i></p>
-                </div>
-                {expandedSections.priceRate && priceRanges.map((range) => (
-                    <div className='mb-2' key={range.key}>
-                        <RadioButton
-                            value={range}
-                            checked={filters.priceRate.key === range.key}
-                            onChange={(e) => handlePriceRangeChange(e.value)}
-                        />
-                        <label className='ml-2'>{range.value}</label>
+            {Object.entries(expandedSections).map(([section, expanded]) => (
+                <div key={section}>
+                    <div className='flex justify-content-between' onClick={() => toggleSection(section)}>
+                        <p>{sectionLabels[section] || section}</p>
+                        <p><i className={`pi ${expanded ? 'pi-minus' : 'pi-plus'}`}></i></p>
                     </div>
-                ))}
-            </div>
-            <div>
-                <div className='flex justify-content-between' onClick={() => toggleSection('stock')}>
-                    <p>สต๊อก</p>
-                    <p><i className={`pi ${expandedSections.priceRate ? 'pi-minus' : 'pi-plus'}`}></i></p>
+                    {expanded && (section === 'priceRate' ? priceRanges : section === 'stock' ? stocks : section === 'promotion' ? promotions : section === 'selectedSubCategories' ? subCategoryOptions : brandOptions).map((option) => (
+                        <div className='mb-2' key={option.key}>
+                            {section === 'priceRate' || section === 'stock' || section === 'promotion' ? (
+                                <RadioButton
+                                    inputId={option.key}
+                                    value={option}
+                                    checked={filters[section].key === option.key}
+                                    onChange={(e) => handleFilterChange(section, e.value)}
+                                />
+                            ) : (
+                                <Checkbox
+                                    inputId={option.key}
+                                    value={option.key}
+                                    onChange={(e) => handleCheckboxChange(section, option.key, e.target.checked)}
+                                    checked={filters[section].includes(option.key)} />
+                            )}
+                            <label htmlFor={option.key} className='ml-2'>{option.value}</label>
+                        </div>
+                    ))}
                 </div>
-                {expandedSections.stock && stocks.map((range) => (
-                    <div className='mb-2' key={range.key}>
-                        <RadioButton
-                            value={range}
-                            checked={filters.stock.key === range.key}
-                            onChange={(e) => handleStockChange(e.value)}
-                        />
-                        <label className='ml-2'>{range.value}</label>
-                    </div>
-                ))}
-            </div>
-            <div>
-                <div className='flex justify-content-between' onClick={() => toggleSection('subCategory')}>
-                    <p>หมวดหมู่ย่อย</p>
-                    <p><i className={`pi ${expandedSections.priceRate ? 'pi-minus' : 'pi-plus'}`}></i></p>
-                </div>
-
-                {expandedSections.subCategory && subCategoryOptions.map((option) => (
-                    <div className='mb-2' key={option.key}>
-                        <input
-                            type="checkbox"
-                            value={option.key}
-                            checked={selectedSubCategories.includes(option.key)}
-                            onChange={handleSubCategoryChange}
-                        />
-                        <label className='ml-2'>{option.value}</label>
-                    </div>
-                ))}
-            </div>
-            <div>
-                <div className='flex justify-content-between' onClick={() => toggleSection('brand')}>
-                    <p>แบรนด์</p>
-                    <p><i className={`pi ${expandedSections.priceRate ? 'pi-minus' : 'pi-plus'}`}></i></p>
-                </div>
-
-                {expandedSections.brand && brandOptions.map((option) => (
-                    <div className='mb-2' key={option.key}>
-                        <input
-                            type="checkbox"
-                            value={option.key}
-                            checked={selectedBrands.includes(option.key)}
-                            onChange={handleBrandChange}
-                        />
-                        <label className='ml-2'>{option.value}</label>
-                    </div>
-                ))}
-            </div>
-            <div>
-                <div className='flex justify-content-between' onClick={() => toggleSection('promotion')}>
-                    <p>โปรโมชั่น</p>
-                    <p><i className={`pi ${expandedSections.priceRate ? 'pi-minus' : 'pi-plus'}`}></i></p>
-                </div>
-
-                {expandedSections.promotion && promotions.map((range) => (
-                    <div className='mb-2' key={range.key}>
-                        <RadioButton
-                            value={range}
-                            checked={filters.promotion.key === range.key}
-                            onChange={(e) => handlePromotionChange(e.value)}
-                        />
-                        <label className='ml-2'>{range.value}</label>
-                    </div>
-                ))}
-            </div>
+            ))}
         </div>
     );
 }

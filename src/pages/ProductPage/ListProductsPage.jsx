@@ -67,6 +67,16 @@ const testData = [
     inStock: true,
     onSale: false,
   },
+  {
+    id: '7',
+    product_image: 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F074fc00deace464ba94af3b81fe4ec78&w=384&q=75',
+    product_name: 'D บะหมี่ 6',
+    product_price: 2500.00,
+    subCategory: "อาหารกึ่งสำเร็จรูป",
+    product_brand: "D",
+    inStock: true,
+    onSale: false,
+  },
 ];
 
 function ListProductsPage() {
@@ -79,30 +89,29 @@ function ListProductsPage() {
     setRows(event.rows);
   };
 
-  //เตรียมข้อมลสำหรับ filter
   const [data, setData] = useState(testData);
   const [filteredData, setFilteredData] = useState(testData);
-  //ทำการ filter
-  const applyFilters = (filters, selectedSubCategories, selectedBrands) => {
+
+  const applyFilters = (filters) => {
     let filtered = data;
 
-    if (filters.priceRate.key !== 'all') {
+    if (filters.priceRate.key !== 'allRange') {
       filtered = filtered.filter(product => product.product_price >= filters.priceRate.min && product.product_price <= filters.priceRate.max);
     }
 
-    if (filters.stock.key !== 'all') {
+    if (filters.stock.key !== 'allStock') {
       filtered = filtered.filter(product => product.inStock === filters.stock.inStock);
     }
 
-    if (selectedSubCategories?.length > 0) {
-      filtered = filtered.filter(product => selectedSubCategories.includes(product.subCategory));
+    if (filters.selectedSubCategories.length > 0) {
+      filtered = filtered.filter(product => filters.selectedSubCategories.includes(product.subCategory));
     }
 
-    if (selectedBrands?.length > 0) {
-      filtered = filtered.filter(product => selectedBrands.includes(product.product_brand));
+    if (filters.selectedBrands.length > 0) {
+      filtered = filtered.filter(product => filters.selectedBrands.includes(product.product_brand));
     }
 
-    if (filters.promotion.key !== 'all') {
+    if (filters.promotion.key !== 'allPromotion') {
       filtered = filtered.filter(product => product.onSale === filters.promotion.onSale);
     }
 
@@ -110,13 +119,8 @@ function ListProductsPage() {
 
   };
 
-  //ทำการเซ็คค่าเริ่มต้นของ selectedSubCategories กับ selectedBrands ให้เป็น array
-  const [selectedSubCategories, setSelectedSubCategories] = useState([]);
-  const [selectedBrands, setSelectedBrands] = useState([]);
-
-  //ตรวจจับการเปลี่ยนแปลงของ filter ทั้งหมด
   const handleFilterChange = (filters) => {
-    applyFilters(filters, selectedSubCategories, selectedBrands);
+    applyFilters(filters);
   };
 
   // useEffect(() => {
@@ -182,10 +186,6 @@ function ListProductsPage() {
             <Filter
               onFilterChange={handleFilterChange}
               products={data}
-              selectedSubCategories={selectedSubCategories}
-              selectedBrands={selectedBrands}
-              setSelectedSubCategories={setSelectedSubCategories}
-              setSelectedBrands={setSelectedBrands}
             />
           </div>
           {filteredData ? (
