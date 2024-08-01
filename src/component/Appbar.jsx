@@ -106,7 +106,7 @@ function Appbar() {
                   onHide={() => setVisible2(false)}
                   icons={customIcons}
                 >
-                  <div className="cart gap-1">
+                  <div className="cart gap-1 wt">
                     <img
                       src="https://www.makro.pro/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fempty-basket.76c5ec1f.png&w=1200&q=75"
                       alt=""
@@ -117,6 +117,7 @@ function Appbar() {
                     
                   </div>
                 </Sidebar>
+                
               </div>
               <div className="flex justify-content-between align-items-center">
                 <h1 className="m-0">
@@ -144,7 +145,7 @@ function Appbar() {
             </div>
             <div>
               <IconField iconPosition="left">
-                <InputIcon className="pi pi-search"> </InputIcon>
+                <InputIcon className="pi pi-search wt"> </InputIcon>
                 <InputText v-model="value1" placeholder="Search" />
               </IconField>
             </div>
