@@ -135,7 +135,7 @@ function Filter({ onFilterChange, products, visible, setVisible }) {
                     {Object.entries(expandedSections).map(([section, expanded]) => (
                         <div key={section}>
                             <div className="flex justify-content-between" onClick={() => toggleSection(section)}>
-                                <p>{sectionLabels[section] || section}</p>
+                                <p>{sectionLabels[section]}</p>
                                 <p><i className={`pi ${expanded ? 'pi-minus' : 'pi-plus'}`}></i></p>
                             </div>
                             {expanded && (section === 'priceRanges' ? priceRanges : section === 'stocks' ? stocks : section === 'promotions' ? promotions : section === 'selectedSubCategories' ? subCategoryOptions : brandOptions).map((option) => (
@@ -167,6 +167,7 @@ function Filter({ onFilterChange, products, visible, setVisible }) {
                             label="ล้างตัวคัดกรอง" icon="pi pi-refresh"
                             text />
                         <Button
+                            className='mb-2'
                             onClick={() => setVisible(false)}
                             label="แสดงผล"
                         />

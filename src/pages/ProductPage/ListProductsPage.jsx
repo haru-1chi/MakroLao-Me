@@ -73,7 +73,7 @@ const testData = [
     product_name: 'D บะหมี่ 6',
     product_price: 2500.00,
     subCategory: "อาหารกึ่งสำเร็จรูป",
-    product_brand: "D",
+    product_brand: "T",
     inStock: true,
     onSale: false,
   },
