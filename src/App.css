@@ -250,3 +250,13 @@ body {
   word-wrap: break-word;
   white-space: break-spaces;
 }
+
+.filter-card{
+  width: 16rem;
+}
+
+.filter-card-group{
+  position: sticky;
+  bottom: -20px;
+  z-index: 1;
+}

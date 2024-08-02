@@ -83,6 +83,7 @@ function ListProductsPage() {
 
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
+  const [visible, setVisible] = useState(false);
 
   const onPageChange = (event) => {
     setFirst(event.first);
@@ -95,12 +96,12 @@ function ListProductsPage() {
   const applyFilters = (filters) => {
     let filtered = data;
 
-    if (filters.priceRate.key !== 'allRange') {
-      filtered = filtered.filter(product => product.product_price >= filters.priceRate.min && product.product_price <= filters.priceRate.max);
+    if (filters.priceRanges.key !== 'allRange') {
+      filtered = filtered.filter(product => product.product_price >= filters.priceRanges.min && product.product_price <= filters.priceRanges.max);
     }
 
-    if (filters.stock.key !== 'allStock') {
-      filtered = filtered.filter(product => product.inStock === filters.stock.inStock);
+    if (filters.stocks.key !== 'allStock') {
+      filtered = filtered.filter(product => product.inStock === filters.stocks.inStock);
     }
 
     if (filters.selectedSubCategories.length > 0) {
@@ -111,8 +112,8 @@ function ListProductsPage() {
       filtered = filtered.filter(product => filters.selectedBrands.includes(product.product_brand));
     }
 
-    if (filters.promotion.key !== 'allPromotion') {
-      filtered = filtered.filter(product => product.onSale === filters.promotion.onSale);
+    if (filters.promotions.key !== 'allPromotion') {
+      filtered = filtered.filter(product => product.onSale === filters.promotions.onSale);
     }
 
     setFilteredData(filtered);
@@ -178,14 +179,23 @@ function ListProductsPage() {
       <Footer /> */}
 
       <div className="p-3">
-        <div>
+        <div className="flex justify-content-between">
           <h1>Product List</h1>
+          <Button
+            className="lg:hidden"
+            onClick={() => setVisible(true)}
+            aria-label="Clear Filters"
+            label="กรอง" icon="pi pi-sliders-h"
+            text
+          />
         </div>
         <div className="panel w-full flex">
-          <div className="filter-card flex-none">
+          <div className="hidden lg:block">
             <Filter
               onFilterChange={handleFilterChange}
               products={data}
+              visible={visible}
+              setVisible={setVisible}
             />
           </div>
           {filteredData ? (
