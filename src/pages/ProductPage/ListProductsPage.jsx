@@ -6,92 +6,13 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Paginator } from 'primereact/paginator';
 
-const testData = [
-  {
-    id: '1',
-    product_image: 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F074fc00deace464ba94af3b81fe4ec78&w=384&q=75',
-    product_name: 'B ขนม 1',
-    product_price: 300.00,
-    subCategory: 'ขนม',
-    product_brand: 'B',
-    inStock: false,
-    onSale: true,
-  },
-  {
-    id: '2',
-    product_image: 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F074fc00deace464ba94af3b81fe4ec78&w=384&q=75',
-    product_name: 'B เครื่องใช้ไฟฟ้า 2',
-    product_price: 600.00,
-    subCategory: "เครื่องใช้ไฟฟ้า",
-    product_brand: "B",
-    inStock: true,
-    onSale: false,
-  },
-  {
-    id: '3',
-    product_image: 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F074fc00deace464ba94af3b81fe4ec78&w=384&q=75',
-    product_name: 'A เครื่องครัว 3',
-    product_price: 1200.00,
-    subCategory: "เครื่องครัว",
-    product_brand: "A",
-    inStock: false,
-    onSale: true,
-  },
-  {
-    id: '4',
-    product_image: 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F074fc00deace464ba94af3b81fe4ec78&w=384&q=75',
-    product_name: 'A เครื่องใช้ไฟฟ้า 4',
-    product_price: 1700.00,
-    subCategory: "เครื่องใช้ไฟฟ้า",
-    product_brand: "A",
-    inStock: false,
-    onSale: false,
-  },
-  {
-    id: '5',
-    product_image: 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F074fc00deace464ba94af3b81fe4ec78&w=384&q=75',
-    product_name: 'C เครื่องใช้ไฟฟ้า 5',
-    product_price: 1500.00,
-    subCategory: "เครื่องใช้ไฟฟ้า",
-    product_brand: "C",
-    inStock: true,
-    onSale: false,
-  },
-  {
-    id: '6',
-    product_image: 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F074fc00deace464ba94af3b81fe4ec78&w=384&q=75',
-    product_name: 'D เครื่องครัว 6',
-    product_price: 2500.00,
-    subCategory: "เครื่องครัว",
-    product_brand: "D",
-    inStock: true,
-    onSale: false,
-  },
-  {
-    id: '7',
-    product_image: 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F074fc00deace464ba94af3b81fe4ec78&w=384&q=75',
-    product_name: 'D บะหมี่ 6',
-    product_price: 2500.00,
-    subCategory: "อาหารกึ่งสำเร็จรูป",
-    product_brand: "T",
-    inStock: true,
-    onSale: false,
-  },
-];
-
 function ListProductsPage() {
-
+  const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [paginatedData, setPaginatedData] = useState([]);
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
   const [visible, setVisible] = useState(false);
-
-  const onPageChange = (event) => {
-    setFirst(event.first);
-    setRows(event.rows);
-  };
-
-  const [data, setData] = useState(testData);
-  const [filteredData, setFilteredData] = useState(testData);
 
   const applyFilters = (filters) => {
     let filtered = data;
@@ -117,6 +38,7 @@ function ListProductsPage() {
     }
 
     setFilteredData(filtered);
+    setPaginatedData(filtered.slice(first, first + rows));
 
   };
 
@@ -124,23 +46,37 @@ function ListProductsPage() {
     applyFilters(filters);
   };
 
-  // useEffect(() => {
-  //   axios({
-  //     method: "post",
-  //     url: "https://api.tossaguns.online/tossagun-shop/product/api_product",
-  //     headers: {
-  //       "auth-token":
-  //         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb3ciOiJQYXJ0bmVyIiwiaWF0IjoxNzIxODgzMDI0fQ.MbtGRD3wn1ejaYfdtUvxuke4FLSSB-5_uybIuWozvPg",
-  //     },
-  //   })
-  //     .then(function (response) {
-  //       setData(response.data.slice(0, 20));
-  //       // setData(response.data);
-  //     })
-  //     .catch(function (error) {
-  //       console.log(error);
-  //     });
-  // }, []);
+  const fetchData = () => {
+    axios({
+      method: "post",
+      url: "http://183.88.209.149:9999/tossagun-shop/api/api_product",
+      headers: {
+        "auth-token":
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb3ciOiJQYXJ0bmVyIiwiaWF0IjoxNzIxODgzMDI0fQ.MbtGRD3wn1ejaYfdtUvxuke4FLSSB-5_uybIuWozvPg",
+      },
+    })
+      .then((response) => {
+        setData(response.data);
+        setFilteredData(response.data);
+        setPaginatedData(response.data.slice(first, first + rows));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    setPaginatedData(filteredData.slice(first, first + rows));
+  }, [first, rows, filteredData]);
+
+  const onPageChange = (event) => {
+    setFirst(event.first);
+    setRows(event.rows);
+  };
 
   return (
     <>
@@ -191,16 +127,18 @@ function ListProductsPage() {
         </div>
         <div className="panel w-full flex">
           <div className="hidden lg:block">
-            <Filter
-              onFilterChange={handleFilterChange}
-              products={data}
-              visible={visible}
-              setVisible={setVisible}
-            />
+          {data.length > 0 && (
+              <Filter
+                onFilterChange={handleFilterChange}
+                products={data}
+                visible={visible}
+                setVisible={setVisible}
+              />
+            )}
           </div>
           {filteredData ? (
             <div className="product-list">
-              {filteredData.map((product, index) => (
+              {paginatedData.map((product, index) => (
                 <div key={index} className="flex">
                   <div className="border-1 surface-border border-round py-5 px-3 bg-white border-round-mb flex flex-column justify-content-between">
                     <div className="mb-3">
@@ -230,7 +168,7 @@ function ListProductsPage() {
         </div>
       </div>
       <div className="card">
-        <Paginator first={first} rows={rows} totalRecords={100} onPageChange={onPageChange} />
+        <Paginator first={first} rows={rows} totalRecords={filteredData.length} onPageChange={onPageChange} />
       </div>
       <Footer />
     </>

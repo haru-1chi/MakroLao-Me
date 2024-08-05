@@ -3,8 +3,14 @@ import { RadioButton } from 'primereact/radiobutton';
 import { Checkbox } from 'primereact/checkbox';
 import { Sidebar } from 'primereact/sidebar';
 import { Button } from "primereact/button";
+//
+import { useTranslation } from "react-i18next";
+//
 
 function Filter({ onFilterChange, products, visible, setVisible }) {
+    const { t } = useTranslation()
+    const { filter, clearFilter, priceRange, all, stock, instock, subCategory, brand, promotion, onSale, show } = t("Filter")
+
     const generatePriceRanges = (products) => {
         const prices = products.map(product => product.product_price);
         const maxPrice = Math.max(...prices);
@@ -12,23 +18,36 @@ function Filter({ onFilterChange, products, visible, setVisible }) {
         const ranges = [{ key: 'allRange', value: 'ดูเพิ่มเติม' }];
 
         for (let i = 0; i <= maxPrice; i += step) {
+            const min = i;
+            const max = i + step;
+            const hasData = products.some(product => product.product_price >= min && product.product_price < max);
+
             ranges.push({
-                key: `${i}-${i + step}`,
-                value: `${i} ฿ - ${i + step} ฿`,
-                min: i,
-                max: i + step
+                key: `${min}-${max}`,
+                value: `${min} ฿ - ${max} ฿`,
+                min: min,
+                max: max,
+                hasData: hasData
             });
         }
 
-        if (maxPrice % step !== 0) {
-            const lastStep = Math.floor(maxPrice / step) * step + step;
-            ranges.push({
-                key: `${lastStep}`,
-                value: `${lastStep}฿+ `,
-                min: lastStep,
-                max: Infinity
-            });
+        for (let i = ranges.length - 2; i >= 1; i--) {
+            if (!ranges[i].hasData) {
+                ranges.splice(i, 1);
+            } else {
+                break;
+            }
         }
+
+        const lastRangeMax = ranges[ranges.length - 2].max;
+        ranges.pop();
+        ranges.push({
+            key: `${lastRangeMax}`,
+            value: `${lastRangeMax} ฿+`,
+            min: lastRangeMax,
+            max: Infinity,
+            hasData: true
+        });
 
         return ranges;
     };
@@ -52,22 +71,22 @@ function Filter({ onFilterChange, products, visible, setVisible }) {
     };
 
     const getInitialFilters = () => ({
-        priceRanges: { key: 'allRange', value: 'ดูเพิ่มเติม' },
-        stocks: { key: 'allStock', value: 'ดูเพิ่มเติม', inStock: null },
+        priceRanges: { key: 'allRange', value: `${all}` },
+        stocks: { key: 'allStock', value: `${all}`, inStock: null },
         selectedSubCategories: [],
         selectedBrands: [],
-        promotions: { key: 'allPromotion', value: 'ดูเพิ่มเติม', onSale: null }
+        promotions: { key: 'allPromotion', value: `${all}`, onSale: null }
     });
 
     const priceRanges = generatePriceRanges(products);
     const stocks = [
-        { key: 'allStock', value: 'ดูเพิ่มเติม', inStock: null },
-        { key: 'inStock', value: 'มีสินค้า', inStock: true }
+        { key: 'allStock', value: `${all}`, inStock: null },
+        { key: 'inStock', value: `${instock}`, inStock: true }
     ];
     const { subCategoryOptions, brandOptions } = generateFiltersFromData(products);
     const promotions = [
-        { key: 'allPromotion', value: 'ดูเพิ่มเติม', onSale: null },
-        { key: 'onSale', value: 'ลดราคา', onSale: true }
+        { key: 'allPromotion', value: `${all}`, onSale: null },
+        { key: 'onSale', value: `${onSale}`, onSale: true }
     ];
 
     const [filters, setFilters] = useState(getInitialFilters());
@@ -94,11 +113,11 @@ function Filter({ onFilterChange, products, visible, setVisible }) {
     }, [filters]);
 
     const sectionLabels = {
-        priceRanges: 'ช่วงราคา',
-        stocks: 'สต๊อก',
-        selectedSubCategories: 'หมวดหมู่ย่อย',
-        selectedBrands: 'แบรนด์',
-        promotions: 'โปรโมชั่น'
+        priceRanges: `${priceRange}`,
+        stocks: `${stock}`,
+        selectedSubCategories: `${subCategory}`,
+        selectedBrands: `${brand}`,
+        promotions: `${promotion}`
     };
 
     const [expandedSections, setExpandedSections] = useState({
@@ -129,7 +148,7 @@ function Filter({ onFilterChange, products, visible, setVisible }) {
                     <div className="flex justify-content-between">
                         <div className="flex align-items-center">
                             <i className="pi pi-sliders-h"></i>
-                            <p className='ml-2'>กรอง</p>
+                            <p className='ml-2'>{filter}</p>
                         </div>
                     </div>
                     {Object.entries(expandedSections).map(([section, expanded]) => (
@@ -164,12 +183,12 @@ function Filter({ onFilterChange, products, visible, setVisible }) {
                             className='p-3 mb-2'
                             onClick={clearFilters}
                             aria-label="Clear Filters"
-                            label="ล้างตัวคัดกรอง" icon="pi pi-refresh"
+                            label={clearFilter} icon="pi pi-refresh"
                             text />
                         <Button
                             className='mb-2'
                             onClick={() => setVisible(false)}
-                            label="แสดงผล"
+                            label={show}
                         />
 
                     </div>
@@ -181,13 +200,13 @@ function Filter({ onFilterChange, products, visible, setVisible }) {
                 <div className="flex justify-content-between">
                     <div className="flex align-items-center">
                         <i className="pi pi-sliders-h"></i>
-                        <p className='ml-2'>กรอง</p>
+                        <p className='ml-2'>{filter}</p>
                     </div>
                     <Button
                         className='p-2'
                         onClick={clearFilters}
                         aria-label="Clear Filters"
-                        label="ล้างตัวคัดกรอง" icon="pi pi-refresh"
+                        label={clearFilter} icon="pi pi-refresh"
                         text />
                 </div>
                 {Object.entries(expandedSections).map(([section, expanded]) => (

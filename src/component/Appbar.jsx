@@ -5,6 +5,9 @@ import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
 import { Outlet, Link } from "react-router-dom";
+//
+import { useTranslation } from "react-i18next";
+//
 
 function Appbar() {
   const [visible1, setVisible1] = useState(false);
@@ -42,6 +45,9 @@ function Appbar() {
       <a href="/" className="font-bold">Logo</a>
     </div>
   );
+
+  const { t } = useTranslation()
+  const { zipcode, category, makroProPoint, makromail } = t("Appbar")
 
   return (
     <>
@@ -139,7 +145,7 @@ function Appbar() {
               <div className="flex align-items-center text-center gap-2 bg-post">
                 {/* <Button className="p-1" label="รหัสไปรษณีย์" icon="pi pi-truck"/> */}
                 <i className="pi pi-truck"></i>
-                <p>รหัสไปรษณีย์</p>
+                <p>{zipcode}</p>
                 <i className="pi pi-angle-down"></i>
               </div>
             </div>
@@ -190,14 +196,14 @@ function Appbar() {
               </div>
             </Sidebar>
             <Button
-              label="หมวดหมู่"
+              label={category}
               icon="pi pi-chevron-down"
               iconPos="right"
               onClick={() => setVisible4(true)}
             />
           </div>
           <div>
-            <Link to="/Pagepoint">จัดเต็มความคุ้ม แม็คโครโปรพอยท์</Link>
+            <Link to="/Pagepoint">{makroProPoint}</Link>
             {/* <a href="/Pagepoint">จัดเต็มความคุ้ม แม็คโครโปรพอยท์</a> */}
           </div>
           <div>
@@ -225,7 +231,7 @@ function Appbar() {
                 </div>
               </div>
             </Sidebar>
-            <Button label="แม็คโครเมล์" onClick={() => setVisible3(true)} />
+            <Button label={makromail} onClick={() => setVisible3(true)} />
           </div>
         </div>
       </div>
