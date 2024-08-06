@@ -7,6 +7,7 @@ import { InputText } from "primereact/inputtext";
 import { Outlet, Link } from "react-router-dom";
 //
 import { useTranslation } from "react-i18next";
+import { useCart } from '../router/CartContext';
 //
 
 function Appbar() {
@@ -14,6 +15,22 @@ function Appbar() {
   const [visible2, setVisible2] = useState(false);
   const [visible3, setVisible3] = useState(false);
   const [visible4, setVisible4] = useState(false);
+
+  const { cart, removeFromCart, updateQuantity } = useCart();
+
+  const calculateTotalBeforeDiscount = () => {
+    return cart.reduce((total, product) => total + product.product_price * product.quantity, 0);
+  };
+
+  const calculateShippingCost = (total) => {
+    return total * 0.03;
+  };
+
+  const totalBeforeDiscount = calculateTotalBeforeDiscount();
+  const shippingCost = calculateShippingCost(totalBeforeDiscount);
+  const totalPayable = totalBeforeDiscount + shippingCost;
+
+
   const customIcons = (
     <React.Fragment>
       <button className="p-sidebar-icon p-link mr-2">
@@ -112,18 +129,79 @@ function Appbar() {
                   onHide={() => setVisible2(false)}
                   icons={customIcons}
                 >
-                  <div className="cart gap-1 wt">
-                    <img
-                      src="https://www.makro.pro/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fempty-basket.76c5ec1f.png&w=1200&q=75"
-                      alt=""
-                    />
-                    <h2>ไม่มีสินค้าในตะกร้า</h2>
-                    <span>เริ่มเลือกสินค้าเลย!</span>
-                    <a href="/"><Button label="หาจากหมวดหมู่สินค้า" /></a>
-                    
+                  {cart.length > 0 && (
+                    <div className="border-1 p-2 border-gray-300 border-round-xl">
+                      <i className="pi pi-map-marker">จัดส่งที่</i>
+                    </div>
+                  )}
+                  <div className={cart.length > 0 ? "cart-items w-full" : "cart flex gap-1"}>
+                    {cart.length > 0 ? (
+                      <>
+                        {cart.map((product, index) => (
+                          <div key={index} className="cart-items justify-content-between mb-2 border-bottom-1">
+                            <div className="flex align-items-center">
+                              <img
+                                src={product.product_image}
+                                alt={product.product_name}
+                                className="w-4 m-2"
+                              />
+                              <div className="flex flex-column">
+                                <span className="mb-3 font-bold">{product.product_name}</span>
+                                <span >{product.product_price} ฿</span>
+                              </div>
+                            </div>
+                            <div className="flex align-items-center justify-content-between">
+                              <Button
+                                icon="pi pi-trash"
+                                onClick={() => removeFromCart(product.product_id)}
+                                className="text-red-600"
+                                text
+                              />
+
+                              <div className="flex align-items-center">
+                                <Button
+                                  size="small"
+                                  label="-"
+                                  className="text-gray-600"
+                                  onClick={() => updateQuantity(product.product_id, product.quantity - 1)}
+                                  rounded
+                                  text
+                                />
+                                <p className="mx-2">{product.quantity}</p>
+                                <Button
+                                  size="small"
+                                  label="+"
+                                  className="text-gray-600"
+                                  onClick={() => updateQuantity(product.product_id, product.quantity + 1)}
+                                  rounded
+                                  text
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                        <div>
+                          <p>ยอดสั่งซื้อก่อนหักส่วนลด {totalBeforeDiscount.toFixed(2)} ฿</p>
+                          <p>ค่าจัดส่ง {shippingCost.toFixed(2)} ฿</p>
+                          <p>ยอดชำระ {totalPayable.toFixed(2)} ฿</p>
+                          <div>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <img
+                          src="https://www.makro.pro/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fempty-basket.76c5ec1f.png&w=1200&q=75"
+                          alt=""
+                        />
+                        <h2 className="m-1">ไม่มีสินค้าในตะกร้า</h2>
+                        <span className="mb-3">เริ่มเลือกสินค้าเลย!</span>
+                        <a href="/"><Button label="หาจากหมวดหมู่สินค้า" rounded /></a>
+                      </>
+                    )}
                   </div>
                 </Sidebar>
-                
+
               </div>
               <div className="flex justify-content-between align-items-center">
                 <h1 className="m-0">
@@ -156,7 +234,7 @@ function Appbar() {
               </IconField>
             </div>
           </div>
-        </div>
+        </div >
         <div className="navmenu w-full border-solid mb-1">
           <div>
             <Sidebar
@@ -173,8 +251,8 @@ function Appbar() {
                   </a>
                 </div>
 
-                
-    
+
+
                 <div className="box-menu mt-5">
                   <Link to="List-Product" className="flex justify-content-between" onClick={() => setVisible4(false)}><span><i className="pi pi-hashtag mr-2" />สินค้าทุกหมวดหมู่</span> <i className="pi pi-angle-right mr-2"></i></Link>
                 </div>
@@ -182,16 +260,16 @@ function Appbar() {
                   <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />เนื้อสัตว์</span> <i className="pi pi-angle-right mr-2"></i></a>
                 </div>
                 <div className="box-menu mt-5">
-                <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />อาหารทะเล</span> <i className="pi pi-angle-right mr-2"></i></a>
+                  <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />อาหารทะเล</span> <i className="pi pi-angle-right mr-2"></i></a>
                 </div>
                 <div className="box-menu mt-5">
-                <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />ผักและผลไม้</span> <i className="pi pi-angle-right mr-2"></i></a>
+                  <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />ผักและผลไม้</span> <i className="pi pi-angle-right mr-2"></i></a>
                 </div>
                 <div className="box-menu mt-5">
-                <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />เครื่องดื่มและนม</span> <i className="pi pi-angle-right mr-2"></i></a>
+                  <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />เครื่องดื่มและนม</span> <i className="pi pi-angle-right mr-2"></i></a>
                 </div>
                 <div className="box-menu mt-5">
-                <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />อาหารและเครื่องปรุง</span> <i className="pi pi-angle-right mr-2"></i></a>
+                  <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />อาหารและเครื่องปรุง</span> <i className="pi pi-angle-right mr-2"></i></a>
                 </div>
               </div>
             </Sidebar>
@@ -234,7 +312,7 @@ function Appbar() {
             <Button label={makromail} onClick={() => setVisible3(true)} />
           </div>
         </div>
-      </div>
+      </div >
       <Outlet />
     </>
   );

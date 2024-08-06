@@ -1,18 +1,34 @@
-import { Button } from "primereact/button";
+import React, { useState, useEffect, useRef } from "react";
 import { Outlet, Link } from "react-router-dom";
+import axios from "axios";
+import { useCart } from '../../router/CartContext';
 import Filter from "../../component/Filter";
 import Footer from "../../component/Footer";
-import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Paginator } from 'primereact/paginator';
+import { Button } from "primereact/button";
+import { Toast } from 'primereact/toast';
 
 function ListProductsPage() {
+  const { addToCart } = useCart();
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [paginatedData, setPaginatedData] = useState([]);
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
   const [visible, setVisible] = useState(false);
+
+  const toast = useRef(null);
+  const toastTopCenter = useRef(null);
+
+  const show = () => {
+    toast.current.show({ severity: 'info', summary: 'Info', detail: 'Message Content' });
+  };
+
+  const showMessage = (event, ref, severity) => {
+    const label = event.target.innerText;
+
+    ref.current.show({ severity: severity, summary: label, detail: label, life: 3000 });
+  };
 
   const applyFilters = (filters) => {
     let filtered = data;
@@ -80,40 +96,12 @@ function ListProductsPage() {
 
   return (
     <>
-      {/* <div className="p-3">
-        <div>
-          <h1>Product List</h1>
-        </div>
-        <div className="product-list">
-          {data.map((product) => (
-            <Link to="Product">
-              <div className="border-1 surface-border border-round py-5 px-3 bg-white border-round-mb">
-                <div className="mb-3">
-                  <img
-                    src={product.imgURL}
-                    alt={product.name}
-                    className="w-12"
-                  />
-                </div>
-                <div>
-                  <h4 className="mb-1">{product.name}</h4>
-                  <hr />
-                  <div className="flex align-items-center justify-content-between p-2 mt-2 bg-product">
-                    <div className="font-bold">{product.price} ฿</div>
-                    <Button
-                      className="btn-plus-product"
-                      icon="pi pi-plus"
-                      rounded
-                    />
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </div>
-      <Footer /> */}
-
+    
+      <Toast ref={toast} position="top-center" />
+      <Toast ref={toastTopCenter} position="top-center" />
+      <Button onClick={show} label="Basic" />
+      <Button label="Top Center" onClick={(e) => showMessage(e, toastTopCenter, 'info')} />
+      
       <div className="p-3">
         <div className="flex justify-content-between">
           <h1>Product List</h1>
@@ -127,7 +115,7 @@ function ListProductsPage() {
         </div>
         <div className="panel w-full flex">
           <div className="hidden lg:block">
-          {data.length > 0 && (
+            {data.length > 0 && (
               <Filter
                 onFilterChange={handleFilterChange}
                 products={data}
@@ -156,6 +144,7 @@ function ListProductsPage() {
                         className="btn-plus-product"
                         icon="pi pi-plus"
                         rounded
+                        onClick={() => addToCart(product)}
                       />
                     </div>
                   </div>
