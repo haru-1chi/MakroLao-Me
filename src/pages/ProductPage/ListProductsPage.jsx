@@ -18,16 +18,10 @@ function ListProductsPage() {
   const [visible, setVisible] = useState(false);
 
   const toast = useRef(null);
-  const toastTopCenter = useRef(null);
-
   const show = () => {
-    toast.current.show({ severity: 'info', summary: 'Info', detail: 'Message Content' });
-  };
-
-  const showMessage = (event, ref, severity) => {
-    const label = event.target.innerText;
-
-    ref.current.show({ severity: severity, summary: label, detail: label, life: 3000 });
+    toast.current.show({
+      severity: 'success', summary: 'เพิ่มในตะกร้าแล้ว', life: 2000
+    });
   };
 
   const applyFilters = (filters) => {
@@ -96,12 +90,7 @@ function ListProductsPage() {
 
   return (
     <>
-    
       <Toast ref={toast} position="top-center" />
-      <Toast ref={toastTopCenter} position="top-center" />
-      <Button onClick={show} label="Basic" />
-      <Button label="Top Center" onClick={(e) => showMessage(e, toastTopCenter, 'info')} />
-      
       <div className="p-3">
         <div className="flex justify-content-between">
           <h1>Product List</h1>
@@ -140,11 +129,15 @@ function ListProductsPage() {
                     <hr />
                     <div className="flex align-items-center justify-content-between p-2 mt-2 bg-product">
                       <div className="font-bold">{product.product_price} ฿</div>
+
                       <Button
                         className="btn-plus-product"
                         icon="pi pi-plus"
                         rounded
-                        onClick={() => addToCart(product)}
+                        onClick={() => {
+                          addToCart(product)
+                          show()
+                        }}
                       />
                     </div>
                   </div>

@@ -121,7 +121,7 @@ function HomePage() {
     <div className="banner">
         <img className="w-full" src={topBanner} alt="" />
       </div>
-      <div class="flex category-scrllo w-full border-solid p-3">
+      <div class="category-scrllo flex w-full border-solid p-3">
         <div className="flex text-center sm:col-12 gap-2">
           {categories.map((item) => (
             <Category data={item} />

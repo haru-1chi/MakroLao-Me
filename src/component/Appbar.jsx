@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Sidebar } from "primereact/sidebar";
 import { Button } from "primereact/button";
+import { Toast } from 'primereact/toast';
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
@@ -17,6 +18,12 @@ function Appbar() {
   const [visible4, setVisible4] = useState(false);
 
   const { cart, removeFromCart, updateQuantity } = useCart();
+  const toast = useRef(null);
+  const showToast = () => {
+    toast.current.show({
+      severity: 'info', summary: 'สินค้าถูกนำออกจากตะกร้า', life: 2000
+    });
+  };
 
   const calculateTotalBeforeDiscount = () => {
     return cart.reduce((total, product) => total + product.product_price * product.quantity, 0);
@@ -134,6 +141,7 @@ function Appbar() {
                       <i className="pi pi-map-marker">จัดส่งที่</i>
                     </div>
                   )}
+                  <Toast ref={toast} position="top-center" />
                   <div className={cart.length > 0 ? "cart-items w-full" : "cart flex gap-1"}>
                     {cart.length > 0 ? (
                       <>
@@ -153,11 +161,14 @@ function Appbar() {
                             <div className="flex align-items-center justify-content-between">
                               <Button
                                 icon="pi pi-trash"
-                                onClick={() => removeFromCart(product.product_id)}
+                                onClick={() => {
+                                  showToast();
+                                  removeFromCart(product.product_id);
+                                }
+                                }
                                 className="text-red-600"
                                 text
                               />
-
                               <div className="flex align-items-center">
                                 <Button
                                   size="small"
@@ -181,10 +192,20 @@ function Appbar() {
                           </div>
                         ))}
                         <div>
-                          <p>ยอดสั่งซื้อก่อนหักส่วนลด {totalBeforeDiscount.toFixed(2)} ฿</p>
-                          <p>ค่าจัดส่ง {shippingCost.toFixed(2)} ฿</p>
-                          <p>ยอดชำระ {totalPayable.toFixed(2)} ฿</p>
-                          <div>
+                          <div className="flex align-items-center justify-content-between border-bottom-1">
+                            <p className='m-0'>ยอดสั่งซื้อก่อนหักส่วนลด</p>
+                            <p className='m-0'>{totalBeforeDiscount.toFixed(2)} ฿</p>
+                          </div>
+                          <div className="flex align-items-center justify-content-between border-bottom-1">
+                            <p className='m-0'>จัดส่ง</p>
+                            <p className='m-0'>{shippingCost.toFixed(2)} ฿</p>
+                          </div>
+                          <div className="flex align-items-center justify-content-between border-bottom-1">
+                            <p className='m-0'>ยอดชำระ</p>
+                            <p className='m-0'>{totalPayable.toFixed(2)} ฿</p>
+                          </div>
+                          <div className="flex justify-content-end">
+                            <Link to="/CheckoutPage"><Button label="เช็คเอาท์" size="small" onClick={() => setVisible2(false)} rounded /></Link>
                           </div>
                         </div>
                       </>
@@ -220,7 +241,7 @@ function Appbar() {
 
           <div className="flex justify-content-between align-items-center border-solid">
             <div>
-              <div className="flex align-items-center text-center gap-2 bg-post">
+              <div className="bg-post flex align-items-center text-center gap-2">
                 {/* <Button className="p-1" label="รหัสไปรษณีย์" icon="pi pi-truck"/> */}
                 <i className="pi pi-truck"></i>
                 <p>{zipcode}</p>

@@ -228,6 +228,21 @@ body {
   grid-template-columns: repeat(2, 1fr);
 }
 
+.checkout-1 {
+  display: grid;
+  gap: 8px;
+  width: 70%;
+  /* grid-template-columns: repeat(2, 1fr); */
+}
+
+.checkout-2 {
+  display: grid;
+  gap: 8px;
+  width: 30%;
+  height: 40%;
+  /* grid-template-columns: repeat(2, 1fr); */
+}
+
 .section-point-product a {
   text-decoration: none;
   color: black;

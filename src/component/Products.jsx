@@ -66,7 +66,7 @@ const productTemplate = (product) => {
             <div>
                 <h4 className="mb-1">{product.name}</h4>
                 <hr />
-                <div className="flex align-items-center justify-content-between p-2 mt-2 bg-product">
+                <div className="bg-product flex align-items-center justify-content-between p-2 mt-2">
                     <div className='font-bold'>{product.price} ฿</div>
                     <Button className='btn-plus-product' icon="pi pi-plus" rounded/>
                 </div>

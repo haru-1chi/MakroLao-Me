@@ -15,7 +15,7 @@ function Navbar() {
 
   return (
     <>
-    <div className="card flex justify-content-start p-4 w-full bg-white section-appbar">
+    <div className="section-appbar card flex justify-content-start p-4 w-full bg-white ">
       <Sidebar
         header={customHeader}
         visible={visible}
