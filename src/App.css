@@ -242,7 +242,12 @@ body {
   height: 40%;
   /* grid-template-columns: repeat(2, 1fr); */
 }
-
+.checkout-3 {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  grid-template-columns: repeat(4, 1fr);
+}
 .section-point-product a {
   text-decoration: none;
   color: black;

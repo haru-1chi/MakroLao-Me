@@ -1,24 +1,36 @@
 import Products from "../../component/Products";
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
+import { useCart } from '../../router/CartContext';
 import { Galleria } from "primereact/galleria";
 import { Button } from 'primereact/button';
+import { Toast } from 'primereact/toast';
 import Footer from "../../component/Footer";
+import { useLocation } from 'react-router-dom';
 
 function ProductPage() {
+  const location = useLocation();
+  const product = location.state?.product;
+  const { addToCart } = useCart();
+
+  const toast = useRef(null);
+  const show = () => {
+    toast.current.show({
+      severity: 'success', summary: 'เพิ่มในตะกร้าแล้ว', life: 2000
+    });
+  };
+
   const data = [
     {
-      imgURL : 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2Fccf8d24de08045b2905f4a12d5522d5e&w=1080&q=75'
+      imgURL: product.product_image
     },
     {
-      imgURL : 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F9102f2833d2246ea8b22f33fc5dc6944&w=1080&q=75'
+      imgURL: product.product_image
     },
     {
-      imgURL : 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2Fefa4a4ae912749768560bd44f34b4f3f&w=1080&q=75'
+      imgURL: product.product_image
     },
   ]
 
-  
-  
   const responsiveOptions = [
     {
       breakpoint: "991px",
@@ -36,40 +48,48 @@ function ProductPage() {
 
 
   const itemTemplate = (item) => {
-    return <img src={item.imgURL} alt='' width={300}  />
-}
+    return <img src={item.imgURL} alt='' width={300} />
+  }
 
-const thumbnailTemplate = (item) => {
-  return <img src={item.imgURL} alt='' width={100} />
-}
-  
+  const thumbnailTemplate = (item) => {
+    return <img src={item.imgURL} alt='' width={100} />
+  }
 
+  if (!product) {
+    return <div>Product not found</div>;
+  }
 
   return (
     <>
-    <div className="m-3">
-     {/* ----------------------- */}
-      <div className="card shadow-2 bg-white mb-3">
-        <Galleria
-          value={data}
-          responsiveOptions={responsiveOptions}
-          numVisible={5}
-          style={{ maxWidth: "640px" }}
-          item={itemTemplate} 
-          thumbnail={thumbnailTemplate}
-        />
-      </div>
-      {/* ----------------------- */}
+      <Toast ref={toast} position="top-center" />
+      <div className="m-3">
+        {/* ----------------------- */}
+        <div className="card shadow-2 bg-white mb-3">
+          <Galleria
+            value={data}
+            responsiveOptions={responsiveOptions}
+            numVisible={5}
+            style={{ maxWidth: "640px" }}
+            item={itemTemplate}
+            thumbnail={thumbnailTemplate}
+          />
+        </div>
+        {/* ----------------------- */}
 
-      <div className="p-4 bg-white border-round-lg shadow-2">
-        <h1>Name Product</h1>
-        <h2>999.00 </h2>
-        <Button className="w-full" label="+ เพิ่มสินค้าในตะกร้า"/>
-      </div>
+        <div className="p-4 bg-white border-round-lg shadow-2">
+          <h1>{product.product_name}</h1>
+          <h2>{product.product_price} ฿</h2>
+          <p>{product.product_detail}</p>
+          <Button className="w-full" label="+ เพิ่มสินค้าในตะกร้า"
+            onClick={() => {
+              addToCart(product)
+              show()
+            }} />
+        </div>
 
-      <div>
-        <Products />
-      </div>
+        <div>
+          <Products />
+        </div>
       </div>
       <Footer />
     </>

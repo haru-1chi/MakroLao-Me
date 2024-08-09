@@ -29,8 +29,7 @@ function Router() {
               <Route index element={<HomePage />} />
               <Route path="Pagepoint" element={<Pagepoint />} />
               <Route path="List-Product" element={<ListProductsPage />} />
-              <Route path="List-Product/Product" element={<ProductPage />} />
-              {/* <Route path="/product/:id" component={ProductPage} /> */}
+              <Route path="List-Product/Product/:productId" element={<ProductPage />} />
               <Route path="CheckoutPage" element={<CheckoutPage />} />
               <Route path="PaymentPage" element={<PaymentPage />} />
               <Route path="PaymentSuccessfully" element={<PaymentSuccessfully />} />

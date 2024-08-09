@@ -5,8 +5,10 @@ import { Toast } from 'primereact/toast';
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
+import { Badge } from 'primereact/badge';
 import { Outlet, Link } from "react-router-dom";
 //
+import LanguageSelector from "./LanguageSelector";
 import { useTranslation } from "react-i18next";
 import { useCart } from '../router/CartContext';
 //
@@ -106,7 +108,7 @@ function Appbar() {
                       แม็คโครโปรพอยท์<span>เรียนรู้เพิ่มเติม</span>
                     </div>
                     <hr />
-                    <div>ภาษา</div>
+                    <div>ภาษา <LanguageSelector /></div>
                     <br />
                     <div className="">
                       <div>
@@ -232,10 +234,21 @@ function Appbar() {
             </div>
             <div className="flex gap-4">
               <Button icon="pi pi-heart" />
+              {/* <i className="pi pi-shopping-cart p-overlay-badge" style={{ fontSize: '2rem' }}>
+                <Badge value={cart.length} severity="danger"></Badge>
+              </i> */}
               <Button
-                icon="pi pi-shopping-cart"
+                icon={
+                  <span style={{ position: 'relative', display: 'inline-block' }}>
+                    <i className="pi pi-shopping-cart" style={{ fontSize: '1.3rem' }}></i>
+                    <Badge value={cart.length} severity="danger" 
+                           style={{ position: 'absolute', top: '-0.5rem', right: '-0.5rem' }} />
+                  </span>
+                }
                 onClick={() => setVisible2(true)}
               />
+              <Link to="/AccountPage"><Button icon="pi pi-user" /></Link>
+
             </div>
           </div>
 

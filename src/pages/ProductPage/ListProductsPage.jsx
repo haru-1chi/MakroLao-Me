@@ -119,11 +119,13 @@ function ListProductsPage() {
                 <div key={index} className="flex">
                   <div className="border-1 surface-border border-round py-5 px-3 bg-white border-round-mb flex flex-column justify-content-between">
                     <div className="mb-3">
-                      <img
-                        src={product.product_image}
-                        alt={product.product_name}
-                        className="w-12"
-                      />
+                    <Link to={`product/${product.product_id}`} state={{ product }}>
+                        <img
+                          src={product.product_image}
+                          alt={product.product_name}
+                          className="w-12"
+                        />
+                      </Link>
                     </div>
                     <h4 className="mb-1">{product.product_name}</h4>
                     <hr />
