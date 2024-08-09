@@ -16,8 +16,13 @@ function PaymentSuccessfully() {
                     </div>
                     <h2 className="text-center">การสั่งซื้อสำเร็จแล้ว!</h2>
                     <p className="text-center">เราจะจัดเตรียมรายการสินค้าของคุณและจัดส่งอย่างตรงเวลา!</p>
-                    <Link to="/AccountPage"><Button label="ดูรายการสั่งซื้อ" size="small" rounded /></Link>
-                    <Button label="เลือกสินค้าเพิ่มเติม" size="small" rounded />
+                    <div className="flex align-items-center justify-content-center">
+                        <Link to="/AccountPage" ><Button label="ดูรายการสั่งซื้อ" size="small" rounded /></Link>
+                    </div>
+                    <div className="flex align-items-center justify-content-center">
+                        <Link to="/"><Button label="เลือกสินค้าเพิ่มเติม" size="small" rounded /></Link>
+                    </div>
+
                 </div>
 
             </div>
