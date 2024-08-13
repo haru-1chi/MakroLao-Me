@@ -87,7 +87,6 @@ body {
 }
 
 .navmenu {
-  margin-top: 10px;
   display: flex;
   gap: 10px;
   width: 100%;
@@ -223,9 +222,10 @@ body {
 
 .product-list {
   display: grid;
-  gap: 8px;
+  gap: 16px;
   width: 100%;
-  grid-template-columns: repeat(2, 1fr);
+  /* grid-template-columns: repeat(4, 1fr); */
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 }
 
 .checkout-1 {
@@ -246,7 +246,7 @@ body {
   display: grid;
   gap: 8px;
   width: 100%;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: auto auto auto auto;
 }
 .section-point-product a {
   text-decoration: none;

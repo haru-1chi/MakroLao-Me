@@ -22,32 +22,34 @@ function Router() {
   return (
     <BrowserRouter>
 
-        <Routes>
-          if (path != "LoginPage" && path != "LoginPage" )
-          {
-            <Route path="/" element={<Appbar />}>
-              <Route index element={<HomePage />} />
-              <Route path="Pagepoint" element={<Pagepoint />} />
-              <Route path="List-Product" element={<ListProductsPage />} />
-              <Route path="List-Product/Product/:productId" element={<ProductPage />} />
-              <Route path="CheckoutPage" element={<CheckoutPage />} />
-              <Route path="PaymentPage" element={<PaymentPage />} />
-              <Route path="PaymentSuccessfully" element={<PaymentSuccessfully />} />
-              <Route path="AccountPage" element={<AccountPage />} />
-              <Route path="StatusShippingPage/:orderId" element={<StatusShippingPage />} />
-              <Route path="QRPage" element={<QRPage />} />
-              <Route path="*" element={<NoPage />} />
-              <Route path="/OrderSummaryPage" element={<OrderSummaryPage />} />
-            </Route>
-          }
-          else
-          {
-            <Route path="/" element={<Navbar />}>
-              <Route path="LoginPage" element={<LoginPage />} />
-              <Route path="RegisterPage" element={<RegisterPage />} />
-            </Route>
-          }
-        </Routes>
+      <Routes>
+        if (path != "LoginPage" && path != "LoginPage" )
+        {
+          <Route path="/" element={<Appbar />}>
+            <Route index element={<HomePage />} />
+            <Route path="Pagepoint" element={<Pagepoint />} />
+            <Route path="List-Product" element={<ListProductsPage />} />
+            <Route path="List-Product/Product/:productId" element={<ProductPage />} />
+            <Route path="CheckoutPage" element={<CheckoutPage />} />
+            <Route path="PaymentPage" element={<PaymentPage />} />
+            <Route path="PaymentSuccessfully" element={<PaymentSuccessfully />} />
+            <Route path="QRPage" element={<QRPage />} />
+            <Route path="AccountPage" element={<AccountPage />} />
+            <Route path="StatusShippingPage/:orderId" element={<StatusShippingPage />} />
+            
+            <Route path="*" element={<NoPage />} />
+            <Route path="/OrderSummaryPage" element={<OrderSummaryPage />} />
+          </Route>
+        }
+        else
+        {
+          <Route path="/" element={<Navbar />}>
+            <Route path="LoginPage" element={<LoginPage />} />
+            <Route path="RegisterPage" element={<RegisterPage />} />
+            
+          </Route>
+        }
+      </Routes>
     </BrowserRouter>
   );
 }

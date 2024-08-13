@@ -19,7 +19,8 @@
     "primereact": "^10.7.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-i18next": "^15.0.0"
+    "react-i18next": "^15.0.0",
+    "sass": "^1.77.8"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

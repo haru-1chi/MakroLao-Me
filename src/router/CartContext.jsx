@@ -1,35 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { formatDate, formatTime, convertTHBtoLAK } from '../utils/DateTimeFormat';
 
 const CartContext = createContext();
-
-const formatDate = (date) => {
-  const options = {
-    weekday: 'long',
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  };
-
-  const formattedDate = new Intl.DateTimeFormat('th-TH', options).format(date);
-
-  const [weekday, day, month, year, time] = formattedDate.split(' ');
-  const [hour, minute] = time.split(':');
-
-  return `${weekday} ${day} ${month} ${parseInt(year)} ${hour}.${minute}`;
-};
-
-function formatTime(date) {
-  const hours = date.getHours().toString().padStart(2, '0');
-  const minutes = date.getMinutes().toString().padStart(2, '0');
-  return `${hours}.${minutes}`;
-}
 
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
+  const COD_COST_RATE = 0.03;
+
   const user = {
     id: 1,
     name: 'วันดี วันเพ็ญ',
@@ -38,40 +16,30 @@ export const CartProvider = ({ children }) => {
     zipcode: 12345,
   };
 
-  const [cartDetails, setCartDetails] = useState(() => {
-    const storedCartDetails = localStorage.getItem('cartDetails');
-    return storedCartDetails ? JSON.parse(storedCartDetails) : [];
-  });
-
-  const [cart, setCart] = useState(() => {
-    const storedCart = localStorage.getItem('cart');
-    return storedCart ? JSON.parse(storedCart) : [];
-  });
-
-  const [orders, setOrders] = useState(() => {
-    const storedOrders = localStorage.getItem('orders');
-    return storedOrders ? JSON.parse(storedOrders) : [];
-  });
+  const [cartDetails, setCartDetails] = useState(() => JSON.parse(localStorage.getItem('cartDetails')) || []);
+  const [cart, setCart] = useState(() => JSON.parse(localStorage.getItem('cart')) || []);
+  const [orders, setOrders] = useState(() => JSON.parse(localStorage.getItem('orders')) || []);
 
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
   useEffect(() => {
+    localStorage.setItem('cartDetails', JSON.stringify(cartDetails));
+  }, [cartDetails]);
+
+  useEffect(() => {
     localStorage.setItem('orders', JSON.stringify(orders));
   }, [orders]);
 
   const addToCart = (product) => {
-    setCart((prevCart) => {
+    setCart(prevCart => {
       const existingProduct = prevCart.find(item => item.product_id === product.product_id);
-      if (existingProduct) {
-        return prevCart.map(item =>
-          item.product_id === product.product_id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-      return [...prevCart, { ...product, quantity: 1 }];
+      return existingProduct
+        ? prevCart.map(item => item.product_id === product.product_id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item)
+        : [...prevCart, { ...product, quantity: 1 }];
     });
   };
 
@@ -85,6 +53,52 @@ export const CartProvider = ({ children }) => {
     ));
   };
 
+  const placeCartDetail = (details) => {
+    const newCartDetails = {
+      id: `${Date.now()}`,
+      ...details
+    };
+    setCartDetails(newCartDetails);
+  };
+
+  const placeOrder = (orderDetails) => {
+    const totalBeforeDiscount = convertTHBtoLAK(cart.reduce((total, product) => total + product.product_price * product.quantity, 0));
+    
+    const shippingCost = totalBeforeDiscount * COD_COST_RATE;
+
+    const totalPayable = totalBeforeDiscount + shippingCost;
+
+    const newOrder = {
+      id: `ORD-${Date.now()}`,
+      user,
+      date: formatDate(new Date()),
+      ...orderDetails,
+      items: [...cart],
+      status: { key: 'Ordered', value: 'ได้รับคำสั่งซื้อแล้ว' },
+      totalBeforeDiscount,
+      shippingCost,
+      total: totalPayable.toFixed(2),
+      //รหัสสมาชิกลูกค้า
+      //ที่อยู่
+      //เลขประจำตัวผู้เสียภาษาและสาขาที่เสียภาษี
+      //สถานที่ส่งสินค้า ซึ่งเป็นสาขาขนส่ง/โกดังที่จะไปรับ
+      //เบอร์โทรติดต่อ
+      //อีเมล
+      //ชื่อลูกค้า ชื่อผู้รับสินค้า
+      //สาขาที่ออกใบกำกับภาษา (สาขาแม็คโครไทย)
+      //ที่อยู่แม็คโครไทย
+      //เลขที่ น่าจะ ใบเสร็จ ไอดี
+      //วันที่ และวันที่สั่งซื้อ
+      //เลขที่สั่งซื้อ
+      //วิธีการชำระเงิน
+      //เลขที่ใบรับมัดจำ
+    };
+
+    setOrders([...orders, newOrder]);
+    setCart([]);
+    setCartDetails([]);
+  };
+
   const clearCart = () => {
     setCart([]);
   };
@@ -96,45 +110,6 @@ export const CartProvider = ({ children }) => {
     setCartDetails([]);
   };
   
-  const placeCartDetail = (details) => {
-    const newCartDetails = {
-      id: `${Date.now()}`,
-      ...details
-    };
-    setCartDetails(newCartDetails);
-    console.log(newCartDetails)
-  };
-
-  const placeOrder = (orderDetails) => {
-    const calculateTotalBeforeDiscount = () => {
-      return cart.reduce((total, product) => total + product.product_price * product.quantity, 0);
-    };
-
-    const calculateShippingCost = (total) => {
-      return total * 0.03;
-    };
-    const totalBeforeDiscount = calculateTotalBeforeDiscount();
-    const shippingCost = calculateShippingCost(totalBeforeDiscount);
-    const totalPayable = totalBeforeDiscount + shippingCost;
-
-    const newOrder = {
-      id: `ORD-${Date.now()}`,
-      user: user,
-      date: `${formatDate(new Date())}`,
-      ...orderDetails, //detail อื่นๆที่ถูกใส่เข้ามา เช่น เลขภาษี
-      items: [...cart],
-      status: {
-        key: 'Ordered',
-        value: 'ได้รับคำสั่งซื้อแล้ว'
-      },
-      total: totalPayable.toFixed(2)
-    };
-    console.log(newOrder)
-    setOrders([...orders, newOrder]);
-    setCart([]);
-    setCartDetails([]);
-  };
-
   return (
     <CartContext.Provider value={{ user, cart, orders, cartDetails, addToCart, removeFromCart, updateQuantity, clearCart, clearCartDetails, placeCartDetail, placeOrder, clearOrder }}>
       {children}

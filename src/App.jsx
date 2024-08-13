@@ -1,7 +1,8 @@
 import { useState } from "react";
 
 import "primeicons/primeicons.css";
-import "primereact/resources/themes/lara-light-cyan/theme.css";
+import './assets/theme.css';
+// import "primereact/resources/themes/lara-light-pink/theme.css";
 import Appbar from "./component/Appbar";
 import "./App.css";
 import "/node_modules/primeflex/primeflex.css";

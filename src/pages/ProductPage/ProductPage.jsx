@@ -62,30 +62,30 @@ function ProductPage() {
   return (
     <>
       <Toast ref={toast} position="top-center" />
-      <div className="m-3">
-        {/* ----------------------- */}
-        <div className="card shadow-2 bg-white mb-3">
-          <Galleria
-            value={data}
-            responsiveOptions={responsiveOptions}
-            numVisible={5}
-            style={{ maxWidth: "640px" }}
-            item={itemTemplate}
-            thumbnail={thumbnailTemplate}
-          />
+      <div className="m-3 flex justify-content-center flex-wrap">
+        <div className="w-9 flex gap-2">
+          <div className="card w-full shadow-2 border-round-lg bg-white p-4 mb-3">
+            <Galleria
+              value={data}
+              responsiveOptions={responsiveOptions}
+              numVisible={5}
+              style={{ maxWidth: "640px" }}
+              item={itemTemplate}
+              thumbnail={thumbnailTemplate}
+            />
+          </div>
+          <div className="w-full p-4 bg-white border-round-lg shadow-2">
+            <h1>{product.product_name}</h1>
+            <h2>{product.product_price} ฿</h2>
+            <p>{product.product_detail}</p>
+            <Button className="w-fit" label="+ เพิ่มสินค้าในตะกร้า"
+              onClick={() => {
+                addToCart(product)
+                show()
+              }} />
+          </div>
         </div>
-        {/* ----------------------- */}
 
-        <div className="p-4 bg-white border-round-lg shadow-2">
-          <h1>{product.product_name}</h1>
-          <h2>{product.product_price} ฿</h2>
-          <p>{product.product_detail}</p>
-          <Button className="w-full" label="+ เพิ่มสินค้าในตะกร้า"
-            onClick={() => {
-              addToCart(product)
-              show()
-            }} />
-        </div>
 
         <div>
           <Products />

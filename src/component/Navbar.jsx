@@ -31,7 +31,7 @@ function Navbar() {
           {/* <a href="RegisterPage"><Button label="ลงทะเบียน" /></a> */}
         </div>
       </Sidebar>
-      <Button icon="pi pi-bars" onClick={() => setVisible(true)} />
+      <Button icon="pi pi-bars" onClick={() => setVisible(true)} rounded text/>
     </div>
      <Outlet />
    </>

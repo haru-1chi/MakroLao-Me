@@ -8,17 +8,91 @@ import { Paginator } from 'primereact/paginator';
 import { Button } from "primereact/button";
 import { Toast } from 'primereact/toast';
 
+// const testData = [
+//   {
+//     product_id: '1',
+//     product_image: 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F074fc00deace464ba94af3b81fe4ec78&w=384&q=75',
+//     product_name: 'B ขนม 1',
+//     product_price: 300.00,
+//     subCategory: 'ขนม',
+//     product_brand: 'B',
+//     inStock: false,
+//     onSale: true,
+//   },
+//   {
+//     product_id: '2',
+//     product_image: 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F074fc00deace464ba94af3b81fe4ec78&w=384&q=75',
+//     product_name: 'B เครื่องใช้ไฟฟ้า 2',
+//     product_price: 600.00,
+//     subCategory: "เครื่องใช้ไฟฟ้า",
+//     product_brand: "B",
+//     inStock: true,
+//     onSale: false,
+//   },
+//   {
+//     product_id: '3',
+//     product_image: 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F074fc00deace464ba94af3b81fe4ec78&w=384&q=75',
+//     product_name: 'A เครื่องครัว 3',
+//     product_price: 1200.00,
+//     subCategory: "เครื่องครัว",
+//     product_brand: "A",
+//     inStock: false,
+//     onSale: true,
+//   },
+//   {
+//     product_id: '4',
+//     product_image: 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F074fc00deace464ba94af3b81fe4ec78&w=384&q=75',
+//     product_name: 'A เครื่องใช้ไฟฟ้า 4',
+//     product_price: 1700.00,
+//     subCategory: "เครื่องใช้ไฟฟ้า",
+//     product_brand: "A",
+//     inStock: false,
+//     onSale: false,
+//   },
+//   {
+//     product_id: '5',
+//     product_image: 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F074fc00deace464ba94af3b81fe4ec78&w=384&q=75',
+//     product_name: 'C เครื่องใช้ไฟฟ้า 5',
+//     product_price: 1500.00,
+//     subCategory: "เครื่องใช้ไฟฟ้า",
+//     product_brand: "C",
+//     inStock: true,
+//     onSale: false,
+//   },
+//   {
+//     product_id: '6',
+//     product_image: 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F074fc00deace464ba94af3b81fe4ec78&w=384&q=75',
+//     product_name: 'D เครื่องครัว 6',
+//     product_price: 2500.00,
+//     subCategory: "เครื่องครัว",
+//     product_brand: "D",
+//     inStock: true,
+//     onSale: false,
+//   },
+//   {
+//     product_id: '7',
+//     product_image: 'https://www.makro.pro/_next/image?url=https%3A%2F%2Fimages.mango-prod.siammakro.cloud%2FSOURCE%2F074fc00deace464ba94af3b81fe4ec78&w=384&q=75',
+//     product_name: 'D บะหมี่ 6',
+//     product_price: 2500.00,
+//     subCategory: "อาหารกึ่งสำเร็จรูป",
+//     product_brand: "T",
+//     inStock: true,
+//     onSale: false,
+//   },
+// ];
+
+
 function ListProductsPage() {
   const { addToCart } = useCart();
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [paginatedData, setPaginatedData] = useState([]);
   const [first, setFirst] = useState(0);
-  const [rows, setRows] = useState(10);
+  const [rows, setRows] = useState(20);
   const [visible, setVisible] = useState(false);
-
   const toast = useRef(null);
-  const show = () => {
+
+  const showSuccessToast = () => {
     toast.current.show({
       severity: 'success', summary: 'เพิ่มในตะกร้าแล้ว', life: 2000
     });
@@ -103,7 +177,7 @@ function ListProductsPage() {
           />
         </div>
         <div className="panel w-full flex">
-          <div className="hidden lg:block">
+          <div className="hidden lg:block mr-3">
             {data.length > 0 && (
               <Filter
                 onFilterChange={handleFilterChange}
@@ -116,10 +190,10 @@ function ListProductsPage() {
           {filteredData ? (
             <div className="product-list">
               {paginatedData.map((product, index) => (
-                <div key={index} className="flex">
+                <div key={index} className="relative flex">
                   <div className="border-1 surface-border border-round py-5 px-3 bg-white border-round-mb flex flex-column justify-content-between">
-                    <div className="mb-3">
-                    <Link to={`product/${product.product_id}`} state={{ product }}>
+                    <div className="">
+                      <Link to={`product/${product.product_id}`} state={{ product }}>
                         <img
                           src={product.product_image}
                           alt={product.product_name}
@@ -138,7 +212,7 @@ function ListProductsPage() {
                         rounded
                         onClick={() => {
                           addToCart(product)
-                          show()
+                          showSuccessToast();
                         }}
                       />
                     </div>

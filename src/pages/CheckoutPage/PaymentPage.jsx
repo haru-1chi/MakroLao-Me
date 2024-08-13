@@ -3,17 +3,17 @@ import { useCart } from '../../router/CartContext';
 import { Outlet, Link } from "react-router-dom";
 import { Button } from "primereact/button";
 function PaymentPage() {
-    const { cart } = useCart();
-    const calculateTotalBeforeDiscount = () => {
-        return cart.reduce((total, product) => total + product.product_price * product.quantity, 0);
-    };
+    const {cartDetails } = useCart();
+    // const calculateTotalBeforeDiscount = () => {
+    //     return cart.reduce((total, product) => total + product.product_price * product.quantity, 0);
+    // };
 
-    const calculateShippingCost = (total) => {
-        return total * 0.03;
-    };
-    const totalBeforeDiscount = calculateTotalBeforeDiscount();
-    const shippingCost = calculateShippingCost(totalBeforeDiscount);
-    const totalPayable = totalBeforeDiscount + shippingCost;
+    // const calculateShippingCost = (total) => {
+    //     return total * 0.03;
+    // };
+    // const totalBeforeDiscount = calculateTotalBeforeDiscount();
+    // const shippingCost = calculateShippingCost(totalBeforeDiscount);
+    const totalPayable = cartDetails.amountPayment;
 
     return (
         <>
@@ -74,7 +74,7 @@ function PaymentPage() {
                     </div>
                     <div className="mt-3 flex flex-column">
                         <p className='m-0'>ยอด</p>
-                        <p className='m-0 font-bold text-xl'>{totalPayable.toFixed(2)} ฿</p>
+                        <p className='m-0 font-bold text-xl'>{Number(totalPayable.toFixed(2)).toLocaleString('en-US')} ₭</p>
                     </div>
                 </div>
             </div>

@@ -139,7 +139,7 @@ function StatusShippingPage() {
                                 <p className='m-2'>{totalBeforeDiscount.toFixed(2)} ฿</p>
                             </div>
                             <div className="flex align-items-center justify-content-between">
-                                <p className='m-2'>ค่าจัดส่ง</p>
+                                <p className='m-2'>ค่า COD</p>
                                 <p className='m-2'>{shippingCost.toFixed(2)} ฿</p>
                             </div>
                             <div className="flex align-items-center justify-content-between border-top-1 surface-border">
