@@ -1,14 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useRef} from 'react';
 import { useParams } from 'react-router-dom';
 import { useCart } from '../../router/CartContext';
 import { Button } from "primereact/button";
 import { Timeline } from 'primereact/timeline';
+import { InputNumber } from 'primereact/inputnumber';
+import { Toast } from 'primereact/toast';
+import { FileUpload } from 'primereact/fileupload';
+import { Calendar } from 'primereact/calendar';
 import { Card } from 'primereact/card';
 
 function StatusShippingPage() {
     const { orderId } = useParams();
     const { orders } = useCart();
     const order = orders.find(o => o.id === orderId);
+    const [date, setDate] = useState(null);
+    const [time, setTime] = useState(null);
+    const [amount, setAmount] = useState(null);
+    const toast = useRef(null);
+
+    const onUpload = () => {
+        toast.current.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
+    };
 
     if (!order) {
         return <div>Order not found</div>;
@@ -18,22 +30,33 @@ function StatusShippingPage() {
         return order.items.reduce((total, product) => total + product.product_price * product.quantity, 0);
     };
 
-    const calculateShippingCost = (total) => {
+    const calculateCODCost = (total) => {
         return total * 0.03;
     };
     const totalBeforeDiscount = calculateTotalBeforeDiscount();
-    const shippingCost = calculateShippingCost(totalBeforeDiscount);
-    const totalPayable = totalBeforeDiscount + shippingCost;
+    const CODCost = calculateCODCost(totalBeforeDiscount);
+    const totalPayable = totalBeforeDiscount + CODCost;
 
     //status order
-    const [currentStatus, setCurrentStatus] = useState(order.status.key);
-
+    // const [currentStatus, setCurrentStatus] = useState(order.status.key) pi pi-check-circle;
+    const [currentStatus, setCurrentStatus] = useState('Received');
     const events = [
-        { status: 'Ordered', label: 'ได้รับคำสั่งซื้อแล้ว', date: '15/10/2020 10:30', icon: 'pi pi-shopping-cart', color: '#9C27B0' },
-        { status: 'preparing', label: 'จัดเตรียมคำสั่งซื้อ', date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7' },
-        { status: 'prepared', label: 'สินค้าจัดเตรียมสำเร็จ', date: '15/10/2020 16:15', icon: 'pi pi-shopping-cart', color: '#FF9800' },
-        { status: 'shipping', label: 'อยู่ในระหว่างการนำส่ง', date: '15/10/2020 16:15', icon: 'pi pi-shopping-cart', color: '#FF9800' },
-        { status: 'Delivered', label: 'สินค้าจัดส่งและชำระเงินสำเร็จแล้ว', date: '16/10/2020 10:00', icon: 'pi pi-check', color: '#607D8B' }
+        ...(order.PaymentChannel === 'bankCounter' ? [
+            { status: 'PendingPayment', label: 'รอชำระเงิน', icon: 'pi pi-hourglass', color: '#607D8B' }
+        ] : []),
+        { status: 'PendingVerification', label: 'รอตรวจสอบ', icon: 'pi pi-hourglass', color: '#607D8B' },
+        { status: 'Preparing', label: 'กำลังจัดเตรียมสินค้า', icon: 'pi pi-cart-arrow-down', color: '#607D8B' },
+        { status: 'Packaged', label: 'จัดเตรียมสินค้าเสร็จ', icon: 'pi pi-box', color: '#607D8B' },
+        { status: 'ThaiWarehouseArrival', label: 'ถึงโกดังฝั่งไทยแล้ว', icon: 'pi pi-truck', color: '#607D8B' },
+        ...(order.shipping === 'selfPickup' ? [
+            { status: 'LaosWarehouseArrival', label: 'ถึงจุดรับสินค้าที่โกดังลาวแล้ว ลูกค้าโปรดมารับสินค้า', icon: 'pi pi-warehouse', color: '#607D8B' },
+            { status: 'Received', label: 'ลูกค้ารับสินค้าเรียบร้อยแล้ว', icon: 'pi pi-check', color: '#607D8B' }
+        ] : [
+            { status: 'LaosWarehouseArrival', label: 'ถึงจุดรับสินค้าที่โกดังลาวแล้ว', icon: 'pi pi-warehouse', color: '#607D8B' },
+            { status: 'InTransit', label: 'ขนส่งรับสินค้าที่โกดังแล้ว', icon: 'pi pi-truck', color: '#607D8B' },
+            { status: 'BranchArrival', label: 'ถึงจุดรับสินค้าที่สาขาขนส่งแล้ว ลูกค้าโปรดมารับสินค้า', icon: 'pi pi-warehouse', color: '#607D8B' },
+            { status: 'Received', label: 'ลูกค้ารับสินค้าเรียบร้อยแล้ว', icon: 'pi pi-check', color: '#00bf26' }
+        ])
     ];
 
     const statusesOrder = events.map(event => event.status);
@@ -63,15 +86,16 @@ function StatusShippingPage() {
 
     return (
         <>
-            <div className='w-full px-5 pt-5 flex flex-column justify-content-center'>
+            <div className='w-full px-5 pt-5 flex flex-column gap-2 justify-content-center'>
+                <Toast ref={toast}></Toast>
                 <div className='bg-section-product flex flex-column border-1 surface-border border-round py-3 px-3 bg-white border-round-mb justify-content-center'>
                     <div className='border-1 surface-border border-round p-3'>
                         <h2 className="m-0 mb-2 p-0">Thank you for your order!</h2>
                         <p>หมายเลขคำสั่งซื้อ {order.id}</p>
                         <p>Your order has been placed and we will start preparing soon...</p>
                         <div>
-                            <p>วันที่สั่งซื้อ {order.date}</p>
-                            <p>จัดส่งวัน {order.shippingTime}</p>
+                            <p>วันที่สั่งซื้อ {order.date} น.</p>
+                            {/* <p>จัดส่งวัน {order.shippingTime}</p> */}
                         </div>
                     </div>
                     <div className="flex">
@@ -81,27 +105,50 @@ function StatusShippingPage() {
                         </div>
                         <div className="w-full pl-5">
                             <div>
-                                <h3>ที่อยู่จัดส่ง</h3>
-                                <p>ชื่อ {order.user.name}</p>
-                                <p>ที่อยู่ {order.user.address} {order.user.zipcode}</p>
-                                <p>{order.user.tel}</p>
-                            </div>
-                            <div className='mt-5'>
-                                <h3>ที่อยู่ในใบเสร็จรับเงิน</h3>
-                                <p>ชื่อ {order.user.name}</p>
-                                <p>ที่อยู่ {order.user.address} {order.user.zipcode}</p>
-                                <p>{order.user.tel}</p>
+                                <h3>ข้อมูลการรับสินค้า</h3>
+                                {order.shipping === 'courierDelivery' ? (
+                                    <p>จัดส่งโดยขนส่ง {order.selectedDelivery.name} ไปยังสาขา {order.deliveryBranch}</p>
+                                ) : (
+                                    <p>รับสินค้าเองที่โกดังลาว (พิกัด)</p>
+                                )}
                             </div>
                         </div>
                     </div>
+                    <Button className="w-fit align-self-center" label="ยกเลิกคำสั่งซื้อ" rounded />
                 </div>
+
+                {order.PaymentChannel === 'bankCounter'
+                    ? (
+                        <div className='bg-section-product flex flex-column border-1 surface-border border-round py-3 px-3 bg-white border-round-mb justify-content-center'>
+                            <h2 className='text-center'>แจ้งการชำระเงิน</h2>
+                            <div className="flex flex-column gap-3 justify-content-center align-self-center">
+                                <div className="flex flex-column">
+                                    <label htmlFor="currency-la">ระบุจำนวนเงิน(กีบ)</label>
+                                    <InputNumber inputId="currency-la" value={amount} onValueChange={(e) => setAmount(e.value)} mode="currency" currency="LAK" locale="lo-LA" />
+                                </div>
+                                <div className="flex flex-column">
+                                    <label htmlFor="username">วันที่โอนเงิน</label>
+                                    <Calendar value={date} onChange={(e) => setDate(e.value)} dateFormat="dd/mm/yy" />
+                                </div>
+                                <div className="flex flex-column">
+                                    <label htmlFor="username">เวลาที่โอนเงิน</label>
+                                    <Calendar value={time} onChange={(e) => setTime(e.value)} timeOnly />
+                                </div>
+
+                                <FileUpload className="w-fit align-self-center" mode="basic" name="demo[]" url="/api/upload" accept="image/*" maxFileSize={1000000} onUpload={onUpload} auto chooseLabel="แนบสลิปโอนเงิน" />
+                                <Button className="w-fit align-self-center" label="ยืนยันชำระเงิน" rounded />
+                            </div>
+                        </div>)
+                    : ("")
+                }
+
                 <div className='bg-section-product flex flex-column border-1 surface-border border-round py-3 px-3 bg-white border-round-mb justify-content-center'>
-                    <div className='border-1 surface-border border-round p-3 flex justify-content-between'>
+                    <div className='border-1 surface-border border-round p-2 flex justify-content-between'>
                         <div>
-                            <p className="m-0 mb-2 p-0">ผู้ขาย: CP Axtra Public Company Limited. Branch ()</p>
-                            <p>{order.items.length} รายการ</p>
+                            <p className="m-0 p-0 font-semibold">ผู้ขาย: CP Axtra Public Company Limited. Branch ()</p>
+                            <p className="m-0 p-0">{order.items.length} รายการ</p>
                         </div>
-                        <Button label="เพิ่มสินค้าทั้งหมดลงตะกร้า" outlined />
+                        <Button label="เพิ่มสินค้าทั้งหมดลงตะกร้า" outlined rounded />
                     </div>
                     <h2>ที่ต้องจัดส่ง</h2>
                     <div className="flex flex-column mx-5">
@@ -139,8 +186,8 @@ function StatusShippingPage() {
                                 <p className='m-2'>{totalBeforeDiscount.toFixed(2)} ฿</p>
                             </div>
                             <div className="flex align-items-center justify-content-between">
-                                <p className='m-2'>ค่า COD</p>
-                                <p className='m-2'>{shippingCost.toFixed(2)} ฿</p>
+                                <p className='m-2'>ค่า COD 3%</p>
+                                <p className='m-2'>{CODCost.toFixed(2)} ฿</p>
                             </div>
                             <div className="flex align-items-center justify-content-between border-top-1 surface-border">
                                 <p className='m-2'>ราคารวม</p>

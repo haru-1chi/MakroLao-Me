@@ -1,68 +1,77 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from '../../router/CartContext';
-import { formatDate, formatTime, convertTHBtoLAK } from '../../utils/DateTimeFormat';
+import { convertTHBtoLAK, formatLaosPhone } from '../../utils/DateTimeFormat';
 import { RadioButton } from 'primereact/radiobutton';
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Dropdown } from 'primereact/dropdown';
 
 function CheckoutPage() {
+    const navigate = useNavigate();
     const { cart, user, placeCartDetail } = useCart();
+    const LaosPhone = formatLaosPhone(user.tel);
     const [taxId, setTaxId] = useState('');
     const [branchCode, setBranchCode] = useState('');
-    const [shipping, setShipping] = useState('จัดส่ง');
+    const [shipping, setShipping] = useState('courierDelivery');
+    const [selectedDelivery, setSelectedDelivery] = useState('');
     const [deliveryBranch, setDeliveryBranch] = useState('');
-    
+    const [error, setError] = useState(false);
+
     const calculateTotalBeforeDiscount = () => {
         return cart.reduce((total, product) => total + product.product_price * product.quantity, 0);
     };
 
-    const calculateShippingCost = (total) => {
+    const calculateCODCost = (total) => {
         return total * 0.03;
     };
     const num_total = cart.length
-    
+
     const totalBeforeDiscount = calculateTotalBeforeDiscount();
     const LaostotalBeforeDiscount = convertTHBtoLAK(calculateTotalBeforeDiscount());
 
-    const shippingCost = calculateShippingCost(totalBeforeDiscount);
-    const LaosshippingCost = convertTHBtoLAK(calculateShippingCost(totalBeforeDiscount));
+    const CODCost = calculateCODCost(totalBeforeDiscount);
+    const LaosCODCost = convertTHBtoLAK(calculateCODCost(totalBeforeDiscount));
 
-    const totalPayable = totalBeforeDiscount + shippingCost;
+    const totalPayable = totalBeforeDiscount + CODCost;
     const LaostotalPayable = convertTHBtoLAK(totalPayable)
-    //set time
-    const [deliveryDate] = useState(() => {
-        const date = new Date();
-        date.setDate(date.getDate() + 1);
-        return date;
-    });
 
-    const [deliveryTime] = useState(() => {
-        const date = new Date();
-        date.setHours(date.getHours() + 4);
-        return date;
-    });
-
-    const handleConfirmPayment = () => {
-        const orderDetails = {
-            taxId,
-            branchCode,
-            shipping,
-            shippingTime: `${formatDate(deliveryDate)} - ${formatTime(deliveryTime)}`,
-            selectedDelivery,
-            deliveryBranch, 
-            amountPayment: LaostotalPayable
-        };
-        placeCartDetail(orderDetails);
-        navigate("/QRPage");
-    };
-    const [selectedDelivery, setSelectedDelivery] = useState(null);
     const deliveries = [
         { name: 'รุ่งอรุณ' },
         { name: 'อนุสิทธิ์' },
         { name: 'ไอเดีย' }
     ];
+    
+    const handleConfirmPayment = () => {
+        if (shipping === 'courierDelivery') {
+            if (!selectedDelivery || !deliveryBranch) {
+                setError(true);
+            } else {
+                setError(false);
+                const orderDetails = {
+                    taxId,
+                    branchCode,
+                    shipping,
+                    selectedDelivery,
+                    deliveryBranch,
+                    amountPayment: LaostotalPayable
+                };
+                placeCartDetail(orderDetails);
+                navigate("/PaymentPage");
+            }
+        } else {
+            const orderDetails = {
+                taxId,
+                branchCode,
+                shipping,
+                selectedDelivery,
+                deliveryBranch,
+                amountPayment: LaostotalPayable
+            };
+            placeCartDetail(orderDetails);
+            navigate("/PaymentPage");
+        }
+    };
 
     return (
         <>
@@ -75,8 +84,8 @@ function CheckoutPage() {
                             <i className="m-0 mr-2 pi pi-map-marker"></i>
                             <h2 className='m-0 mb-2'>ข้อมูลผู้สั่งสินค้า</h2>
                         </div>
-                        <p className='m-0'>{user.name}, {user.tel}</p>
-                        <p className='m-0'>{user.address}</p>
+                        <p className='m-0'>ชื่อ: {user.name}</p>
+                        <p className='m-0'>เบอร์โทร: {LaosPhone}</p>
                         {/* <p className="w-fit p-1 border-1 border-cyan-500 text-cyan-500 border-round">ที่อยู่เริ่มต้น</p> */}
                     </div>
                     <div className='tax flex flex-column p-3 border-1 surface-border border-round  bg-white border-round-mb justify-content-center'>
@@ -114,59 +123,47 @@ function CheckoutPage() {
                                     </div>
                                 </div>
                             ))}
-                            {/* {cart.map((product, index) => (
-                                <div key={index} className="cart-items mb-2">
-                                    <div className="flex flex-wrap align-items-center">
-                                        <div style={{ position: 'relative', display: 'inline-block' }}>
-                                            <img
-                                                src={product.product_image}
-                                                alt={product.product_name}
-                                                className="border-1 surface-border border-round m-2"
-                                                width={60}
-                                                height={60}
-                                            />
-                                            <p className="mx-2" style={{
-                                                position: 'absolute',
-                                                bottom: '-0.25rem',
-                                                right: '0px',
-                                                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                                                color: 'white',
-                                                fontSize: '1rem',
-                                                padding: '0.2rem 0.5rem ',
-                                                borderRadius: '0.25rem'
-                                            }}>{product.quantity}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))} */}
                         </div>
 
                         <p className='m-0 mt-3 mb-2'>วิธีการรับสินค้า</p>
 
                         <div className="flex gap-2 mb-2">
                             <div className="w-full flex align-items-center border-1 surface-border border-round p-2">
-                                <RadioButton inputId="shipping1" name="shipping" value="จัดส่ง" onChange={(e) => setShipping(e.value)} checked={shipping === 'จัดส่ง'} />
+                                <RadioButton inputId="shipping1" name="shipping" value="courierDelivery" onChange={(e) => setShipping(e.value)} checked={shipping === 'courierDelivery'} />
                                 <label htmlFor="shipping1" className="ml-2">จัดส่งโดยขนส่ง</label>
                             </div>
                             <div className="w-full flex align-items-center border-1 surface-border border-round p-2">
-                                <RadioButton inputId="shipping2" name="shipping" value="รับเอง" onChange={(e) => setShipping(e.value)} checked={shipping === 'รับเอง'} />
+                                <RadioButton inputId="shipping2" name="shipping" value="selfPickup" onChange={(e) => setShipping(e.value)} checked={shipping === 'selfPickup'} />
                                 <label htmlFor="shipping2" className="ml-2">รับเองที่บริษัท</label>
                             </div>
                         </div>
                         <div className='flex flex-column border-1 surface-border border-round justify-content-center p-2'>
-                            {shipping === 'จัดส่ง' ? (
+                            {shipping === 'courierDelivery' ? (
                                 <div className="">
                                     <p className='m-0 mb-2'>เลือกขนส่งและระบุสาขา</p>
-                                    <div className='flex gap-2'>
-                                        <Dropdown
-                                            value={selectedDelivery}
-                                            onChange={(e) => setSelectedDelivery(e.value)}
-                                            options={deliveries}
-                                            optionLabel="name"
-                                            placeholder="เลือกขนส่ง"
-                                            className="w-full"
-                                        />
-                                        <InputText className="w-full border-round p-3" value={deliveryBranch} onChange={(e) => setDeliveryBranch(e.target.value)} placeholder='ระบุสาขาขนส่ง' />
+                                    <div className=''>
+                                        <div className="flex gap-2">
+                                            <Dropdown
+                                                value={selectedDelivery}
+                                                onChange={(e) => setSelectedDelivery(e.value)}
+                                                options={deliveries}
+                                                optionLabel="name"
+                                                placeholder="เลือกขนส่ง"
+                                                className="w-full"
+                                            />
+                                            <InputText
+                                                className="w-full border-round p-3"
+                                                value={deliveryBranch}
+                                                onChange={(e) => setDeliveryBranch(e.target.value)}
+                                                placeholder='ระบุสาขาขนส่ง'
+                                            />
+
+                                        </div>
+                                        <div className="flex gap-2">
+                                            {error && !selectedDelivery && <small className="p-error w-full">กรุณาระบุชื่อขนส่ง</small>}
+                                            {error && !deliveryBranch && <small className="p-error w-full">กรุณาระบุสาขาขนส่ง</small>}
+                                        </div>
+
                                     </div>
                                 </div>
                             ) : (
@@ -181,7 +178,7 @@ function CheckoutPage() {
                             <p className='m-0 mt-3'>ยอดสั่งซื้อ {num_total} รายการ: {Number(totalBeforeDiscount.toFixed(2)).toLocaleString('en-US')} ฿</p>
                         </div>
                         <div className='flex justify-content-end'>
-                            <p className='m-0'>ค่า COD: {Number(shippingCost.toFixed(2)).toLocaleString('en-US')} ฿</p>
+                            <p className='m-0'>ค่า COD 3%: {Number(CODCost.toFixed(2)).toLocaleString('en-US')} ฿</p>
                         </div>
                     </div>
                 </div>
@@ -195,10 +192,10 @@ function CheckoutPage() {
 
                     </div>
                     <div className="flex justify-content-between pb-3 border-bottom-1 surface-border">
-                        <p className='m-0'>ค่า COD</p>
+                        <p className='m-0'>ค่า COD 3%</p>
                         <div className="flex flex-column gap-1">
-                            <p className='m-0 text-right'>{Number(shippingCost.toFixed(2)).toLocaleString('en-US')} ฿</p>
-                            <p className='m-0 text-right font-bold'>{Number(LaosshippingCost.toFixed(2)).toLocaleString('en-US')} ₭</p>
+                            <p className='m-0 text-right'>{Number(CODCost.toFixed(2)).toLocaleString('en-US')} ฿</p>
+                            <p className='m-0 text-right font-bold'>{Number(LaosCODCost.toFixed(2)).toLocaleString('en-US')} ₭</p>
                         </div>
                     </div>
                     <div className="flex justify-content-between pb-3 border-bottom-1 surface-border">
@@ -208,7 +205,7 @@ function CheckoutPage() {
                             <p className='m-0 text-right text-primary font-bold'>{Number(LaostotalPayable.toFixed(2)).toLocaleString('en-US')} ₭</p>
                         </div>
                     </div>
-                    <Link to="/PaymentPage"><Button className="w-full" label="ไปหน้าชำระสินค้า" size="small" rounded onClick={handleConfirmPayment} /></Link>
+                    <Button className="w-full" label="ไปหน้าชำระสินค้า" size="small" rounded onClick={handleConfirmPayment} />
 
 
                 </div>

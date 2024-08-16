@@ -228,6 +228,13 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 }
 
+.p-menu {
+  padding: 0.5rem 0;
+  border: none;
+  border-radius: none;
+  width: 100%;
+}
+
 .checkout-1 {
   display: grid;
   gap: 8px;
@@ -242,12 +249,14 @@ body {
   height: 40%;
   /* grid-template-columns: repeat(2, 1fr); */
 }
+
 .checkout-3 {
   display: grid;
   gap: 8px;
   width: 100%;
   grid-template-columns: auto auto auto auto;
 }
+
 .section-point-product a {
   text-decoration: none;
   color: black;

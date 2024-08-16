@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Sidebar } from "primereact/sidebar";
 import { Button } from "primereact/button";
 import { Toast } from 'primereact/toast';
@@ -6,14 +6,37 @@ import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
 import { Badge } from 'primereact/badge';
-import { Outlet, Link } from "react-router-dom";
+import { Menu } from 'primereact/menu';
+import { Outlet, Link, useNavigate } from "react-router-dom";
 //
 import LanguageSelector from "./LanguageSelector";
 import { useTranslation } from "react-i18next";
 import { useCart } from '../router/CartContext';
+import axios from "axios";
 //
 
 function Appbar() {
+  const itemsMenu = [
+    { label: 'บัญชีของฉัน' },
+    {
+      label: 'ประวัติการสั่งซื้อ',
+      command: () => {
+        setVisible1(false)
+        navigate("/AccountPage");
+      }
+    },
+    { label: 'จัดการข้อมูลส่วนบุคคล' },
+    { label: 'ติดต่อเรา' },
+    {
+      label: 'ออกจากระบบ',
+      command: () => {
+        localStorage.removeItem('token');
+        setVisible1(false)
+        navigate("/LoginPage");
+      }
+    },
+  ];
+
   const [visible1, setVisible1] = useState(false);
   const [visible2, setVisible2] = useState(false);
   const [visible3, setVisible3] = useState(false);
@@ -31,14 +54,34 @@ function Appbar() {
     return cart.reduce((total, product) => total + product.product_price * product.quantity, 0);
   };
 
-  const calculateShippingCost = (total) => {
+  const calculateCODCost = (total) => {
     return total * 0.03;
   };
 
   const totalBeforeDiscount = calculateTotalBeforeDiscount();
-  const shippingCost = calculateShippingCost(totalBeforeDiscount);
-  const totalPayable = totalBeforeDiscount + shippingCost;
+  const CODCost = calculateCODCost(totalBeforeDiscount);
+  const totalPayable = totalBeforeDiscount + CODCost;
 
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const getUserProfile = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const user_id = localStorage.getItem("user_id");
+        const res = await axios.get(`http://183.88.209.149:12233/makrolao/api/v1/users/${user_id}`, {
+          headers: {
+            "token": token,
+          },
+        });
+        setUser(res.data.data);
+      } catch (err) {
+        console.error("Error fetching user data", err.response?.data || err.message);
+      }
+    };
+    getUserProfile();
+  }, []);
 
   const customIcons = (
     <React.Fragment>
@@ -78,6 +121,7 @@ function Appbar() {
   return (
     <>
       <div className="hidden lg:block section-appbar">
+        <Toast ref={toast} position="top-center" />
         <div className="pt-3 pr-3 pl-3">
           <div className="flex justify-content-end">
             <LanguageSelector />
@@ -94,10 +138,10 @@ function Appbar() {
                   <div>
                     <div className="flex justify-content-between pt-2 pb-4">
                       <Link to="/LoginPage">
-                        <Button label="เข้าสู่ระบบ" />
+                        <Button label="เข้าสู่ระบบ" outlined rounded />
                       </Link>
                       <Link to="/RegisterPage">
-                        <Button label="ลงทะเบียน" />
+                        <Button label="ลงทะเบียน" rounded />
                       </Link>
                     </div>
                     <div>
@@ -140,11 +184,6 @@ function Appbar() {
                   onHide={() => setVisible2(false)}
                   icons={customIcons}
                 >
-                  {cart.length > 0 && (
-                    <div className="border-1 p-2 border-gray-300 border-round-xl">
-                      <i className="pi pi-map-marker">จัดส่งที่</i>
-                    </div>
-                  )}
                   <Toast ref={toast} position="top-center" />
                   <div className={cart.length > 0 ? "cart-items w-full border-top-1 surface-border" : "cart flex gap-1"}>
                     {cart.length > 0 ? (
@@ -202,8 +241,8 @@ function Appbar() {
                             <p className='m-0'>{totalBeforeDiscount.toFixed(2)} ฿</p>
                           </div>
                           <div className="flex align-items-center justify-content-between border-bottom-1">
-                            <p className='m-0'>ค่า COD</p>
-                            <p className='m-0'>{shippingCost.toFixed(2)} ฿</p>
+                            <p className='m-0'>ค่า COD 3%</p>
+                            <p className='m-0'>{CODCost.toFixed(2)} ฿</p>
                           </div>
                           <div className="flex align-items-center justify-content-between border-bottom-1">
                             <p className='m-0'>ยอดชำระ</p>
@@ -260,8 +299,10 @@ function Appbar() {
                 }
                 rounded text
                 onClick={() => setVisible2(true)}
-              />
-              <Link to="/AccountPage"><Button icon="pi pi-user" rounded text /></Link>
+              />{user ? (
+                <Link to="/AccountPage"><Button icon="pi pi-user" rounded text label={user.name} /></Link>) : (
+                <Link to="/AccountPage"><Button icon="pi pi-user" rounded text /></Link>)}
+              {/* label={user.data} */}
             </div>
           </div>
           <div className="navmenu w-full border-solid pb-1">
@@ -343,6 +384,7 @@ function Appbar() {
 
       {/* responsive */}
       <div className="block lg:hidden section-appbar">
+        <Toast ref={toast} position="top-center" />
         <div className="pt-2 pr-3 pl-3">
           <div className="card flex justify-content-between mb-2 border-solid align-items-center">
 
@@ -354,43 +396,96 @@ function Appbar() {
                 icons={customIcons}
               >
                 <div>
-                  <div className="flex justify-content-between pt-2 pb-4">
-                    <Link to="/LoginPage">
-                      <Button label="เข้าสู่ระบบ" />
-                    </Link>
-                    <Link to="/RegisterPage">
-                      <Button label="ลงทะเบียน" />
-                    </Link>
-                  </div>
                   <div>
-                    <Button className="w-full flex justify-content-between">
-                      <span>ทั้งหมด</span>
-                      <i className="pi pi-angle-right"></i>
-                    </Button>
-                  </div>
-                  <hr />
-                  <div className="flex flex-column p-2">
-                    แม็คโครโปรพอยท์<span>เรียนรู้เพิ่มเติม</span>
-                  </div>
-                  <hr />
-                  <div>ภาษา <LanguageSelector /></div>
-                  <br />
-                  <div className="">
-                    <div>
-                      <i className="pi pi-mobile mr-2"></i>
-                      <span>ติดตั้งแอปพลิเคชั่น</span>
-                    </div>
-                    <br />
-                    <div>
-                      <i className="pi pi-mobile mr-2"></i>
-                      <span>เพิ่มเพื่อนทางไลน์ @abcdef</span>
-                    </div>
-                    <hr />
-                    <div>
-                      <i className="pi pi-phone mr-2"></i>
-                      <span>โทรคุยกับเรา 1234 กด 5</span>
-                    </div>
-                    <hr />
+                    {user ? (
+                      <>
+                        <div className="flex pt-2 pb-4 align-items-center">
+                          <div class="flex flex-wrap justify-content-center">
+                            <div class="border-circle w-4rem h-4rem m-2 bg-primary font-bold flex align-items-center justify-content-center">{user.name.charAt(0).toUpperCase()}</div>
+                          </div>
+                          <h4 className="ml-3">{user.name}</h4>
+                        </div>
+                        <div>
+                          <Button className="w-full flex justify-content-between" onClick={() => setVisible4(true)}>
+                            <span>ทั้งหมด</span>
+                            <i className="pi pi-angle-right"></i>
+                          </Button>
+                        </div>
+                        <hr />
+                        <div className="flex flex-column p-2">
+                          <Menu model={itemsMenu} className="p-menu" />
+                        </div>
+                        <hr />
+                        <div className="flex justify-content-between">
+                          <p className="p-0 m-0">ภาษา</p>
+                          <LanguageSelector />
+                        </div>
+                        <br />
+                        <div className="mt-3">
+                          <div>
+                            <i className="pi pi-mobile mr-2"></i>
+                            <span>ติดตั้งแอปพลิเคชั่น</span>
+                          </div>
+                          <br />
+                          <div>
+                            <i className="pi pi-mobile mr-2"></i>
+                            <span>เพิ่มเพื่อนทางไลน์ @abcdef</span>
+                          </div>
+                          <hr />
+                          <div>
+                            <i className="pi pi-phone mr-2"></i>
+                            <span>โทรคุยกับเรา 1234 กด 5</span>
+                          </div>
+                          <hr />
+                        </div>
+                      </>
+
+                    ) : (
+                      <div>
+                        <div className="flex justify-content-between pt-2 pb-4">
+                          <Link to="/LoginPage">
+                            <Button label="เข้าสู่ระบบ" outlined rounded />
+                          </Link>
+                          <Link to="/RegisterPage">
+                            <Button label="ลงทะเบียน" rounded />
+                          </Link>
+                        </div>
+                        <div>
+                          <Button className="w-full flex justify-content-between" onClick={() => setVisible4(true)}>
+                            <span>ทั้งหมด</span>
+                            <i className="pi pi-angle-right"></i>
+                          </Button>
+                        </div>
+                        <hr />
+                        <div className="flex flex-column p-2">
+                          แม็คโครโปรพอยท์<span>เรียนรู้เพิ่มเติม</span>
+                        </div>
+                        <hr />
+                        <div className="flex justify-content-between">
+                          <p className="p-0 m-0">ภาษา</p>
+                          <LanguageSelector />
+                        </div>
+                        <br />
+                        <div className="mt-3">
+                          <div>
+                            <i className="pi pi-mobile mr-2"></i>
+                            <span>ติดตั้งแอปพลิเคชั่น</span>
+                          </div>
+                          <br />
+                          <div>
+                            <i className="pi pi-mobile mr-2"></i>
+                            <span>เพิ่มเพื่อนทางไลน์ @abcdef</span>
+                          </div>
+                          <hr />
+                          <div>
+                            <i className="pi pi-phone mr-2"></i>
+                            <span>โทรคุยกับเรา 1234 กด 5</span>
+                          </div>
+                          <hr />
+                        </div>
+                      </div>
+                    )}
+
                   </div>
                 </div>
               </Sidebar>
@@ -402,13 +497,8 @@ function Appbar() {
                 onHide={() => setVisible2(false)}
                 icons={customIcons}
               >
-                {cart.length > 0 && (
-                  <div className="border-1 p-2 border-gray-300 border-round-xl">
-                    <i className="pi pi-map-marker">จัดส่งที่</i>
-                  </div>
-                )}
-                <Toast ref={toast} position="top-center" />
-                <div className={cart.length > 0 ? "cart-items w-full border-top-1 surface-border mt-2" : "cart flex gap-1"}>
+
+                <div className={cart.length > 0 ? "cart-items w-full" : "cart flex gap-1"}>
                   {cart.length > 0 ? (
                     <>
                       {cart.map((product, index) => (
@@ -464,8 +554,8 @@ function Appbar() {
                           <p className='m-0'>{totalBeforeDiscount.toFixed(2)} ฿</p>
                         </div>
                         <div className="flex align-items-center justify-content-between border-bottom-1 surface-border py-2">
-                          <p className='m-0'>ค่า COD</p>
-                          <p className='m-0'>{shippingCost.toFixed(2)} ฿</p>
+                          <p className='m-0'>ค่า COD 3%</p>
+                          <p className='m-0'>{CODCost.toFixed(2)} ฿</p>
                         </div>
                         <div className="flex align-items-center justify-content-between border-bottom-1 surface-border py-2">
                           <p className='m-0'>ยอดชำระ</p>

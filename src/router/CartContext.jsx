@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { formatDate, formatTime, convertTHBtoLAK } from '../utils/DateTimeFormat';
+import { formatDate, getLocalStorageItem, setLocalStorageItem, convertTHBtoLAK } from '../utils/DateTimeFormat';
 
 const CartContext = createContext();
 
@@ -11,25 +11,25 @@ export const CartProvider = ({ children }) => {
   const user = {
     id: 1,
     name: 'วันดี วันเพ็ญ',
-    tel: '099 999 9999',
+    tel: '0999999999',
     address: '123 ต.ตำบล อ.เมือง จ.จังหวัด',
     zipcode: 12345,
   };
 
-  const [cartDetails, setCartDetails] = useState(() => JSON.parse(localStorage.getItem('cartDetails')) || []);
-  const [cart, setCart] = useState(() => JSON.parse(localStorage.getItem('cart')) || []);
-  const [orders, setOrders] = useState(() => JSON.parse(localStorage.getItem('orders')) || []);
+  const [cart, setCart] = useState(() => getLocalStorageItem('cart', []));
+  const [cartDetails, setCartDetails] = useState(() => getLocalStorageItem('cartDetails', {}));
+  const [orders, setOrders] = useState(() => getLocalStorageItem('orders', []));
 
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
+    setLocalStorageItem('cart', cart);
   }, [cart]);
 
   useEffect(() => {
-    localStorage.setItem('cartDetails', JSON.stringify(cartDetails));
+    setLocalStorageItem('cartDetails', cartDetails);
   }, [cartDetails]);
 
   useEffect(() => {
-    localStorage.setItem('orders', JSON.stringify(orders));
+    setLocalStorageItem('orders', orders);
   }, [orders]);
 
   const addToCart = (product) => {
@@ -63,10 +63,8 @@ export const CartProvider = ({ children }) => {
 
   const placeOrder = (orderDetails) => {
     const totalBeforeDiscount = convertTHBtoLAK(cart.reduce((total, product) => total + product.product_price * product.quantity, 0));
-    
-    const shippingCost = totalBeforeDiscount * COD_COST_RATE;
-
-    const totalPayable = totalBeforeDiscount + shippingCost;
+    const CODCost = totalBeforeDiscount * COD_COST_RATE;
+    const totalPayable = totalBeforeDiscount + CODCost;
 
     const newOrder = {
       id: `ORD-${Date.now()}`,
@@ -76,43 +74,57 @@ export const CartProvider = ({ children }) => {
       items: [...cart],
       status: { key: 'Ordered', value: 'ได้รับคำสั่งซื้อแล้ว' },
       totalBeforeDiscount,
-      shippingCost,
-      total: totalPayable.toFixed(2),
-      //รหัสสมาชิกลูกค้า
-      //ที่อยู่
-      //เลขประจำตัวผู้เสียภาษาและสาขาที่เสียภาษี
-      //สถานที่ส่งสินค้า ซึ่งเป็นสาขาขนส่ง/โกดังที่จะไปรับ
-      //เบอร์โทรติดต่อ
-      //อีเมล
-      //ชื่อลูกค้า ชื่อผู้รับสินค้า
-      //สาขาที่ออกใบกำกับภาษา (สาขาแม็คโครไทย)
-      //ที่อยู่แม็คโครไทย
-      //เลขที่ น่าจะ ใบเสร็จ ไอดี
-      //วันที่ และวันที่สั่งซื้อ
-      //เลขที่สั่งซื้อ
-      //วิธีการชำระเงิน
-      //เลขที่ใบรับมัดจำ
+      CODCost,
+      totalPayable: totalPayable,
     };
 
-    setOrders([...orders, newOrder]);
-    setCart([]);
-    setCartDetails([]);
+    setOrders(prevOrders => [...prevOrders, newOrder]);
+    clearCart();
+    clearCartDetails();
   };
 
-  const clearCart = () => {
-    setCart([]);
-  };
-  const clearOrder = () => {
-    setOrders([]);
-  };
+  const clearCart = () => setCart([]);
+  const clearCartDetails = () => setCartDetails([]);
+  const clearOrder = () => setOrders([]);
 
-  const clearCartDetails = () => {
-    setCartDetails([]);
-  };
-  
   return (
-    <CartContext.Provider value={{ user, cart, orders, cartDetails, addToCart, removeFromCart, updateQuantity, clearCart, clearCartDetails, placeCartDetail, placeOrder, clearOrder }}>
+    <CartContext.Provider value={{ user, cart, cartDetails, orders, addToCart, removeFromCart, updateQuantity, placeCartDetail, placeOrder, clearCart, clearCartDetails, clearOrder }}>
       {children}
     </CartContext.Provider>
   );
 };
+
+//ข้อมูล Body ที่ post to {{url_dev}}/orders
+//*ฝั่ง frontend ตอนนี้
+// _id || code
+// user_id
+// createdAt
+//x shipping,
+// selectedDelivery, //delivery_id delivery
+//x deliveryBranch,
+// paymentChannel
+// line_items
+// status (processing)
+// items_price
+// cod_price
+// net_price
+// ++ เพิ่ม currency
+// ++ เพิ่ม dropoff_id
+
+//ฝั่ง Backend
+//x "currency": "THB",
+// "_id": "66bdd66efeceb4c324bc2d70",
+// "code": "MLO-670815-0001",
+// "user_id": "66bdbe6c6067f1bb5f595fc0",
+// "status": "processing",
+// "line_items": [],
+// "items_price": 2590,
+// "cod_percent": 3,
+// "cod_price": 77.7,
+// "net_price": 2667.7,
+//x "dropoff_id": "66bdd3023208ada843eb3a1c", //รายละเอียดสาขาที่รับออเดอร์/ที่สั่ง
+// "delivery_id": "66bdd415203788461da41f81", //ขนส่งที่เลือก (ไอเดีย)
+// "createdAt": "2024-08-15T10:20:30.386Z",
+// "updatedAt": "2024-08-15T10:25:03.446Z",
+// "__v": 0,
+// "delivery": "ไอเดีย"
