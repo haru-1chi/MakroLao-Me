@@ -8,6 +8,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function RegisterPage() {
+  const apiUrl = import.meta.env_VITE_REACT_APP_API_URL;
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ function RegisterPage() {
   const handleRegister = async () => {
     setLoading(true);
     try {
-      const response = await axios.post("http://183.88.209.149:12233/makrolao/api/v1/users", {
+      const response = await axios.post(`${apiUrl}/users`, {
         phone,
         email,
         username,

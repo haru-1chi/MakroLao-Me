@@ -17,7 +17,13 @@ import axios from "axios";
 
 function Appbar() {
   const itemsMenu = [
-    { label: 'บัญชีของฉัน' },
+    {
+      label: 'บัญชีของฉัน',
+      command: () => {
+        setVisible1(false)
+        navigate("/AccountPage");
+      }
+    },
     {
       label: 'ประวัติการสั่งซื้อ',
       command: () => {
@@ -25,11 +31,24 @@ function Appbar() {
         navigate("/AccountPage");
       }
     },
-    { label: 'จัดการข้อมูลส่วนบุคคล' },
-    { label: 'ติดต่อเรา' },
+    {
+      label: 'จัดการข้อมูลส่วนบุคคล',
+      command: () => {
+        setVisible1(false)
+        navigate("/AccountPage");
+      }
+    },
+    {
+      label: 'ติดต่อเรา',
+      command: () => {
+        setVisible1(false)
+        navigate("/AccountPage");
+      }
+    },
     {
       label: 'ออกจากระบบ',
       command: () => {
+        localStorage.removeItem('user_id');
         localStorage.removeItem('token');
         setVisible1(false)
         navigate("/LoginPage");
@@ -66,11 +85,12 @@ function Appbar() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
     const getUserProfile = async () => {
       try {
         const token = localStorage.getItem("token");
         const user_id = localStorage.getItem("user_id");
-        const res = await axios.get(`http://183.88.209.149:12233/makrolao/api/v1/users/${user_id}`, {
+        const res = await axios.get(`${apiUrl}/users/${user_id}`, {
           headers: {
             "token": token,
           },
@@ -301,7 +321,7 @@ function Appbar() {
                 onClick={() => setVisible2(true)}
               />{user ? (
                 <Link to="/AccountPage"><Button icon="pi pi-user" rounded text label={user.name} /></Link>) : (
-                <Link to="/AccountPage"><Button icon="pi pi-user" rounded text /></Link>)}
+                <Link to="/LoginPage"><Button icon="pi pi-user" rounded text /></Link>)}
               {/* label={user.data} */}
             </div>
           </div>

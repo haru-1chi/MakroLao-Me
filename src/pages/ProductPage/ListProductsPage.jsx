@@ -9,6 +9,7 @@ import { Button } from "primereact/button";
 import { Toast } from 'primereact/toast';
 
 function ListProductsPage() {
+  const apiUrl = import.meta.env.VITE_REACT_APP_API_PRODUCT;
   const { addToCart } = useCart();
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -59,7 +60,7 @@ function ListProductsPage() {
   const fetchData = () => {
     axios({
       method: "post",
-      url: "http://183.88.209.149:9999/tossagun-shop/api/api_product",
+      url: `${apiUrl}/api_product`,
       headers: {
         "auth-token":
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb3ciOiJQYXJ0bmVyIiwiaWF0IjoxNzIxODgzMDI0fQ.MbtGRD3wn1ejaYfdtUvxuke4FLSSB-5_uybIuWozvPg",
@@ -72,6 +73,7 @@ function ListProductsPage() {
       })
       .catch((error) => {
         console.log(error);
+        console.log(apiUrl);
       });
   };
 

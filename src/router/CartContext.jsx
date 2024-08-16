@@ -102,7 +102,7 @@ export const CartProvider = ({ children }) => {
 //x shipping,
 // selectedDelivery, //delivery_id delivery
 //x deliveryBranch,
-// paymentChannel
+//x paymentChannel
 // line_items
 // status (processing)
 // items_price

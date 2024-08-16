@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 const EXPIRE_TIME = 60;
 
 function QRPage() {
+    const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
     const { cart, placeOrder, cartDetails } = useCart();
     const navigate = useNavigate();
     const [qrCodeUrl, setQrCodeUrl] = useState('');
@@ -14,14 +15,15 @@ function QRPage() {
     const [remainingTime, setRemainingTime] = useState(EXPIRE_TIME);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    const [paymentStatus, setPaymentStatus] = useState(null);
+    const paymentUUID = "BCELBANK";
     const totalPayable = cartDetails.amountPayment;
 
     useEffect(() => {
         async function fetchQrCode() {
             try {
                 setLoading(true);
-                const response = await fetch(`http://183.88.209.149:12233/makrolao/api/v1/payment/qrcode`, {
+                const response = await fetch(`${apiUrl}/payment/qrcode`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -60,31 +62,48 @@ function QRPage() {
         }
     }, [remainingTime]);
 
-    // // Polling payment status
-    // useEffect(() => {
-    //     let pollingInterval;
-    //     if (paymentCode) {
-    //         pollingInterval = setInterval(async () => {
-    //             try {
-    //                 const response = await fetch(`PAYMENT_STATUS_ENDPOINT/${paymentCode}`);
-    //                 const data = await response.json();
-    //                 setPaymentStatus(data.status);
+    useEffect(() => {
+        let pollingInterval;
+        if (remainingTime > 0) {
+            pollingInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`${apiUrl}/payment/subscription`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            uuid: paymentUUID,
+                            tid: "001",
+                            shopcode: "12345678"
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    setPaymentStatus(data.message);
 
-    //                 if (data.status === 'SUCCESS') {
-    //                     handlePaymentSuccess();
-    //                 }
-    //             } catch (error) {
-    //                 console.error('Error checking payment status:', error);
-    //             }
-    //         }, 5000); // Poll every 5 seconds
-    //     }
+                    if (response.status === 200) {
+                        const data = await response.json();
+                        setPaymentStatus(data.message);
+                        handlePaymentSuccess();
+                    } else {
+                        console.log(data.message)
+                    }
+                } catch (error) {
+                    console.error('Error checking payment status:', error);
+                }
+            }, 5000);
+        }
 
-    //     return () => clearInterval(pollingInterval); // Clean up on unmount
-    // }, [paymentCode]);
+        return () => clearInterval(pollingInterval);
+    }, [paymentCode, apiUrl]);
 
     const handlePaymentSuccess = () => {
-        placeOrder(cartDetails);
-        navigate("/PaymentSuccessfully");
+        console.log('ok success')
+
+        // placeOrder(cartDetails);
+        // navigate("/PaymentSuccessfully");
     };
 
     const renderPaymentDetails = () => (

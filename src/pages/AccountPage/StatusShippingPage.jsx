@@ -1,5 +1,4 @@
 import React, { useState, useRef} from 'react';
-import { useParams } from 'react-router-dom';
 import { useCart } from '../../router/CartContext';
 import { Button } from "primereact/button";
 import { Timeline } from 'primereact/timeline';
@@ -9,8 +8,7 @@ import { FileUpload } from 'primereact/fileupload';
 import { Calendar } from 'primereact/calendar';
 import { Card } from 'primereact/card';
 
-function StatusShippingPage() {
-    const { orderId } = useParams();
+function StatusShippingPage({ orderId }) {
     const { orders } = useCart();
     const order = orders.find(o => o.id === orderId);
     const [date, setDate] = useState(null);
@@ -86,7 +84,7 @@ function StatusShippingPage() {
 
     return (
         <>
-            <div className='w-full px-5 pt-5 flex flex-column gap-2 justify-content-center'>
+            <div className='w-full pt-3 flex flex-column gap-2 justify-content-center'>
                 <Toast ref={toast}></Toast>
                 <div className='bg-section-product flex flex-column border-1 surface-border border-round py-3 px-3 bg-white border-round-mb justify-content-center'>
                     <div className='border-1 surface-border border-round p-3'>

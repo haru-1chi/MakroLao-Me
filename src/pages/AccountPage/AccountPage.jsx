@@ -1,9 +1,17 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom';
 import { useCart } from '../../router/CartContext';
 import { Button } from "primereact/button";
+import StatusShippingPage from './StatusShippingPage';
+import axios from "axios";
 
 function AccountPage() {
+    const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
+    const [activeTab, setActiveTab] = useState('account');
+    const [selectedOrderId, setSelectedOrderId] = useState(null);
+
+    const [user, setUser] = useState(null);
+    const [userOrders, setUserOrder] = useState(null);
     const { orders, clearOrder } = useCart();
     const [activeOrderStatus, setActiveOrderStatus] = useState('all');
 
@@ -15,6 +23,46 @@ function AccountPage() {
     const filteredOrders = activeOrderStatus === 'all'
         ? orders
         : orders.filter(order => order.status.key === activeOrderStatus);
+
+
+    useEffect(() => {
+        const getUserProfile = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const user_id = localStorage.getItem("user_id");
+                const res = await axios.get(`${apiUrl}/users/${user_id}`, {
+                    headers: {
+                        "token": token,
+                    },
+                });
+                setUser(res.data.data);
+            } catch (err) {
+                console.error("Error fetching user data", err.response?.data || err.message);
+            }
+        };
+        getUserProfile();
+    }, []);
+
+    useEffect(() => {
+        const getUserOrders = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const res = await axios.get(`${apiUrl}/orders`, {
+                    headers: {
+                        "token": token,
+                    },
+                });
+                setUserOrders(res.data.data);
+            } catch (err) {
+                console.error("Error fetching user data", err.response?.data || err.message);
+            }
+        };
+        getUserOrders();
+    }, []);
+
+    const handleRevertClick = () => {
+        setSelectedOrderId(null);
+    };
 
     const StatusBar = () => (
         <ul className='status-bar w-full flex justify-content-between'>
@@ -52,19 +100,38 @@ function AccountPage() {
     );
 
 
-    const OrderList = () => (
+    const OrderHistory = () => (
         filteredOrders.length > 0 ? (
-            filteredOrders.map((order) => (
-                <Link to={`/StatusShippingPage/${order.id}`} key={order.id} className='no-underline text-900'>
-                    <OrderItem order={order} />
-                </Link>
-            ))
+            selectedOrderId ? (
+                <div>
+                    <Button className='text-900' label="กลับไปดูประวัติการซื้อ" icon="pi pi-angle-left" onClick={handleRevertClick} text />
+                    <StatusShippingPage orderId={selectedOrderId} />
+                </div>
+            ) : (
+                <>
+                    <h2 className="m-0 mb-2 p-0">ประวัติการสั่งซื้อ</h2>
+                    <StatusBar />
+                    {filteredOrders.map((order) => (
+                        <div
+                            key={order.id}
+                            onClick={() => setSelectedOrderId(order.id)}
+                            className='no-underline text-900 cursor-pointer'
+                        >
+                            <OrderItem order={order} />
+                        </div>
+                    ))}
+                </>
+            )
         ) : (
-            <div className='h-full text-center align-content-center'>
-                <h2>ยังไม่มีรายการสั่งซื้อขณะนี้</h2>
-                <p className='mb-5'>คุณจะเห็นคำสั่งซื้อเมื่อมีคำสั่งซื้อที่ตรงตามเมนูสถานะที่คุณเลือก</p>
-                <Link to="/"><Button label="หาจากหมวดหมู่สินค้า" rounded /></Link>
-            </div>
+            <>
+                <h2 className="m-0 mb-2 p-0">ประวัติการสั่งซื้อ</h2>
+                <StatusBar />
+                <div className='h-full text-center align-content-center'>
+                    <h2>ยังไม่มีรายการสั่งซื้อขณะนี้</h2>
+                    <p className='mb-5'>คุณจะเห็นคำสั่งซื้อเมื่อมีคำสั่งซื้อที่ตรงตามเมนูสถานะที่คุณเลือก</p>
+                    <Link to="/"><Button label="หาจากหมวดหมู่สินค้า" rounded /></Link>
+                </div>
+            </>
         )
     );
 
@@ -107,22 +174,87 @@ function AccountPage() {
         </div>
     );
 
+    const MyAccount = () => (
+        <div>
+            <h2 className="m-0 mb-2 p-0">บัญชีของฉัน</h2>
+            <div className='bg-section-product w-20rem flex flex-column border-1 surface-border border-round mt-4 py-3 px-3 bg-white border-round-mb justify-content-center align-self-center'>
+                <h2 className="m-0 p-0">ข้อมูลบัญชี</h2>
+                <div className="card my-5 flex flex-column gap-3 justify-content-center">
+                    {user ? (
+                        <div className='w-fit'>
+                            <div className='grid'>
+                                <p className='col-6'>ชื่อ</p>
+                                <p className='col-6'>{user.name}</p>
+                            </div>
+                            <div className='grid'>
+                                <p className='col-6'>อีเมล</p>
+                                <p className='col-6'>{user.email}</p>
+                            </div>
+                            <div className='grid'>
+                                <p className='col-6'>เบอร์โทรศัพท์</p>
+                                <p className='col-6'>{user.phone}</p>
+                            </div>
+                            <div className='grid'>
+                                <p className='col-6'>ประเทศ</p>
+                                <p className='col-6'>{user.region}</p>
+                            </div>
+                        </div>
+                    ) : (
+                        "loading..."
+                    )}
+
+                </div>
+            </div>
+        </div>
+    )
+
+
+    const Favorites = () => <div>รายการโปรด</div>;
+    const PrivacySettings = () => <div>จัดการข้อมูลส่วนบุคคล</div>;
+    const ContactUs = () => <div>ติดต่อเรา</div>;
+
+    const renderActiveComponent = () => {
+        switch (activeTab) {
+            case 'account':
+                return <MyAccount />;
+            case 'orderHistory':
+                return <OrderHistory />;
+            case 'favorites':
+                return <Favorites />;
+            case 'privacySettings':
+                return <PrivacySettings />;
+            case 'contactUs':
+                return <ContactUs />;
+            default:
+                return <MyAccount />;
+        }
+    };
+
+
     return (
         <>
             <div className="flex my-5 mx-8">
                 <div className="checkout-2 bg-white border-1 surface-border border-round-xl mr-5">
                     <ul>
-                        <li className='list-none py-3'>บัญชีของฉัน</li>
-                        <li className='list-none py-3'>ประวัติการสั่งซื้อ</li>
-                        <li className='list-none py-3'>รายการโปรด</li>
-                        <li className='list-none py-3'>จัดการข้อมูลส่วนบุคคล</li>
-                        <li className='list-none py-3' onClick={clearOrder}>*ติดต่อเรา</li>
+                        <li className='list-none py-3 cursor-pointer' onClick={() => setActiveTab('account')}>
+                            บัญชีของฉัน
+                        </li>
+                        <li className='list-none py-3 cursor-pointer' onClick={() => setActiveTab('orderHistory')}>
+                            ประวัติการสั่งซื้อ
+                        </li>
+                        <li className='list-none py-3 cursor-pointer' onClick={() => setActiveTab('favorites')}>
+                            รายการโปรด
+                        </li>
+                        <li className='list-none py-3 cursor-pointer' onClick={() => setActiveTab('privacySettings')}>
+                            จัดการข้อมูลส่วนบุคคล
+                        </li>
+                        <li className='list-none py-3 cursor-pointer' onClick={() => setActiveTab('contactUs')}>
+                            ติดต่อเรา
+                        </li>
                     </ul>
                 </div>
                 <div className='w-full'>
-                    <h2 className="m-0 mb-2 p-0">ประวัติการสั่งซื้อ</h2>
-                    <StatusBar />
-                    <OrderList />
+                    {renderActiveComponent()}
                 </div>
             </div>
         </>

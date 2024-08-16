@@ -7,6 +7,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
+  const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
@@ -16,7 +17,7 @@ function LoginPage() {
   const handleLogin = async () => {
     setLoading(true);
     try {
-      const response = await axios.post("http://183.88.209.149:12233/makrolao/api/v1/login", {
+      const response = await axios.post(`${apiUrl}/login`, {
         username,
         password,
       });
@@ -75,7 +76,7 @@ function LoginPage() {
             rounded
           />
           <span className="text-center">OR</span>
-          <Button className="mt-2 mb-4" label="เข้าสู่ระบบด้วย OTP" rounded/>
+          <Button className="mt-2 mb-4" label="เข้าสู่ระบบด้วย OTP" rounded />
           <p className="text-center m-0 p-0">ไม่มีบัญชีผู้ใช้ <span>สร้างบัญชี</span></p>
           <p className="text-center m-0 p-0">ต้องการความช่วยเหลือใช่ไหม? <a href="#">แตะที่นี้</a></p>
         </div>
