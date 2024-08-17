@@ -103,30 +103,31 @@ function RegisterPage() {
             </FloatLabel>
 
             <FloatLabel className="w-full mb-3">
+              <Password
+                inputId="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                feedback={false}
+                className="w-full"
+                toggleMask />
               <label htmlFor="password">
                 รหัสผ่าน
               </label>
-              <InputText
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full"
-                type="Password"
-              />
             </FloatLabel>
 
             <FloatLabel className="w-full mb-3">
-              <label htmlFor="comfirmPassword">
-                ยืนยันรหัสผ่าน
-              </label>
-              <InputText
-                id="comfirmPassword"
+              <Password
+                inputId="comfirmPassword"
                 value={comfirmPassword}
                 onChange={(e) => setComfirmPassword(e.target.value)}
+                feedback={false}
                 className="w-full"
-                type="Password"
-              />
+                toggleMask />
+              <label htmlFor="password">
+                ยืนยันรหัสผ่าน
+              </label>
             </FloatLabel>
+            
             {errorMessage && <p className="text-red-500">{errorMessage}</p>}
             <Button
               className="my-3"
@@ -136,7 +137,7 @@ function RegisterPage() {
               rounded
             />
             <span className="text-center">หรือ</span>
-            <Button className="mt-3 mb-5" label="สร้างบัญชีธุรกิจ" outlined rounded/>
+            <Button className="mt-3 mb-5" label="สร้างบัญชีธุรกิจ" outlined rounded />
             <a href="#" className="text-center">บัญชีธุรกิจคืออะไร</a>
             <p className="text-center">มีบัญชีของอยู่แล้วใช่ไหม <a href="#">เข้าสู่ระบบที่นี่</a></p>
           </div>

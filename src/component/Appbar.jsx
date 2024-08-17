@@ -50,6 +50,7 @@ function Appbar() {
       command: () => {
         localStorage.removeItem('user_id');
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
         setVisible1(false)
         navigate("/LoginPage");
       }
@@ -74,7 +75,8 @@ function Appbar() {
   };
 
   const calculateCODCost = (total) => {
-    return total * 0.03;
+    const codCost = total * 0.03;
+    return Math.max(codCost, 30); // Ensure CODCost is at least 30
   };
 
   const totalBeforeDiscount = calculateTotalBeforeDiscount();
@@ -292,11 +294,10 @@ function Appbar() {
                 <h1 className="m-0 mr-4">
                   <Link to="/">Logo</Link>
                 </h1>
-                <div className="bg-post flex align-items-center text-center gap-2">
+                <div className="bg-post flex align-items-center text-center gap-2 px-2">
                   {/* <Button className="p-1" label="รหัสไปรษณีย์" icon="pi pi-truck"/> */}
                   <i className="pi pi-truck"></i>
-                  <p>{zipcode}</p>
-                  <i className="pi pi-angle-down"></i>
+                  <p className="text-sm font-semibold">สาขาหนองคาย {zipcode}: 43000</p>
                 </div>
               </div>
 
@@ -314,13 +315,26 @@ function Appbar() {
                   <span style={{ position: 'relative', display: 'inline-block' }}>
                     <i className="pi pi-shopping-cart" style={{ fontSize: '1.4rem' }}></i>
                     <Badge value={cart.length} severity="danger"
-                      style={{ position: 'absolute', top: '-0.4rem', right: '-0.4rem',fontSize: '0.7rem'}} />
+                      style={{ position: 'absolute', top: '-0.4rem', right: '-0.4rem', fontSize: '0.7rem' }} />
                   </span>
                 }
                 rounded text
                 onClick={() => setVisible2(true)}
               />{user ? (
-                <Link to="/AccountPage"><Button icon="pi pi-user" rounded text label={user.name} /></Link>) : (
+                <Link to="/AccountPage">
+                  <Button
+                    className="py-2 px-3 surface-border"
+                    icon="pi pi-user"
+                    rounded
+                    outlined
+                    label={
+                      <div className="flex align-items-center gap-2 white-space-nowrap text-overflow-ellipsis">
+                        {user.name}
+                        <i className="pi pi-angle-down"></i>
+                      </div>
+                    }
+                  />
+                </Link>) : (
                 <Link to="/LoginPage"><Button icon="pi pi-user" rounded text /></Link>)}
               {/* label={user.data} */}
             </div>

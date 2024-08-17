@@ -66,6 +66,11 @@ body {
 }
 
 .p-password {
+  position: relative;
+  display: inline;
+}
+
+.p-password-input {
   width: 100%;
   position: relative;
   display: inline-flex;
@@ -262,6 +267,15 @@ body {
   gap: 8px;
   width: 100%;
   grid-template-columns: auto auto auto auto;
+}
+
+.p-timeline-event-opposite {
+  flex: 0;
+  padding: 0 0rem;
+}
+
+.p-timeline-event-content p {
+  margin: 0;
 }
 
 .section-point-product a {

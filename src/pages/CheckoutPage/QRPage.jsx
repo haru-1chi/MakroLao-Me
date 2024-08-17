@@ -100,10 +100,8 @@ function QRPage() {
     }, [paymentCode, apiUrl]);
 
     const handlePaymentSuccess = () => {
-        console.log('ok success')
-
-        // placeOrder(cartDetails);
-        // navigate("/PaymentSuccessfully");
+        placeOrder(cartDetails);
+        navigate("/PaymentSuccessfully");
     };
 
     const renderPaymentDetails = () => (

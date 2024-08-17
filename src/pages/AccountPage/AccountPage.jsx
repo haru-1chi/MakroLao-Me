@@ -65,34 +65,34 @@ function AccountPage() {
     };
 
     const StatusBar = () => (
-        <ul className='status-bar w-full flex justify-content-between'>
+        <ul className='status-bar w-full flex justify-content-between font-semibold'>
             <li
-                className={`list-none cursor-pointer ${activeOrderStatus === 'all' ? 'border-bottom-2' : ''}`}
+                className={`list-none cursor-pointer ${activeOrderStatus === 'all' ? 'border-bottom-3 border-promary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('all')}>
                 ทั้งหมด {orders.length}
             </li>
             <li
-                className={`list-none cursor-pointer ${activeOrderStatus === 'pending' ? 'border-bottom-2' : ''}`}
+                className={`list-none cursor-pointer ${activeOrderStatus === 'pending' ? 'border-bottom-3 border-promary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('pending')}>
                 ต้องชำระเงิน {statusCounts['pending'] || ''}
             </li>
             <li
-                className={`list-none cursor-pointer ${activeOrderStatus === 'Ordered' ? 'border-bottom-2' : ''}`}
+                className={`list-none cursor-pointer ${activeOrderStatus === 'Ordered' ? 'border-bottom-3 border-promary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('Ordered')}>
                 กำลังจัดเตรียม {statusCounts['Ordered'] || ''}
             </li>
             <li
-                className={`list-none cursor-pointer ${activeOrderStatus === 'shipping' ? 'border-bottom-2' : ''}`}
+                className={`list-none cursor-pointer ${activeOrderStatus === 'shipping' ? 'border-bottom-3 border-promary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('shipping')}>
                 กำลังจัดส่ง {statusCounts['shipping'] || ''}
             </li>
             <li
-                className={`list-none cursor-pointer ${activeOrderStatus === 'Delivered' ? 'border-bottom-2' : ''}`}
+                className={`list-none cursor-pointer ${activeOrderStatus === 'Delivered' ? 'border-bottom-3 border-promary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('Delivered')}>
                 จัดส่งสำเร็จ {statusCounts['Delivered'] || ''}
             </li>
             <li
-                className={`list-none cursor-pointer ${activeOrderStatus === 'cancelled' ? 'border-bottom-2' : ''}`}
+                className={`list-none cursor-pointer ${activeOrderStatus === 'cancelled' ? 'border-bottom-3 border-promary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('cancelled')}>
                 ถูกยกเลิก {statusCounts['cancelled'] || ''}
             </li>
@@ -109,7 +109,7 @@ function AccountPage() {
                 </div>
             ) : (
                 <>
-                    <h2 className="m-0 mb-2 p-0">ประวัติการสั่งซื้อ</h2>
+                    <h1 className="m-0 mb-2 p-0 font-semibold">ประวัติการสั่งซื้อ</h1>
                     <StatusBar />
                     {filteredOrders.map((order) => (
                         <div
@@ -136,16 +136,16 @@ function AccountPage() {
     );
 
     const OrderItem = ({ order }) => (
-        <div className='checkout-3 w-full bg-white border-1 surface-border border-round-xl py-5 px-3 mt-3 align-items-start'>
-            <div className='w-full'>
-                <p className="m-0 p-0">#รหัสใบเสร็จ {order.id}</p>
-                <p className="m-0 p-0">Makro PRO</p>
+        <div className='bg-section-product w-full grid bg-white border-1 surface-border border-round-xl py-3 px-2 mt-3 align-items-start'>
+            <div className='col-2'>
+                <p className="m-0 p-0">#{order.id}</p>
+                <p className="m-0 p-0 font-semibold">Makro PRO</p>
             </div>
-            <div>
+            <div className='col-5'>
                 <div className="w-full flex flex-column text-left gap-2">
                     {order.items.map((product, index) => (
-                        <div key={index} className="cart-items flex justify-content-between align-items-center mb-2 border-bottom-1 surface-border">
-                            <div className="flex align-items-center">
+                        <div key={index} className="cart-items flex justify-content-between align-items-center pb-1 border-bottom-1 surface-border">
+                            <div className="w-full flex align-items-center">
                                 <img
                                     src={product.product_image}
                                     alt={product.product_name}
@@ -153,50 +153,54 @@ function AccountPage() {
                                     height={50}
                                 />
                                 <div className="flex flex-column ml-3">
-                                    <span className="mb-1 font-bold">{product.product_name}</span>
-                                    <span>{product.product_price * product.quantity} ฿</span>
+                                    <span className="mb-1 font-semibold">{product.product_name}</span>
+                                    <span>{product.quantity} หน่วย</span>
                                 </div>
                             </div>
-                            <div>
-                                <span className='text-2xl'>{product.quantity}</span>
+                            <div className='w-2 text-right'>
+                                <span className='text-xl'>{product.product_price * product.quantity} ฿</span>
                             </div>
                         </div>
                     ))}
                 </div>
             </div>
-            <div className='w-full justify-content-center'>
+            <div className='col-3 justify-content-center'>
                 <p className="m-0 p-0">{order.status.value}</p>
-                <p className="m-0 p-0">{order.date}</p>
+                <p className="mt-2 p-0"><i className='pi pi-shopping-cart mr-1'></i>{order.date}</p>
             </div>
-            <div className='w-full'>
-                <p className="m-0 p-0 text-right">{order.totalPayable?.toLocaleString('en-US')} ₭</p>
+            <div className='col-2'>
+                <p className="m-0 p-0 text-right font-semibold text-primary text-l">{order.totalPayable?.toLocaleString('en-US')} ₭</p>
             </div>
         </div>
     );
 
     const MyAccount = () => (
         <div>
-            <h2 className="m-0 mb-2 p-0">บัญชีของฉัน</h2>
-            <div className='bg-section-product w-20rem flex flex-column border-1 surface-border border-round mt-4 py-3 px-3 bg-white border-round-mb justify-content-center align-self-center'>
-                <h2 className="m-0 p-0">ข้อมูลบัญชี</h2>
-                <div className="card my-5 flex flex-column gap-3 justify-content-center">
+            <h1 className="m-0 mb-2 p-0 font-semibold">บัญชีของฉัน</h1>
+            <div className='bg-section-product w-24rem flex flex-column border-1 surface-border border-round mt-4 py-3 px-3 bg-white border-round-mb justify-content-center align-self-center'>
+                <h2 className="m-0 p-0 font-medium">ข้อมูลบัญชี</h2>
+                <div className="card mt-3 flex flex-column gap-3 justify-content-center">
                     {user ? (
                         <div className='w-fit'>
-                            <div className='grid'>
-                                <p className='col-6'>ชื่อ</p>
-                                <p className='col-6'>{user.name}</p>
+                            <div className='grid align-items-center border-bottom-1 surface-border'>
+                                <p className='col-4'>ชื่อ</p>
+                                <p className='col'>{user.name}</p>
                             </div>
-                            <div className='grid'>
-                                <p className='col-6'>อีเมล</p>
-                                <p className='col-6'>{user.email}</p>
+                            <div className='grid align-items-center border-bottom-1 surface-border'>
+                                <p className='col-4'>อีเมล</p>
+                                <p className='col'>{user.email}</p>
                             </div>
-                            <div className='grid'>
-                                <p className='col-6'>เบอร์โทรศัพท์</p>
-                                <p className='col-6'>{user.phone}</p>
+                            <div className='grid align-items-center border-bottom-1 surface-border'>
+                                <p className='col-4'>เบอร์โทรศัพท์</p>
+                                <p className='col'>{user.phone}</p>
                             </div>
-                            <div className='grid'>
-                                <p className='col-6'>ประเทศ</p>
-                                <p className='col-6'>{user.region}</p>
+                            <div className='grid align-items-center border-bottom-1 surface-border'>
+                                <p className='col-4'>เลขประจำตัวผู้เสียภาษีอากร</p>
+                                <p className='col text-sm'><i className='pi pi-minus text-sm'></i><br />คุณสามารถแก้ไขค่านี้ได้ขณะสั่งซื้อสินค้า</p>
+                            </div>
+                            <div className='grid align-items-center'>
+                                <p className='col-4'>รหัสสาขา</p>
+                                <p className='col text-sm'><i className='pi pi-minus text-sm'></i><br />คุณสามารถแก้ไขค่านี้ได้ขณะสั่งซื้อสินค้า</p>
                             </div>
                         </div>
                     ) : (
@@ -209,7 +213,10 @@ function AccountPage() {
     )
 
 
-    const Favorites = () => <div>รายการโปรด</div>;
+    const Favorites = () => (
+        <div>รายการโปรด</div>
+    )
+
     const PrivacySettings = () => <div>จัดการข้อมูลส่วนบุคคล</div>;
     const ContactUs = () => <div>ติดต่อเรา</div>;
 
@@ -234,21 +241,36 @@ function AccountPage() {
     return (
         <>
             <div className="flex my-5 mx-8">
-                <div className="checkout-2 bg-white border-1 surface-border border-round-xl mr-5">
-                    <ul>
-                        <li className='list-none py-3 cursor-pointer' onClick={() => setActiveTab('account')}>
+                <div className="bg-section-product w-20rem h-fit bg-white border-1 surface-border border-round-xl mr-5">
+                    <ul className='font-semibold'>
+                        <li
+                            className={`list-none py-3 cursor-pointer ${activeTab === 'account' ? 'text-primary' : ''}`}
+                            onClick={() => setActiveTab('account')}
+                        >
                             บัญชีของฉัน
                         </li>
-                        <li className='list-none py-3 cursor-pointer' onClick={() => setActiveTab('orderHistory')}>
+                        <li
+                            className={`list-none py-3 cursor-pointer ${activeTab === 'orderHistory' ? 'text-primary' : ''}`}
+                            onClick={() => setActiveTab('orderHistory')}
+                        >
                             ประวัติการสั่งซื้อ
                         </li>
-                        <li className='list-none py-3 cursor-pointer' onClick={() => setActiveTab('favorites')}>
+                        <li
+                            className={`list-none py-3 cursor-pointer ${activeTab === 'favorites' ? 'text-primary' : ''}`}
+                            onClick={() => setActiveTab('favorites')}
+                        >
                             รายการโปรด
                         </li>
-                        <li className='list-none py-3 cursor-pointer' onClick={() => setActiveTab('privacySettings')}>
+                        <li
+                            className={`list-none py-3 cursor-pointer ${activeTab === 'privacySettings' ? 'text-primary' : ''}`}
+                            onClick={() => setActiveTab('privacySettings')}
+                        >
                             จัดการข้อมูลส่วนบุคคล
                         </li>
-                        <li className='list-none py-3 cursor-pointer' onClick={() => setActiveTab('contactUs')}>
+                        <li
+                            className={`list-none py-3 cursor-pointer ${activeTab === 'contactUs' ? 'text-primary' : ''}`}
+                            onClick={() => setActiveTab('contactUs')}
+                        >
                             ติดต่อเรา
                         </li>
                     </ul>

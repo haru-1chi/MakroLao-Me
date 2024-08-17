@@ -88,7 +88,7 @@ function ProductPage() {
 
 
         <div>
-          <Products />
+          {/* <Products /> */}
         </div>
       </div>
       <Footer />

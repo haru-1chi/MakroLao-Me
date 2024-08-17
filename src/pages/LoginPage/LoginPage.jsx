@@ -27,7 +27,7 @@ function LoginPage() {
         console.log("Login successful", response.data);
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("user_id", response.data.data._id);
-
+        localStorage.setItem('user', JSON.stringify(response.data.data));
         navigate("/");
       } else {
         setErrorMessage(response.data.message || "Login failed");
@@ -58,16 +58,16 @@ function LoginPage() {
             />
           </FloatLabel>
           <FloatLabel className="w-full">
-            <label htmlFor="password">
-              รหัสผ่าน
-            </label>
-            <InputText
-              id="password"
+            <Password
+              inputId="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               feedback={false}
               className="w-full"
-              type="password" />
+              toggleMask />
+            <label htmlFor="password">
+              รหัสผ่าน
+            </label>
           </FloatLabel>
           {errorMessage && <p className="text-red-500">{errorMessage}</p>}
           <Button

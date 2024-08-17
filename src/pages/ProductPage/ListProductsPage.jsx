@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useCart } from '../../router/CartContext';
 import Filter from "../../component/Filter";
@@ -10,6 +10,7 @@ import { Toast } from 'primereact/toast';
 
 function ListProductsPage() {
   const apiUrl = import.meta.env.VITE_REACT_APP_API_PRODUCT;
+  const navigate = useNavigate();
   const { addToCart } = useCart();
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -22,6 +23,12 @@ function ListProductsPage() {
   const showSuccessToast = () => {
     toast.current.show({
       severity: 'success', summary: 'เพิ่มในตะกร้าแล้ว', life: 2000
+    });
+  };
+
+  const showWarningToast = () => {
+    toast.current.show({
+      severity: 'error', summary: 'เข้าสู่ระบบเพื่อเพิ่มสินค้าใส่ตะกร้า', life: 2000
     });
   };
 
@@ -90,6 +97,19 @@ function ListProductsPage() {
     setRows(event.rows);
   };
 
+  const addCart = (product) => {
+    const token = localStorage.getItem("token");
+  
+    if (!token) {
+      navigate("/LoginPage");
+      showWarningToast();
+    } else {
+      addToCart(product)
+      showSuccessToast();
+    }
+  };
+  
+
   return (
     <>
       <Toast ref={toast} position="top-center" />
@@ -138,10 +158,7 @@ function ListProductsPage() {
                         className="btn-plus-product"
                         icon="pi pi-plus"
                         rounded
-                        onClick={() => {
-                          addToCart(product)
-                          showSuccessToast();
-                        }}
+                        onClick={() => addCart(product)}
                       />
                     </div>
                   </div>

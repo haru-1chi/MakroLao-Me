@@ -13,7 +13,7 @@ function CheckoutPage() {
     const LaosPhone = formatLaosPhone(user.tel);
     const [taxId, setTaxId] = useState('');
     const [branchCode, setBranchCode] = useState('');
-    const [shipping, setShipping] = useState('courierDelivery');
+    const [shipping, setShipping] = useState('selfPickup');
     const [selectedDelivery, setSelectedDelivery] = useState('');
     const [deliveryBranch, setDeliveryBranch] = useState('');
     const [error, setError] = useState(false);
@@ -23,8 +23,9 @@ function CheckoutPage() {
     };
 
     const calculateCODCost = (total) => {
-        return total * 0.03;
-    };
+        const codCost = total * 0.03;
+        return Math.max(codCost, 30); // Ensure CODCost is at least 30
+      };
     const num_total = cart.length
 
     const totalBeforeDiscount = calculateTotalBeforeDiscount();
@@ -128,13 +129,13 @@ function CheckoutPage() {
                         <p className='m-0 mt-3 mb-2'>วิธีการรับสินค้า</p>
 
                         <div className="flex gap-2 mb-2">
+                        <div className="w-full flex align-items-center border-1 surface-border border-round p-2">
+                                <RadioButton inputId="shipping2" name="shipping" value="selfPickup" onChange={(e) => setShipping(e.value)} checked={shipping === 'selfPickup'} />
+                                <label htmlFor="shipping2" className="ml-2">รับเองที่บริษัท</label>
+                            </div>
                             <div className="w-full flex align-items-center border-1 surface-border border-round p-2">
                                 <RadioButton inputId="shipping1" name="shipping" value="courierDelivery" onChange={(e) => setShipping(e.value)} checked={shipping === 'courierDelivery'} />
                                 <label htmlFor="shipping1" className="ml-2">จัดส่งโดยขนส่ง</label>
-                            </div>
-                            <div className="w-full flex align-items-center border-1 surface-border border-round p-2">
-                                <RadioButton inputId="shipping2" name="shipping" value="selfPickup" onChange={(e) => setShipping(e.value)} checked={shipping === 'selfPickup'} />
-                                <label htmlFor="shipping2" className="ml-2">รับเองที่บริษัท</label>
                             </div>
                         </div>
                         <div className='flex flex-column border-1 surface-border border-round justify-content-center p-2'>
