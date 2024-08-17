@@ -120,27 +120,27 @@ function HomePage() {
 
   const [data, setData] = useState([]);
   const apiUrl = import.meta.env.VITE_REACT_APP_API_PRODUCT;
-  const fetchData = () => {
-    axios({
-      method: "post",
-      url: `${apiUrl}/api_product`,
-      headers: {
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb3ciOiJQYXJ0bmVyIiwiaWF0IjoxNzIxODgzMDI0fQ.MbtGRD3wn1ejaYfdtUvxuke4FLSSB-5_uybIuWozvPg",
-      },
-    })
-      .then((response) => {
-        setData(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-        console.log(apiUrl);
-      });
-  };
+  // const fetchData = () => {
+  //   axios({
+  //     method: "post",
+  //     url: `${apiUrl}/api_product`,
+  //     headers: {
+  //       "auth-token":
+  //         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb3ciOiJQYXJ0bmVyIiwiaWF0IjoxNzIxODgzMDI0fQ.MbtGRD3wn1ejaYfdtUvxuke4FLSSB-5_uybIuWozvPg",
+  //     },
+  //   })
+  //     .then((response) => {
+  //       setData(response.data);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //       console.log(apiUrl);
+  //     });
+  // };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
   return (
     <>
       {/* <div className="banner">

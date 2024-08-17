@@ -48,11 +48,7 @@ function Appbar() {
     {
       label: 'ออกจากระบบ',
       command: () => {
-        localStorage.removeItem('user_id');
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setVisible1(false)
-        navigate("/LoginPage");
+        handleLogout()
       }
     },
   ];
@@ -62,7 +58,7 @@ function Appbar() {
   const [visible3, setVisible3] = useState(false);
   const [visible4, setVisible4] = useState(false);
 
-  const { cart, removeFromCart, updateQuantity } = useCart();
+  const { cart, removeFromCart, updateQuantity, resetCart } = useCart();
   const toast = useRef(null);
   const showToast = () => {
     toast.current.show({
@@ -71,6 +67,7 @@ function Appbar() {
   };
 
   const calculateTotalBeforeDiscount = () => {
+    if (!Array.isArray(cart)) return 0;
     return cart.reduce((total, product) => total + product.product_price * product.quantity, 0);
   };
 
@@ -139,6 +136,13 @@ function Appbar() {
 
   const { t } = useTranslation()
   const { zipcode, category, makroProPoint, makromail } = t("Appbar")
+
+  const handleLogout = () => {
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate("/LoginPage");
+  };
 
   return (
     <>

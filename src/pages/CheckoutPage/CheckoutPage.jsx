@@ -8,9 +8,10 @@ import { Button } from "primereact/button";
 import { Dropdown } from 'primereact/dropdown';
 
 function CheckoutPage() {
+    const user = localStorage.getItem('user');
     const navigate = useNavigate();
-    const { cart, user, placeCartDetail } = useCart();
-    const LaosPhone = formatLaosPhone(user.tel);
+    const { cart, placeCartDetail } = useCart();
+    // const LaosPhone = formatLaosPhone(user.phone);
     const [taxId, setTaxId] = useState('');
     const [branchCode, setBranchCode] = useState('');
     const [shipping, setShipping] = useState('selfPickup');
@@ -86,7 +87,7 @@ function CheckoutPage() {
                             <h2 className='m-0 mb-2'>ข้อมูลผู้สั่งสินค้า</h2>
                         </div>
                         <p className='m-0'>ชื่อ: {user.name}</p>
-                        <p className='m-0'>เบอร์โทร: {LaosPhone}</p>
+                        <p className='m-0'>เบอร์โทร: </p>
                         {/* <p className="w-fit p-1 border-1 border-cyan-500 text-cyan-500 border-round">ที่อยู่เริ่มต้น</p> */}
                     </div>
                     <div className='tax flex flex-column p-3 border-1 surface-border border-round  bg-white border-round-mb justify-content-center'>

@@ -1,100 +1,3 @@
-// import React, { createContext, useContext, useState, useEffect } from 'react';
-// import { formatDate, getLocalStorageItem, setLocalStorageItem, convertTHBtoLAK } from '../utils/DateTimeFormat';
-
-// const CartContext = createContext();
-
-// export const useCart = () => useContext(CartContext);
-
-// export const CartProvider = ({ children }) => {
-//   const COD_COST_RATE = 0.03;
-
-//   const user = {
-//     id: 1,
-//     name: 'วันดี วันเพ็ญ',
-//     tel: '0999999999',
-//     address: '123 ต.ตำบล อ.เมือง จ.จังหวัด',
-//     zipcode: 12345,
-//   };
-
-//   const [cart, setCart] = useState(() => getLocalStorageItem('cart', []));
-//   const [cartDetails, setCartDetails] = useState(() => getLocalStorageItem('cartDetails', {}));
-//   const [orders, setOrders] = useState(() => getLocalStorageItem('orders', []));
-
-//   useEffect(() => {
-//     setLocalStorageItem('cart', cart);
-//   }, [cart]);
-
-//   useEffect(() => {
-//     setLocalStorageItem('cartDetails', cartDetails);
-//   }, [cartDetails]);
-
-//   useEffect(() => {
-//     setLocalStorageItem('orders', orders);
-//   }, [orders]);
-
-//   const addToCart = (product) => {
-//     setCart(prevCart => {
-//       const existingProduct = prevCart.find(item => item.product_id === product.product_id);
-//       return existingProduct
-//         ? prevCart.map(item => item.product_id === product.product_id
-//           ? { ...item, quantity: item.quantity + 1 }
-//           : item)
-//         : [...prevCart, { ...product, quantity: 1 }];
-//     });
-//   };
-
-//   const removeFromCart = (productId) => {
-//     setCart(prevCart => prevCart.filter(product => product.product_id !== productId));
-//   };
-
-//   const updateQuantity = (productId, quantity) => {
-//     setCart(cart.map(product =>
-//       product.product_id === productId ? { ...product, quantity: Math.max(1, quantity) } : product
-//     ));
-//   };
-
-//   const placeCartDetail = (details) => {
-//     const newCartDetails = {
-//       id: `${Date.now()}`,
-//       ...details
-//     };
-//     setCartDetails(newCartDetails);
-//   };
-
-//   const placeOrder = (orderDetails) => {
-//     const totalBeforeDiscount = convertTHBtoLAK(
-//       cart.reduce((total, product) => total + product.product_price * product.quantity, 0)
-//     );
-//     const CODCost = Math.max(totalBeforeDiscount * COD_COST_RATE, 30);
-//     const totalPayable = totalBeforeDiscount + CODCost;
-//     const newOrder = {
-//       id: `ORD-${Date.now()}`,
-//       user,
-//       date: formatDate(new Date()),
-//       ...orderDetails,
-//       items: [...cart],
-//       status: { key: 'Ordered', value: 'ได้รับคำสั่งซื้อแล้ว' },
-//       totalBeforeDiscount,
-//       CODCost,
-//       totalPayable: totalPayable,
-//     };
-
-//     setOrders(prevOrders => [...prevOrders, newOrder]);
-//     clearCart();
-//     clearCartDetails();
-//   };
-
-//   const clearCart = () => setCart([]);
-//   const clearCartDetails = () => setCartDetails([]);
-//   const clearOrder = () => setOrders([]);
-
-//   return (
-//     <CartContext.Provider value={{ user, cart, cartDetails, orders, addToCart, removeFromCart, updateQuantity, placeCartDetail, placeOrder, clearCart, clearCartDetails, clearOrder }}>
-//       {children}
-//     </CartContext.Provider>
-//   );
-// };
-
 //ข้อมูล Body ที่ post to {{url_dev}}/orders
 //*ฝั่ง frontend ตอนนี้
 // _id || code
@@ -141,55 +44,49 @@ export const CartProvider = ({ children }) => {
 
   const COD_COST_RATE = 0.03;
 
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({});
 
   const [cart, setCart] = useState([]);
   const [cartDetails, setCartDetails] = useState({});
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-      
       const storedUser = getLocalStorageItem('user', null);
-      // console.log("Loading user data:", storedUser);
       setUser(storedUser);
   }, []);
 
   useEffect(() => {
     if (user && user._id) {
       const storedCart = getLocalStorageItem(`cart_${user._id}`, '[]');
-      setCart(JSON.parse(storedCart));
+      setCart(storedCart);
       const storedCartDetails = getLocalStorageItem(`cartDetails_${user._id}`, '{}');
-      setCartDetails(JSON.parse(storedCartDetails));
+      setCartDetails(storedCartDetails);
       const storedOrders = getLocalStorageItem(`orders_${user._id}`, '[]');
-      setOrders(JSON.parse(storedOrders));
+      setOrders(storedOrders);
     }
   }, [user]);
 
   useEffect(() => {
-    if (user && user._id) {
-      setLocalStorageItem(`cart_${user._id}`, JSON.stringify(cart));
+    if (user && user._id && cart.length) {
+      setLocalStorageItem(`cart_${user._id}`, cart);
     }
-    // console.log("Saving cart to localStorage:", cart);
-    // console.log("User object:", user);
   }, [cart, user]);
 
   useEffect(() => {
     if (user && user._id) {
-      setLocalStorageItem(`cartDetails_${user._id}`, JSON.stringify(cartDetails));
+      setLocalStorageItem(`cartDetails_${user._id}`, cartDetails);
     }
   }, [cartDetails, user]);
 
   useEffect(() => {
     if (user && user._id) {
-      setLocalStorageItem(`orders_${user._id}`, JSON.stringify(orders));
+      setLocalStorageItem(`orders_${user._id}`, orders);
     }
   }, [orders, user]);
 
   const addToCart = (product) => {
-    // console.log("Adding to cart:", product);
     setCart(prevCart => {
       const existingProduct = prevCart.find(item => item.product_id === product.product_id);
-      // console.log("Updated cart:", existingProduct);
       return existingProduct
         ? prevCart.map(item => item.product_id === product.product_id
           ? { ...item, quantity: item.quantity + 1 }
@@ -242,8 +139,14 @@ export const CartProvider = ({ children }) => {
   const clearCartDetails = () => setCartDetails([]);
   const clearOrder = () => setOrders([]);
 
+  const resetCart = () => {
+    setCart([]);
+    setCartDetails({});
+    setOrders([]);
+  };
+
   return (
-    <CartContext.Provider value={{ user, cart, cartDetails, orders, addToCart, removeFromCart, updateQuantity, placeCartDetail, placeOrder, clearCart, clearCartDetails, clearOrder }}>
+    <CartContext.Provider value={{ user, cart, cartDetails, orders, addToCart, removeFromCart, updateQuantity, placeCartDetail, placeOrder, clearCart, clearCartDetails, clearOrder, resetCart }}>
       {children}
     </CartContext.Provider>
   );
