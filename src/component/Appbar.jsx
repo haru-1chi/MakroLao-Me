@@ -76,7 +76,7 @@ function Appbar() {
 
   const calculateCODCost = (total) => {
     const codCost = total * 0.03;
-    return Math.max(codCost, 30); // Ensure CODCost is at least 30
+    return Math.max(codCost, 30);
   };
 
   const totalBeforeDiscount = calculateTotalBeforeDiscount();
