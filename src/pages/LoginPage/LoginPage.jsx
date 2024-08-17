@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { FloatLabel } from "primereact/floatlabel";
 import { Button } from "primereact/button";
+import { Password } from 'primereact/password';
 import Navbar from "../../component/Navbar";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -64,8 +65,9 @@ function LoginPage() {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              feedback={false}
               className="w-full"
-            />
+              type="password" />
           </FloatLabel>
           {errorMessage && <p className="text-red-500">{errorMessage}</p>}
           <Button

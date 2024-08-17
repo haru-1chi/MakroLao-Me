@@ -40,11 +40,17 @@
 .read-the-docs {
   color: #888;
 } */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100..900&display=swap');
+
 body {
   margin: 0;
   padding: 0;
   background: #ededed;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "noto Sans Thai", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
 }
 
 .section-appbar {
@@ -59,10 +65,11 @@ body {
   z-index: 1;
 }
 
-/* img {
+.p-password {
   width: 100%;
-
-} */
+  position: relative;
+  display: inline-flex;
+}
 
 .menu {
   white-space: nowrap;
@@ -105,13 +112,13 @@ body {
   border: 0;
   color: black;
   font-size: 15px;
-  font-weight: lighter;
+  font-weight: 400;
 }
 
 .navmenu a {
   color: black;
   font-size: 16px;
-  font-weight: lighter;
+  font-weight: 400;
   text-decoration: none;
 }
 

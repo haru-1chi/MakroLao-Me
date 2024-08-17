@@ -126,7 +126,7 @@ function Pagepoint() {
                   height={70}
                 />
               </div>
-              <div className="h-full align-content-center text-xs font-light mx-1 my-2">
+              <div className="h-full align-content-center text-sm mx-1 my-2">
                 {Item.name}
               </div>
             </div>

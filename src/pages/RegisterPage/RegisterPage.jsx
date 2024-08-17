@@ -8,7 +8,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function RegisterPage() {
-  const apiUrl = import.meta.env_VITE_REACT_APP_API_URL;
+  const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -33,8 +33,6 @@ function RegisterPage() {
 
       if (response.data.status) {
         console.log("Register successful", response.data);
-        // localStorage.setItem("token", response.data.token);
-        // localStorage.setItem("user_id", response.data.data._id);
 
         navigate("/LoginPage");
       } else {

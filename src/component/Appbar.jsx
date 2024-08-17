@@ -312,9 +312,9 @@ function Appbar() {
               <Button
                 icon={
                   <span style={{ position: 'relative', display: 'inline-block' }}>
-                    <i className="pi pi-shopping-cart" style={{ fontSize: '1.3rem' }}></i>
+                    <i className="pi pi-shopping-cart" style={{ fontSize: '1.4rem' }}></i>
                     <Badge value={cart.length} severity="danger"
-                      style={{ position: 'absolute', top: '-0.5rem', right: '-0.5rem' }} />
+                      style={{ position: 'absolute', top: '-0.4rem', right: '-0.4rem',fontSize: '0.7rem'}} />
                   </span>
                 }
                 rounded text
