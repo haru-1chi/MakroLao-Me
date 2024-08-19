@@ -44,6 +44,20 @@ export const CartProvider = ({ children }) => {
 
   const COD_COST_RATE = 0.03;
 
+  const statusEvents = {
+    Ordered: { key: 'Ordered', value: 'ได้รับคำสั่งซื้อแล้ว', icon: 'pi pi-check', color: '#00bf26' },
+    PendingPayment: { key: 'PendingPayment', value: 'รอชำระเงิน', icon: 'pi pi-hourglass', color: '#607D8B' },
+    PendingVerification: { key: 'PendingVerification', value: 'รอตรวจสอบ', icon: 'pi pi-hourglass', color: '#607D8B' },
+    Preparing: { key: 'Preparing', value: 'กำลังจัดเตรียมสินค้า', icon: 'pi pi-cart-arrow-down', color: '#607D8B' },
+    Packaged: { key: 'Packaged', value: 'จัดเตรียมสินค้าเสร็จ', icon: 'pi pi-box', color: '#607D8B' },
+    ThaiWarehouseArrival: { key: 'ThaiWarehouseArrival', value: 'ถึงโกดังฝั่งไทยแล้ว', icon: 'pi pi-truck', color: '#607D8B' },
+    LaosWarehouseArrival: { key: 'LaosWarehouseArrival', value: 'ถึงจุดรับสินค้าที่โกดังลาวแล้ว', icon: 'pi pi-warehouse', color: '#607D8B' },
+    InTransit: { key: 'InTransit', value: 'ขนส่งรับสินค้าที่โกดังแล้ว', icon: 'pi pi-truck', color: '#607D8B' },
+    BranchArrival: { key: 'BranchArrival', value: 'ถึงจุดรับสินค้าที่สาขาขนส่งแล้ว', icon: 'pi pi-warehouse', color: '#607D8B' },
+    Received: { key: 'Received', value: 'ลูกค้ารับสินค้าเรียบร้อยแล้ว', icon: 'pi pi-check', color: '#607D8B' },
+    Cancelled: { key: 'Cancelled', value: 'ถูกยกเลิก', icon: 'pi pi-times', color: '#FF5252' }
+  };
+
   const [user, setUser] = useState({});
 
   const [cart, setCart] = useState([]);
@@ -51,23 +65,23 @@ export const CartProvider = ({ children }) => {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-      const storedUser = getLocalStorageItem('user', null);
-      setUser(storedUser);
+    const storedUser = getLocalStorageItem('user', null);
+    setUser(storedUser);
   }, []);
 
   useEffect(() => {
     if (user && user._id) {
       const storedCart = getLocalStorageItem(`cart_${user._id}`, '[]');
-      setCart(storedCart);
+      setCart(Array.isArray(storedCart) ? storedCart : []);
       const storedCartDetails = getLocalStorageItem(`cartDetails_${user._id}`, '{}');
       setCartDetails(storedCartDetails);
       const storedOrders = getLocalStorageItem(`orders_${user._id}`, '[]');
-      setOrders(storedOrders);
+      setOrders(Array.isArray(storedOrders) ? storedOrders : []);
     }
   }, [user]);
 
   useEffect(() => {
-    if (user && user._id && cart.length) {
+    if (user && user._id) {
       setLocalStorageItem(`cart_${user._id}`, cart);
     }
   }, [cart, user]);
@@ -118,13 +132,17 @@ export const CartProvider = ({ children }) => {
     const CODCost = totalBeforeDiscount * COD_COST_RATE;
     const totalPayable = totalBeforeDiscount + CODCost;
 
+    const status = orderDetails.PaymentChannel === "bankCounter"
+      ? statusEvents.PendingPayment
+      : statusEvents.PendingVerification;
+
     const newOrder = {
       id: `ORD-${Date.now()}`,
       user,
       date: formatDate(new Date()),
       ...orderDetails,
       items: [...cart],
-      status: { key: 'Ordered', value: 'ได้รับคำสั่งซื้อแล้ว' },
+      status,
       totalBeforeDiscount,
       CODCost,
       totalPayable: totalPayable,
@@ -146,7 +164,7 @@ export const CartProvider = ({ children }) => {
   };
 
   return (
-    <CartContext.Provider value={{ user, cart, cartDetails, orders, addToCart, removeFromCart, updateQuantity, placeCartDetail, placeOrder, clearCart, clearCartDetails, clearOrder, resetCart }}>
+    <CartContext.Provider value={{ statusEvents, user, cart, cartDetails, orders, addToCart, removeFromCart, updateQuantity, placeCartDetail, placeOrder, clearCart, clearCartDetails, clearOrder, resetCart }}>
       {children}
     </CartContext.Provider>
   );

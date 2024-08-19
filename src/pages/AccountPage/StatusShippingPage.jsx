@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useCart } from '../../router/CartContext';
 import { Button } from "primereact/button";
 import { Timeline } from 'primereact/timeline';
@@ -7,9 +7,13 @@ import { Toast } from 'primereact/toast';
 import { FileUpload } from 'primereact/fileupload';
 import { Calendar } from 'primereact/calendar';
 import { Card } from 'primereact/card';
+import axios from "axios";
+import { convertTHBtoLAK, formatLaosPhone } from '../../utils/DateTimeFormat';
 
 function StatusShippingPage({ orderId }) {
-    const { orders } = useCart();
+    const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
+    const [user, setUser] = useState(null);
+    const { statusEvents, orders } = useCart();
     const order = orders.find(o => o.id === orderId);
     const [date, setDate] = useState(null);
     const [time, setTime] = useState(null);
@@ -31,46 +35,65 @@ function StatusShippingPage({ orderId }) {
     const calculateCODCost = (total) => {
         const codCost = total * 0.03;
         return Math.max(codCost, 30); // Ensure CODCost is at least 30
-      };
+    };
     const totalBeforeDiscount = calculateTotalBeforeDiscount();
     const CODCost = calculateCODCost(totalBeforeDiscount);
     const totalPayable = totalBeforeDiscount + CODCost;
 
+    useEffect(() => {
+        const getUserProfile = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const user_id = localStorage.getItem("user_id");
+                const res = await axios.get(`${apiUrl}/users/${user_id}`, {
+                    headers: {
+                        "token": token,
+                    },
+                });
+                setUser(res.data.data);
+            } catch (err) {
+                console.error("Error fetching user data", err.response?.data || err.message);
+            }
+        };
+        getUserProfile();
+    }, []);
+
+
     //status order
     // const [currentStatus, setCurrentStatus] = useState(order.status.key) pi pi-check-circle;
-    const [currentStatus, setCurrentStatus] = useState('Preparing');
+    const [currentStatus, setCurrentStatus] = useState(order.status.key);
     const events = [
-        ...(order.PaymentChannel === 'bankCounter' ? [
-            { status: 'PendingPayment', label: 'รอชำระเงิน', icon: 'pi pi-hourglass', color: '#607D8B' }
-        ] : []),
-        { status: 'PendingVerification', label: 'รอตรวจสอบ', icon: 'pi pi-hourglass', color: '#607D8B' },
-        { status: 'Preparing', label: 'กำลังจัดเตรียมสินค้า', icon: 'pi pi-cart-arrow-down', color: '#607D8B' },
-        { status: 'Packaged', label: 'จัดเตรียมสินค้าเสร็จ', icon: 'pi pi-box', color: '#607D8B' },
-        { status: 'ThaiWarehouseArrival', label: 'ถึงโกดังฝั่งไทยแล้ว', icon: 'pi pi-truck', color: '#607D8B' },
-        ...(order.shipping === 'selfPickup' ? [
-            { status: 'LaosWarehouseArrival', label: 'ถึงจุดรับสินค้าที่โกดังลาวแล้ว ลูกค้าโปรดมารับสินค้า', icon: 'pi pi-warehouse', color: '#607D8B' },
-            { status: 'Received', label: 'ลูกค้ารับสินค้าเรียบร้อยแล้ว', icon: 'pi pi-check', color: '#607D8B' }
-        ] : [
-            { status: 'LaosWarehouseArrival', label: 'ถึงจุดรับสินค้าที่โกดังลาวแล้ว', icon: 'pi pi-warehouse', color: '#607D8B' },
-            { status: 'InTransit', label: 'ขนส่งรับสินค้าที่โกดังแล้ว', icon: 'pi pi-truck', color: '#607D8B' },
-            { status: 'BranchArrival', label: 'ถึงจุดรับสินค้าที่สาขาขนส่งแล้ว ลูกค้าโปรดมารับสินค้า', icon: 'pi pi-warehouse', color: '#607D8B' },
-            { status: 'Received', label: 'ลูกค้ารับสินค้าเรียบร้อยแล้ว', icon: 'pi pi-check', color: '#607D8B' }
-        ])
+        statusEvents.Ordered,
+        ...(order.PaymentChannel === 'bankCounter' ? [statusEvents.PendingPayment] : []),
+        statusEvents.PendingVerification,
+        statusEvents.Preparing,
+        statusEvents.Packaged,
+        statusEvents.ThaiWarehouseArrival,
+        ...(order.shipping === 'selfPickup'
+            ? [statusEvents.LaosWarehouseArrival, statusEvents.Received]
+            : [statusEvents.LaosWarehouseArrival, statusEvents.InTransit, statusEvents.BranchArrival, statusEvents.Received]
+        )
     ];
 
-    const statusesOrder = events.map(event => event.status);
+    const statusesOrder = events.map(event => event.key);
 
     const isStatusOrBefore = (status) => {
         const currentIndex = statusesOrder.indexOf(currentStatus);
         const statusIndex = statusesOrder.indexOf(status);
-        return statusIndex <= currentIndex;
+
+        if (currentStatus === 'Ordered' || currentStatus === 'PendingPayment' || currentStatus === 'PendingVerification') {
+            const previousStatusIndex = statusIndex > 0 ? statusIndex + 1 : 0;
+            return previousStatusIndex <= currentIndex;
+        } else {
+            return statusIndex <= currentIndex;
+        }
     };
 
     const customizedMarker = (item) => {
-        const isCompleted = isStatusOrBefore(item.status);
+        const isCompleted = isStatusOrBefore(item.key);
         return (
-            <div className="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle shadow-1" 
-                 style={{ backgroundColor: isCompleted ? '#00bf26' : '#607D8B' }}>
+            <div className="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle shadow-1"
+                style={{ backgroundColor: isCompleted ? '#00bf26' : '#607D8B' }}>
                 <i className={isCompleted ? 'pi pi-check' : item.icon}></i>
             </div>
         );
@@ -78,7 +101,7 @@ function StatusShippingPage({ orderId }) {
 
     const customizedContent = (item) => {
         return (
-            <p className='font-semibold'>{item.label}</p>
+            <p className='font-semibold'>{item.value}</p>
         );
     };
 
@@ -108,15 +131,23 @@ function StatusShippingPage({ orderId }) {
 
                             <div className='mt-5'>
                                 <h3 className='mb-2 font-semibold'>ข้อมูลการรับสินค้า</h3>
+                                {user ? (
+                                    <>
+                                        <p className='my-1 p-0'>ชื่อ {user.name}</p>
+                                        <p className='my-1 p-0'>เบอร์โทร {formatLaosPhone(user.phone)}</p>
+                                    </>
+                                ) : ("")
+
+                                }
                                 {order.shipping === 'courierDelivery' ? (
-                                    <p className='m-0 p-0'>จัดส่งโดยขนส่ง {order.selectedDelivery.name} ไปยังสาขา {order.deliveryBranch}</p>
+                                    <p className='my-1 p-0 font-semibold'>จัดส่งโดยขนส่ง {order.selectedDelivery.name} ไปยังสาขา {order.deliveryBranch}</p>
                                 ) : (
-                                    <p className='m-0 p-0'>รับสินค้าเองที่โกดังลาว</p>
+                                    <p className='my-1 p-0 font-semibold'>รับสินค้าเองที่โกดังลาว</p>
                                 )}
                             </div>
                         </div>
                     </div>
-                    <Button className="mt-3 w-fit align-self-center" label="ยกเลิกคำสั่งซื้อ" rounded />
+                    {(order.PaymentChannel === 'bankCounter' && currentStatus === 'PendingPayment') || (order.PaymentChannel === 'QRCode') ? ("") : (<Button className="mt-3 w-fit align-self-center" label="ยกเลิกคำสั่งซื้อ" rounded />)}
                 </div>
 
                 {order.PaymentChannel === 'bankCounter'

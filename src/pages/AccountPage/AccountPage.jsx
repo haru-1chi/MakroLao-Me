@@ -12,7 +12,7 @@ function AccountPage() {
 
     const [user, setUser] = useState(null);
     const [userOrders, setUserOrder] = useState(null);
-    const { orders, clearOrder } = useCart();
+    const { statusEvents, orders, clearOrder } = useCart();
     const [activeOrderStatus, setActiveOrderStatus] = useState('all');
 
     const statusCounts = orders.reduce((counts, order) => {
@@ -22,8 +22,35 @@ function AccountPage() {
 
     const filteredOrders = activeOrderStatus === 'all'
         ? orders
-        : orders.filter(order => order.status.key === activeOrderStatus);
-
+        : orders.filter(order => {
+            switch (activeOrderStatus) {
+                case 'ต้องชำระเงิน':
+                    return order.status.key === statusEvents.PendingPayment.key;
+                case 'กำลังจัดเตรียม':
+                    return order.status.key === statusEvents.PendingVerification.key || order.status.key === statusEvents.Preparing.key;
+                case 'กำลังจัดส่ง':
+                    if (order.shipping === 'selfPickup') {
+                        return order.status.key === statusEvents.Packaged.key || order.status.key === statusEvents.ThaiWarehouseArrival.key;
+                    } else {
+                        return [
+                            statusEvents.Packaged.key,
+                            statusEvents.ThaiWarehouseArrival.key,
+                            statusEvents.LaosWarehouseArrival.key,
+                            statusEvents.InTransit.key
+                        ].includes(order.status.key);
+                    }
+                case 'ถึงจุดรับสินค้าแล้ว':
+                    return order.shipping === 'selfPickup'
+                        ? order.status.key === statusEvents.LaosWarehouseArrival.key
+                        : order.status.key === statusEvents.BranchArrival.key;
+                case 'รับสินค้าสำเร็จ':
+                    return order.status.key === statusEvents.Received.key;
+                case 'ถูกยกเลิก':
+                    return order.status.key === statusEvents.Cancelled.key;
+                default:
+                    return true;
+            }
+        });
 
     useEffect(() => {
         const getUserProfile = async () => {
@@ -43,22 +70,22 @@ function AccountPage() {
         getUserProfile();
     }, []);
 
-    useEffect(() => {
-        const getUserOrders = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                const res = await axios.get(`${apiUrl}/orders`, {
-                    headers: {
-                        "token": token,
-                    },
-                });
-                setUserOrders(res.data.data);
-            } catch (err) {
-                console.error("Error fetching user data", err.response?.data || err.message);
-            }
-        };
-        getUserOrders();
-    }, []);
+    // useEffect(() => {
+    //     const getUserOrders = async () => {
+    //         try {
+    //             const token = localStorage.getItem("token");
+    //             const res = await axios.get(`${apiUrl}/orders`, {
+    //                 headers: {
+    //                     "token": token,
+    //                 },
+    //             });
+    //             setUserOrders(res.data.data);
+    //         } catch (err) {
+    //             console.error("Error fetching user data", err.response?.data || err.message);
+    //         }
+    //     };
+    //     getUserOrders();
+    // }, []);
 
     const handleRevertClick = () => {
         setSelectedOrderId(null);
@@ -66,39 +93,36 @@ function AccountPage() {
 
     const StatusBar = () => (
         <ul className='status-bar w-full flex justify-content-between font-semibold'>
-            <li
-                className={`list-none cursor-pointer ${activeOrderStatus === 'all' ? 'border-bottom-3 border-promary text-primary' : ''}`}
+            <li className={`list-none cursor-pointer ${activeOrderStatus === 'all' ? 'border-bottom-3 border-primary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('all')}>
                 ทั้งหมด {orders.length}
             </li>
-            <li
-                className={`list-none cursor-pointer ${activeOrderStatus === 'pending' ? 'border-bottom-3 border-promary text-primary' : ''}`}
-                onClick={() => setActiveOrderStatus('pending')}>
-                ต้องชำระเงิน {statusCounts['pending'] || ''}
+            <li className={`list-none cursor-pointer ${activeOrderStatus === 'ต้องชำระเงิน' ? 'border-bottom-3 border-primary text-primary' : ''}`}
+                onClick={() => setActiveOrderStatus('ต้องชำระเงิน')}>
+                ต้องชำระเงิน {statusCounts[statusEvents.PendingPayment.key] || ''}
             </li>
-            <li
-                className={`list-none cursor-pointer ${activeOrderStatus === 'Ordered' ? 'border-bottom-3 border-promary text-primary' : ''}`}
-                onClick={() => setActiveOrderStatus('Ordered')}>
-                กำลังจัดเตรียม {statusCounts['Ordered'] || ''}
+            <li className={`list-none cursor-pointer ${activeOrderStatus === 'กำลังจัดเตรียม' ? 'border-bottom-3 border-primary text-primary' : ''}`}
+                onClick={() => setActiveOrderStatus('กำลังจัดเตรียม')}>
+                กำลังจัดเตรียม {statusCounts[statusEvents.PendingVerification.key] || ''}
             </li>
-            <li
-                className={`list-none cursor-pointer ${activeOrderStatus === 'shipping' ? 'border-bottom-3 border-promary text-primary' : ''}`}
-                onClick={() => setActiveOrderStatus('shipping')}>
-                กำลังจัดส่ง {statusCounts['shipping'] || ''}
+            <li className={`list-none cursor-pointer ${activeOrderStatus === 'กำลังจัดส่ง' ? 'border-bottom-3 border-primary text-primary' : ''}`}
+                onClick={() => setActiveOrderStatus('กำลังจัดส่ง')}>
+                กำลังจัดส่ง {statusCounts[statusEvents.InTransit.key] || ''}
             </li>
-            <li
-                className={`list-none cursor-pointer ${activeOrderStatus === 'Delivered' ? 'border-bottom-3 border-promary text-primary' : ''}`}
-                onClick={() => setActiveOrderStatus('Delivered')}>
-                จัดส่งสำเร็จ {statusCounts['Delivered'] || ''}
+            <li className={`list-none cursor-pointer ${activeOrderStatus === 'ถึงจุดรับสินค้าแล้ว' ? 'border-bottom-3 border-primary text-primary' : ''}`}
+                onClick={() => setActiveOrderStatus('ถึงจุดรับสินค้าแล้ว')}>
+                ถึงจุดรับสินค้าแล้ว {statusCounts[statusEvents.BranchArrival.key] || ''}
             </li>
-            <li
-                className={`list-none cursor-pointer ${activeOrderStatus === 'cancelled' ? 'border-bottom-3 border-promary text-primary' : ''}`}
-                onClick={() => setActiveOrderStatus('cancelled')}>
-                ถูกยกเลิก {statusCounts['cancelled'] || ''}
+            <li className={`list-none cursor-pointer ${activeOrderStatus === 'รับสินค้าสำเร็จ' ? 'border-bottom-3 border-primary text-primary' : ''}`}
+                onClick={() => setActiveOrderStatus('รับสินค้าสำเร็จ')}>
+                รับสินค้าสำเร็จ {statusCounts[statusEvents.Received.key] || ''}
+            </li>
+            <li className={`list-none cursor-pointer ${activeOrderStatus === 'ถูกยกเลิก' ? 'border-bottom-3 border-primary text-primary' : ''}`}
+                onClick={() => setActiveOrderStatus('ถูกยกเลิก')}>
+                ถูกยกเลิก {statusCounts[statusEvents.Cancelled.key] || ''}
             </li>
         </ul>
     );
-
 
     const OrderHistory = () => (
         filteredOrders.length > 0 ? (
@@ -165,7 +189,7 @@ function AccountPage() {
                 </div>
             </div>
             <div className='col-3 justify-content-center'>
-                <p className="m-0 p-0">{order.status.value}</p>
+                <p className="w-fit m-0 px-1 py-0 border-1 border-round-md surface-border">{order.status.value}</p>
                 <p className="mt-2 p-0"><i className='pi pi-shopping-cart mr-1'></i>{order.date}</p>
             </div>
             <div className='col-2'>
@@ -177,29 +201,29 @@ function AccountPage() {
     const MyAccount = () => (
         <div>
             <h1 className="m-0 mb-2 p-0 font-semibold">บัญชีของฉัน</h1>
-            <div className='bg-section-product w-24rem flex flex-column border-1 surface-border border-round mt-4 py-3 px-3 bg-white border-round-mb justify-content-center align-self-center'>
+            <div className='bg-section-product w-full flex flex-column border-1 surface-border border-round mt-4 py-3 px-3 bg-white border-round-mb justify-content-center align-self-center'>
                 <h2 className="m-0 p-0 font-medium">ข้อมูลบัญชี</h2>
                 <div className="card mt-3 flex flex-column gap-3 justify-content-center">
                     {user ? (
-                        <div className='w-fit'>
+                        <div className='w-full'>
                             <div className='grid align-items-center border-bottom-1 surface-border'>
-                                <p className='col-4'>ชื่อ</p>
+                                <p className='col-3'>ชื่อ</p>
                                 <p className='col'>{user.name}</p>
                             </div>
                             <div className='grid align-items-center border-bottom-1 surface-border'>
-                                <p className='col-4'>อีเมล</p>
+                                <p className='col-3'>อีเมล</p>
                                 <p className='col'>{user.email}</p>
                             </div>
                             <div className='grid align-items-center border-bottom-1 surface-border'>
-                                <p className='col-4'>เบอร์โทรศัพท์</p>
+                                <p className='col-3'>เบอร์โทรศัพท์</p>
                                 <p className='col'>{user.phone}</p>
                             </div>
                             <div className='grid align-items-center border-bottom-1 surface-border'>
-                                <p className='col-4'>เลขประจำตัวผู้เสียภาษีอากร</p>
+                                <p className='col-3'>เลขประจำตัวผู้เสียภาษีอากร</p>
                                 <p className='col text-sm'><i className='pi pi-minus text-sm'></i><br />คุณสามารถแก้ไขค่านี้ได้ขณะสั่งซื้อสินค้า</p>
                             </div>
                             <div className='grid align-items-center'>
-                                <p className='col-4'>รหัสสาขา</p>
+                                <p className='col-3'>รหัสสาขา</p>
                                 <p className='col text-sm'><i className='pi pi-minus text-sm'></i><br />คุณสามารถแก้ไขค่านี้ได้ขณะสั่งซื้อสินค้า</p>
                             </div>
                         </div>

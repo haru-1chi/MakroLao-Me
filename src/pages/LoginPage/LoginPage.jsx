@@ -3,6 +3,7 @@ import { InputText } from "primereact/inputtext";
 import { FloatLabel } from "primereact/floatlabel";
 import { Button } from "primereact/button";
 import { Password } from 'primereact/password';
+import { Message } from 'primereact/message';
 import Navbar from "../../component/Navbar";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -22,7 +23,6 @@ function LoginPage() {
         username,
         password,
       });
-
       if (response.data.status) {
         console.log("Login successful", response.data);
         localStorage.setItem("token", response.data.token);
@@ -33,13 +33,12 @@ function LoginPage() {
         setErrorMessage(response.data.message || "Login failed");
       }
     } catch (error) {
-      setErrorMessage("An error occurred. Please try again.");
-      console.error("Login error:", error);
+      setErrorMessage(error.response?.data?.message || "An error occurred. Please try again.");
+      console.error("Login error:", error.response?.data || error.message);
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <div className='w-full flex flex-column gap-2 justify-content-center'>
       <div className='bg-section-product w-fit flex flex-column border-1 surface-border border-round mt-5 py-3 px-3 bg-white border-round-mb justify-content-center align-self-center'>
@@ -69,7 +68,8 @@ function LoginPage() {
               รหัสผ่าน
             </label>
           </FloatLabel>
-          {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+
+          {errorMessage && <Message severity="error" text={errorMessage} />}
           <Button
             className="mt-4 mb-2"
             label={loading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
@@ -78,7 +78,7 @@ function LoginPage() {
             rounded
           />
           <span className="text-center">OR</span>
-          <Button className="mt-2 mb-4" label="เข้าสู่ระบบด้วย OTP" rounded/>
+          <Button className="mt-2 mb-4" label="เข้าสู่ระบบด้วย OTP" rounded />
           <p className="text-center m-0 p-0">ไม่มีบัญชีผู้ใช้ <span>สร้างบัญชี</span></p>
           <p className="text-center m-0 p-0">ต้องการความช่วยเหลือใช่ไหม? <a href="#">แตะที่นี้</a></p>
         </div>

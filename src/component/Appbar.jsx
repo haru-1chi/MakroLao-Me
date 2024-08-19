@@ -80,19 +80,17 @@ function Appbar() {
   const CODCost = calculateCODCost(totalBeforeDiscount);
   const totalPayable = totalBeforeDiscount + CODCost;
 
+  const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
     const getUserProfile = async () => {
       try {
         const token = localStorage.getItem("token");
         const user_id = localStorage.getItem("user_id");
         const res = await axios.get(`${apiUrl}/users/${user_id}`, {
-          headers: {
-            "token": token,
-          },
+          headers: { "token": token },
         });
         setUser(res.data.data);
       } catch (err) {
@@ -100,7 +98,7 @@ function Appbar() {
       }
     };
     getUserProfile();
-  }, []);
+  }, [apiUrl]);
 
   const customIcons = (
     <React.Fragment>
@@ -146,8 +144,8 @@ function Appbar() {
 
   return (
     <>
+    <Toast ref={toast} position="top-center" />
       <div className="hidden lg:block section-appbar">
-        <Toast ref={toast} position="top-center" />
         <div className="pt-3 pr-3 pl-3">
           <div className="flex justify-content-end">
             <LanguageSelector />
@@ -155,151 +153,13 @@ function Appbar() {
           <div className="card flex justify-content-between mb-2 border-solid align-items-center">
             <div className="flex gap-4">
               <div className="block">
-                <Sidebar
-                  header={customHeader}
-                  visible={visible1}
-                  onHide={() => setVisible1(false)}
-                  icons={customIcons}
-                >
-                  <div>
-                    <div className="flex justify-content-between pt-2 pb-4">
-                      <Link to="/LoginPage">
-                        <Button label="เข้าสู่ระบบ" outlined rounded />
-                      </Link>
-                      <Link to="/RegisterPage">
-                        <Button label="ลงทะเบียน" rounded />
-                      </Link>
-                    </div>
-                    <div>
-                      <Button className="w-full flex justify-content-between">
-                        <span>ทั้งหมด</span>
-                        <i className="pi pi-angle-right"></i>
-                      </Button>
-                    </div>
-                    <hr />
-                    <div className="flex flex-column p-2">
-                      แม็คโครโปรพอยท์<span>เรียนรู้เพิ่มเติม</span>
-                    </div>
-                    <hr />
-                    <div>ภาษา <LanguageSelector /></div>
-                    <br />
-                    <div className="">
-                      <div>
-                        <i className="pi pi-mobile mr-2"></i>
-                        <span>ติดตั้งแอปพลิเคชั่น</span>
-                      </div>
-                      <br />
-                      <div>
-                        <i className="pi pi-mobile mr-2"></i>
-                        <span>เพิ่มเพื่อนทางไลน์ @abcdef</span>
-                      </div>
-                      <hr />
-                      <div>
-                        <i className="pi pi-phone mr-2"></i>
-                        <span>โทรคุยกับเรา 1234 กด 5</span>
-                      </div>
-                      <hr />
-                    </div>
-                  </div>
-                </Sidebar>
                 <Button icon="pi pi-bars" onClick={() => setVisible1(true)} rounded text />
-                <Sidebar
-                  header={customHeader2}
-                  visible={visible2}
-                  position="right"
-                  onHide={() => setVisible2(false)}
-                  icons={customIcons}
-                >
-                  <Toast ref={toast} position="top-center" />
-                  <div className={cart.length > 0 ? "cart-items w-full border-top-1 surface-border" : "cart flex gap-1"}>
-                    {cart.length > 0 ? (
-                      <>
-                        {cart.map((product, index) => (
-                          <div key={index} className="cart-items justify-content-between mb-2 border-bottom-1 surface-border">
-                            <div className="flex align-items-center">
-                              <img
-                                src={product.product_image}
-                                alt={product.product_name}
-                                className="w-4 m-2"
-                              />
-                              <div className="flex flex-column">
-                                <span className="mb-3 font-bold">{product.product_name}</span>
-                                <span >{product.product_price} ฿</span>
-                              </div>
-                            </div>
-                            <div className="flex align-items-center justify-content-between mb-2">
-                              <Button
-                                icon="pi pi-trash"
-                                onClick={() => {
-                                  showToast();
-                                  removeFromCart(product.product_id);
-                                }
-                                }
-                                className="text-primary"
-                                rounded
-                                text
-                              />
-                              <div className="flex justify-content-between align-items-center border-primary border-1 border-round-3xl">
-                                <Button
-                                  size="small"
-                                  icon="pi pi-minus"
-                                  className="btn-plus-product text-primary"
-                                  onClick={() => updateQuantity(product.product_id, product.quantity - 1)}
-                                  rounded
-                                  text
-                                />
-                                <p className="text-primary m-0 mx-3">{product.quantity}</p>
-                                <Button
-                                  size="small"
-                                  icon="pi pi-plus"
-                                  className="btn-plus-product text-primary"
-                                  onClick={() => updateQuantity(product.product_id, product.quantity + 1)}
-                                  rounded
-                                  text
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                        <div>
-                          <div className="flex align-items-center justify-content-between border-bottom-1">
-                            <p className='m-0'>ยอดสั่งซื้อ</p>
-                            <p className='m-0'>{totalBeforeDiscount.toFixed(2)} ฿</p>
-                          </div>
-                          <div className="flex align-items-center justify-content-between border-bottom-1">
-                            <p className='m-0'>ค่า COD 3%</p>
-                            <p className='m-0'>{CODCost.toFixed(2)} ฿</p>
-                          </div>
-                          <div className="flex align-items-center justify-content-between border-bottom-1">
-                            <p className='m-0'>ยอดชำระ</p>
-                            <p className='m-0'>{totalPayable.toFixed(2)} ฿</p>
-                          </div>
-                          <div className="flex justify-content-end">
-                            <Link to="/CheckoutPage"><Button label="เช็คเอาท์" size="small" onClick={() => setVisible2(false)} rounded /></Link>
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <img
-                          src="https://www.makro.pro/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fempty-basket.76c5ec1f.png&w=1200&q=75"
-                          alt=""
-                        />
-                        <h2 className="m-1">ไม่มีสินค้าในตะกร้า</h2>
-                        <span className="mb-3">เริ่มเลือกสินค้าเลย!</span>
-                        <a href="/"><Button label="หาจากหมวดหมู่สินค้า" rounded /></a>
-                      </>
-                    )}
-                  </div>
-                </Sidebar>
-
               </div>
               <div className="flex justify-content-between align-items-center">
                 <h1 className="m-0 mr-4">
                   <Link to="/">Logo</Link>
                 </h1>
                 <div className="bg-post flex align-items-center text-center gap-2 px-2">
-                  {/* <Button className="p-1" label="รหัสไปรษณีย์" icon="pi pi-truck"/> */}
                   <i className="pi pi-truck"></i>
                   <p className="text-sm font-semibold">สาขาหนองคาย {zipcode}: 43000</p>
                 </div>
@@ -340,44 +200,10 @@ function Appbar() {
                   />
                 </Link>) : (
                 <Link to="/LoginPage"><Button icon="pi pi-user" rounded text /></Link>)}
-              {/* label={user.data} */}
             </div>
           </div>
           <div className="navmenu w-full border-solid pb-1">
             <div>
-              <Sidebar
-                header={customHeader4}
-                visible={visible4}
-                onHide={() => setVisible4(false)}
-                icons={customIcons}
-              >
-                <div>
-                  <div className="box-menu mt-5">
-                    <a href="#" onClick={() => setVisible4(false)}>
-                      <i className="pi pi-angle-left mr-2"></i>
-                      <span><b>ย้อนกลับ</b></span>
-                    </a>
-                  </div>
-                  <div className="box-menu mt-5">
-                    <Link to="List-Product" className="flex justify-content-between" onClick={() => setVisible4(false)}><span><i className="pi pi-hashtag mr-2" />สินค้าทุกหมวดหมู่</span> <i className="pi pi-angle-right mr-2"></i></Link>
-                  </div>
-                  <div className="box-menu mt-5">
-                    <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />เนื้อสัตว์</span> <i className="pi pi-angle-right mr-2"></i></a>
-                  </div>
-                  <div className="box-menu mt-5">
-                    <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />อาหารทะเล</span> <i className="pi pi-angle-right mr-2"></i></a>
-                  </div>
-                  <div className="box-menu mt-5">
-                    <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />ผักและผลไม้</span> <i className="pi pi-angle-right mr-2"></i></a>
-                  </div>
-                  <div className="box-menu mt-5">
-                    <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />เครื่องดื่มและนม</span> <i className="pi pi-angle-right mr-2"></i></a>
-                  </div>
-                  <div className="box-menu mt-5">
-                    <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />อาหารและเครื่องปรุง</span> <i className="pi pi-angle-right mr-2"></i></a>
-                  </div>
-                </div>
-              </Sidebar>
               <Button
                 label={category}
                 icon="pi pi-chevron-down"
@@ -387,33 +213,8 @@ function Appbar() {
             </div>
             <div>
               <Link to="/Pagepoint">{makroProPoint}</Link>
-              {/* <a href="/Pagepoint">จัดเต็มความคุ้ม แม็คโครโปรพอยท์</a> */}
             </div>
             <div>
-              <Sidebar
-                header={customHeader3}
-                visible={visible3}
-                onHide={() => setVisible3(false)}
-                icons={customIcons}
-              >
-                <div>
-                  <div className="box-menu mt-5">
-                    <a href="#" onClick={() => setVisible3(false)}>
-                      <i className="pi pi-angle-left mr-2"></i>
-                      <span>ย้อนกลับ</span>
-                    </a>
-                  </div>
-                  <div className="box-menu mt-5">
-                    <a href="#">ลดแรง จัดหนัก</a>
-                  </div>
-                  <div className="box-menu mt-5">
-                    <a href="#">โฮเรก้า</a>
-                  </div>
-                  <div className="box-menu mt-5">
-                    <a href="#">มิตรแท้โชห่วย</a>
-                  </div>
-                </div>
-              </Sidebar>
               <Button label={makromail} onClick={() => setVisible3(true)} />
             </div>
           </div>
@@ -422,7 +223,7 @@ function Appbar() {
 
       {/* responsive */}
       <div className="block lg:hidden section-appbar">
-        <Toast ref={toast} position="top-center" />
+        {/* <Toast ref={toast} position="top-center" /> */}
         <div className="pt-2 pr-3 pl-3">
           <div className="card flex justify-content-between mb-2 border-solid align-items-center">
 
@@ -537,10 +338,10 @@ function Appbar() {
               >
 
                 <div className={cart.length > 0 ? "cart-items w-full" : "cart flex gap-1"}>
-                  {cart.length > 0 ? (
+                  {Array.isArray(cart) && cart.length > 0 ? (
                     <>
                       {cart.map((product, index) => (
-                        <div key={index} className="cart-items justify-content-between mb-2 border-bottom-1 surface-border">
+                        <div key={product.product_id || index} className="cart-items justify-content-between mb-2 border-bottom-1 surface-border">
                           <div className="flex align-items-center">
                             <img
                               src={product.product_image}
@@ -549,7 +350,7 @@ function Appbar() {
                             />
                             <div className="flex flex-column">
                               <span className="mb-3 font-bold">{product.product_name}</span>
-                              <span >{product.product_price} ฿</span>
+                              <span>{product.product_price} ฿</span>
                             </div>
                           </div>
                           <div className="flex align-items-center justify-content-between mb-2">
@@ -558,8 +359,7 @@ function Appbar() {
                               onClick={() => {
                                 showToast();
                                 removeFromCart(product.product_id);
-                              }
-                              }
+                              }}
                               className="text-primary"
                               rounded
                               text

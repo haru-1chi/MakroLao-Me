@@ -120,27 +120,33 @@ function HomePage() {
 
   const [data, setData] = useState([]);
   const apiUrl = import.meta.env.VITE_REACT_APP_API_PRODUCT;
-  // const fetchData = () => {
-  //   axios({
-  //     method: "post",
-  //     url: `${apiUrl}/api_product`,
-  //     headers: {
-  //       "auth-token":
-  //         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb3ciOiJQYXJ0bmVyIiwiaWF0IjoxNzIxODgzMDI0fQ.MbtGRD3wn1ejaYfdtUvxuke4FLSSB-5_uybIuWozvPg",
-  //     },
-  //   })
-  //     .then((response) => {
-  //       setData(response.data);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //       console.log(apiUrl);
-  //     });
-  // };
+  const product_token = import.meta.env.VITE_REACT_APP_PRODUCT_TOKEN;
+  const shuffleArray = (array) => {
+    return array.sort(() => 0.5 - Math.random());
+  };
 
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
+  const fetchData = () => {
+    axios({
+      method: "post",
+      url: `${apiUrl}/api_product`,
+      headers: {
+        "auth-token":
+          `${product_token}`,
+      },
+    })
+      .then((response) => {
+        const shuffledData = shuffleArray(response.data);
+      setData(shuffledData);
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(apiUrl);
+      });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
   return (
     <>
       {/* <div className="banner">
@@ -161,7 +167,7 @@ function HomePage() {
             src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FFlash_Sale_Middle_Banner_TH_Electro_0e168c_d08d74be82.png&w=1200&q=90"
             alt=""
           />
-          <Products data={data} />
+          <Products data={data} startIndex={0} /> 
         </div>
 
         <div className="mt-5">
@@ -171,7 +177,7 @@ function HomePage() {
             </span>
             <Link to="/List-Product" className="no-underline text-900">ดูเพิ่มเติม <i className="pi pi-angle-right"></i></Link>
           </div>
-          <Products data={data} />
+          <Products data={data} startIndex={5} />
         </div>
 
         <div className="bg-section-new-product text-center m-2">
@@ -180,7 +186,7 @@ function HomePage() {
             src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FFlash_Sale_Fresh_Middle_TH_016100_8a83bd308a.png&w=1200&q=90"
             alt=""
           />
-          <Products data={data} />
+          <Products data={data} startIndex={10} />
         </div>
         <div className="mt-4 pl-3 pr-3">
           <span>
@@ -201,7 +207,7 @@ function HomePage() {
             </span>
             <Link to="/List-Product" className="no-underline text-900">ดูเพิ่มเติม <i className="pi pi-angle-right"></i></Link>
           </div>
-          <Products data={data} />
+          <Products data={data} startIndex={15} />
         </div>
         <div className="pl-3 pr-3">
           <span>
@@ -218,7 +224,7 @@ function HomePage() {
             </span>
             <Link to="/List-Product" className="no-underline text-900">ดูเพิ่มเติม <i className="pi pi-angle-right"></i></Link>
           </div>
-          <Products data={data} />
+          <Products data={data} startIndex={20} />
         </div>
         <BannerSlider />
       </div>

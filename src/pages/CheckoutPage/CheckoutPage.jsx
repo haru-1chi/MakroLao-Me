@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from '../../router/CartContext';
 import { convertTHBtoLAK, formatLaosPhone } from '../../utils/DateTimeFormat';
@@ -6,16 +6,19 @@ import { RadioButton } from 'primereact/radiobutton';
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Dropdown } from 'primereact/dropdown';
+import axios from "axios";
 
 function CheckoutPage() {
-    const user = localStorage.getItem('user');
+    const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
+    const [user, setUser] = useState(null);
     const navigate = useNavigate();
     const { cart, placeCartDetail } = useCart();
-    // const LaosPhone = formatLaosPhone(user.phone);
+
     const [taxId, setTaxId] = useState('');
     const [branchCode, setBranchCode] = useState('');
     const [shipping, setShipping] = useState('selfPickup');
     const [selectedDelivery, setSelectedDelivery] = useState('');
+    const [deliveries, setDeliveries] = useState([]);
     const [deliveryBranch, setDeliveryBranch] = useState('');
     const [error, setError] = useState(false);
 
@@ -25,10 +28,9 @@ function CheckoutPage() {
 
     const calculateCODCost = (total) => {
         const codCost = total * 0.03;
-        return Math.max(codCost, 30); // Ensure CODCost is at least 30
-      };
+        return Math.max(codCost, 30);
+    };
     const num_total = cart.length
-
     const totalBeforeDiscount = calculateTotalBeforeDiscount();
     const LaostotalBeforeDiscount = convertTHBtoLAK(calculateTotalBeforeDiscount());
 
@@ -38,12 +40,37 @@ function CheckoutPage() {
     const totalPayable = totalBeforeDiscount + CODCost;
     const LaostotalPayable = convertTHBtoLAK(totalPayable)
 
-    const deliveries = [
-        { name: 'รุ่งอรุณ' },
-        { name: 'อนุสิทธิ์' },
-        { name: 'ไอเดีย' }
-    ];
-    
+    useEffect(() => {
+        const getUserProfile = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const user_id = localStorage.getItem("user_id");
+                const res = await axios.get(`${apiUrl}/users/${user_id}`, {
+                    headers: {
+                        "token": token,
+                    },
+                });
+                setUser(res.data.data);
+            } catch (err) {
+                console.error("Error fetching user data", err.response?.data || err.message);
+            }
+        };
+        getUserProfile();
+    }, []);
+
+    useEffect(() => {
+        const fetchDeliveries = async () => {
+            try {
+                const response = await axios.get(`${apiUrl}/deliveries`);
+                setDeliveries(response.data.data);
+            } catch (error) {
+                console.error('Error fetching deliveries:', error);
+            }
+        };
+
+        fetchDeliveries();
+    }, []);
+
     const handleConfirmPayment = () => {
         if (shipping === 'courierDelivery') {
             if (!selectedDelivery || !deliveryBranch) {
@@ -86,8 +113,11 @@ function CheckoutPage() {
                             <i className="m-0 mr-2 pi pi-map-marker"></i>
                             <h2 className='m-0 mb-2'>ข้อมูลผู้สั่งสินค้า</h2>
                         </div>
-                        <p className='m-0'>ชื่อ: {user.name}</p>
-                        <p className='m-0'>เบอร์โทร: </p>
+                        {user ? (
+                            <><p className='m-0'>ชื่อ: {user.name}</p>
+                                <p className='m-0'>เบอร์โทร: {formatLaosPhone(user.phone)}</p></>
+                        ) : ("")
+                        }
                         {/* <p className="w-fit p-1 border-1 border-cyan-500 text-cyan-500 border-round">ที่อยู่เริ่มต้น</p> */}
                     </div>
                     <div className='tax flex flex-column p-3 border-1 surface-border border-round  bg-white border-round-mb justify-content-center'>
@@ -117,11 +147,11 @@ function CheckoutPage() {
                                         />
                                         <div className="flex flex-column ml-3">
                                             <span className="mb-1 font-bold">{product.product_name}</span>
-                                            <span>{product.product_price * product.quantity} ฿</span>
+                                            <span>{product.quantity} หน่วย</span>
                                         </div>
                                     </div>
                                     <div>
-                                        <span className='text-2xl'>{product.quantity}</span>
+                                        <span className='text-2xl'>{product.product_price * product.quantity} ฿</span>
                                     </div>
                                 </div>
                             ))}
@@ -130,7 +160,7 @@ function CheckoutPage() {
                         <p className='m-0 mt-3 mb-2'>วิธีการรับสินค้า</p>
 
                         <div className="flex gap-2 mb-2">
-                        <div className="w-full flex align-items-center border-1 surface-border border-round p-2">
+                            <div className="w-full flex align-items-center border-1 surface-border border-round p-2">
                                 <RadioButton inputId="shipping2" name="shipping" value="selfPickup" onChange={(e) => setShipping(e.value)} checked={shipping === 'selfPickup'} />
                                 <label htmlFor="shipping2" className="ml-2">รับเองที่บริษัท</label>
                             </div>
@@ -141,31 +171,30 @@ function CheckoutPage() {
                         </div>
                         <div className='flex flex-column border-1 surface-border border-round justify-content-center p-2'>
                             {shipping === 'courierDelivery' ? (
-                                <div className="">
-                                    <p className='m-0 mb-2'>เลือกขนส่งและระบุสาขา</p>
-                                    <div className=''>
-                                        <div className="flex gap-2">
-                                            <Dropdown
-                                                value={selectedDelivery}
-                                                onChange={(e) => setSelectedDelivery(e.value)}
-                                                options={deliveries}
-                                                optionLabel="name"
-                                                placeholder="เลือกขนส่ง"
-                                                className="w-full"
-                                            />
-                                            <InputText
-                                                className="w-full border-round p-3"
-                                                value={deliveryBranch}
-                                                onChange={(e) => setDeliveryBranch(e.target.value)}
-                                                placeholder='ระบุสาขาขนส่ง'
-                                            />
-
-                                        </div>
-                                        <div className="flex gap-2">
-                                            {error && !selectedDelivery && <small className="p-error w-full">กรุณาระบุชื่อขนส่ง</small>}
-                                            {error && !deliveryBranch && <small className="p-error w-full">กรุณาระบุสาขาขนส่ง</small>}
-                                        </div>
-
+                                <div className=''>
+                                    <div className="flex gap-2">
+                                        <p className='m-0 m-0 w-full'>เลือกขนส่ง</p>
+                                        <p className='m-0 m-b-2 w-full'>รับที่สาขา</p>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Dropdown
+                                            value={selectedDelivery}
+                                            onChange={(e) => setSelectedDelivery(e.value)}
+                                            options={deliveries}
+                                            optionLabel="name"
+                                            placeholder="เลือกขนส่ง"
+                                            className="w-full"
+                                        />
+                                        <InputText
+                                            className="w-full border-round p-3"
+                                            value={deliveryBranch}
+                                            onChange={(e) => setDeliveryBranch(e.target.value)}
+                                            placeholder='ระบุสาขาที่ต้องการรับ'
+                                        />
+                                    </div>
+                                    <div className="flex gap-2">
+                                        {error && !selectedDelivery && <small className="p-error w-full">กรุณาระบุชื่อขนส่ง</small>}
+                                        {error && !deliveryBranch && <small className="p-error w-full">กรุณาระบุสาขาที่ต้องการรับ</small>}
                                     </div>
                                 </div>
                             ) : (
