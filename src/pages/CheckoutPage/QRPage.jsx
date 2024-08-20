@@ -21,85 +21,85 @@ function QRPage() {
     const paymentUUID = "BCELBANK";
     const totalPayable = cartDetails.amountPayment;
 
-    // useEffect(() => {
-    //     async function fetchQrCode() {
-    //         try {
-    //             setLoading(true);
-    //             const response = await fetch(`${apiUrl}/payment/qrcode`, {
-    //                 method: 'POST',
-    //                 headers: {
-    //                     'Content-Type': 'application/json',
-    //                 },
-    //                 body: JSON.stringify({
-    //                     amount: totalPayable,
-    //                     description: 'user123',
-    //                 }),
-    //             });
+    useEffect(() => {
+        async function fetchQrCode() {
+            try {
+                setLoading(true);
+                const response = await fetch(`${apiUrl}/payment/qrcode`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        amount: totalPayable,
+                        description: 'user123',
+                    }),
+                });
 
-    //             const result = await response.json();
+                const result = await response.json();
 
-    //             setQrCodeUrl(result.qrCodeUrl);
-    //             setPaymentCode(result.data.transactionid);
-    //             setExpireTime(result.data.expiretime || EXPIRE_TIME);
-    //             setRemainingTime(result.data.expiretime || EXPIRE_TIME);
-    //             setError(null);
-    //         } catch (error) {
-    //             console.error('Error generating QR code:', error);
-    //             setError('Failed to generate QR code. Please try again.');
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     }
+                setQrCodeUrl(result.qrCodeUrl);
+                setPaymentCode(result.data.transactionid);
+                setExpireTime(result.data.expiretime || EXPIRE_TIME);
+                setRemainingTime(result.data.expiretime || EXPIRE_TIME);
+                setError(null);
+            } catch (error) {
+                console.error('Error generating QR code:', error);
+                setError('Failed to generate QR code. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        }
 
-    //     fetchQrCode();
-    // }, [totalPayable]);
+        fetchQrCode();
+    }, [totalPayable]);
 
-    // useEffect(() => {
-    //     if (remainingTime > 0) {
-    //         const timerId = setInterval(() => {
-    //             setRemainingTime(prevTime => prevTime - 1);
-    //         }, 1000);
+    useEffect(() => {
+        if (remainingTime > 0) {
+            const timerId = setInterval(() => {
+                setRemainingTime(prevTime => prevTime - 1);
+            }, 1000);
 
-    //         return () => clearInterval(timerId);
-    //     }
-    // }, [remainingTime]);
+            return () => clearInterval(timerId);
+        }
+    }, [remainingTime]);
 
-    // useEffect(() => {
-    //     let pollingInterval;
-    //     if (remainingTime > 0) {
-    //         pollingInterval = setInterval(async () => {
-    //             try {
-    //                 const response = await fetch(`${apiUrl}/payment/subscription`, {
-    //                     method: 'POST',
-    //                     headers: {
-    //                         'Content-Type': 'application/json',
-    //                     },
-    //                     body: JSON.stringify({
-    //                         uuid: paymentUUID,
-    //                         tid: "001",
-    //                         shopcode: "12345678"
-    //                     })
-    //                 });
+    useEffect(() => {
+        let pollingInterval;
+        if (remainingTime > 0) {
+            pollingInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`${apiUrl}/payment/subscription`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            uuid: paymentUUID,
+                            tid: "001",
+                            shopcode: "12345678"
+                        })
+                    });
 
-    //                 const data = await response.json();
+                    const data = await response.json();
 
-    //                 setPaymentStatus(data.message);
+                    setPaymentStatus(data.message);
 
-    //                 if (response.status === 200) {
-    //                     const data = await response.json();
-    //                     setPaymentStatus(data.message);
-    //                     handleCreateOrder();
-    //                 } else {
-    //                     console.log(data.message)
-    //                 }
-    //             } catch (error) {
-    //                 console.error('Error checking payment status:', error);
-    //             }
-    //         }, 5000);
-    //     }
+                    if (response.status === 200) {
+                        const data = await response.json();
+                        setPaymentStatus(data.message);
+                        handleCreateOrder();
+                    } else {
+                        console.log(data.message)
+                    }
+                } catch (error) {
+                    console.error('Error checking payment status:', error);
+                }
+            }, 5000);
+        }
 
-    //     return () => clearInterval(pollingInterval);
-    // }, [paymentCode, apiUrl]);
+        return () => clearInterval(pollingInterval);
+    }, [paymentCode, apiUrl]);
 
     const handleCreateOrder = async () => {
         setLoading(true);
@@ -109,13 +109,14 @@ function QRPage() {
             // const totalPayable = totalBeforeDiscount + CODCost;
 
             const newOrder = {
-                line_items: cart,
+                _items: cart,
                 ...cartDetails,
-                status: cartDetails.PaymentChannel === "bankCounter" ? "PendingPayment" : "PendingVerification",
+                status: 1
+                // status: cartDetails.paymentChannel === "bankCounter" ? "PendingPayment" : "pending",
                 // totalBeforeDiscount,
                 // CODCost,
                 // totalPayable,
-                
+
             };
 
             const token = localStorage.getItem("token");
@@ -127,11 +128,8 @@ function QRPage() {
             const response = await axios.post(`${apiUrl}/orders`,
                 newOrder,
                 {
-                    headers: {
-                        "token": token,
-                    },
-                });
-
+                    headers: { "token": token }
+                })
             if (response.data && response.data.status) {
                 console.log("Order successful", response.data);
                 clearCart();
@@ -208,7 +206,7 @@ function QRPage() {
                     <h1 className="m-0 p-0">Makro</h1>
                     <p>CP AXTRA PUBLIC COMPANY LIMITED</p>
 
-                    {cartDetails.PaymentChannel === 'QRCode' ? (
+                    {cartDetails.paymentChannel === 'QRCode' ? (
                         loading ? (
                             <p>Loading QR code...</p>
                         ) : error ? (

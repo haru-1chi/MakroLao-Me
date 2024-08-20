@@ -47,7 +47,7 @@ export const CartProvider = ({ children }) => {
   const statusEvents = {
     Ordered: { key: 'Ordered', value: 'ได้รับคำสั่งซื้อแล้ว', icon: 'pi pi-check', color: '#00bf26', tagCSS: 'bg-green-100 border-0 text-green-700' },
     PendingPayment: { key: 'PendingPayment', value: 'รอชำระเงิน', icon: 'pi pi-hourglass', color: '#607D8B', tagCSS: 'bg-yellow-100 border-0 text-yellow-700' },
-    PendingVerification: { key: 'PendingVerification', value: 'รอตรวจสอบ', icon: 'pi pi-hourglass', color: '#607D8B', tagCSS: 'bg-blue-100 border-0 text-blue-700' },
+    pending: { key: 'pendi1ng', value: 'รอตรวจสอบ', icon: 'pi pi-hourglass', color: '#607D8B', tagCSS: 'bg-blue-100 border-0 text-blue-700' },
     Preparing: { key: 'Preparing', value: 'กำลังจัดเตรียมสินค้า', icon: 'pi pi-cart-arrow-down', color: '#607D8B', tagCSS: 'bg-blue-100 border-0 text-blue-700' },
     Packaged: { key: 'Packaged', value: 'จัดเตรียมสินค้าเสร็จ', icon: 'pi pi-box', color: '#607D8B', tagCSS: 'bg-blue-100 border-0 text-blue-700' },
     ThaiWarehouseArrival: { key: 'ThaiWarehouseArrival', value: 'ถึงโกดังฝั่งไทยแล้ว', icon: 'pi pi-truck', color: '#607D8B', tagCSS: 'bg-blue-100 border-0 text-blue-700' },
@@ -57,6 +57,20 @@ export const CartProvider = ({ children }) => {
     Received: { key: 'Received', value: 'ลูกค้ารับสินค้าเรียบร้อยแล้ว', icon: 'pi pi-check', color: '#607D8B', tagCSS: 'bg-green-100 border-0 text-green-700' },
     Cancelled: { key: 'Cancelled', value: 'ถูกยกเลิก', icon: 'pi pi-times', color: '#FF5252', tagCSS: 'bg-red-100 border-0 text-red-700' }
   };
+
+  // const statusEvents = {
+  //   Ordered: { key: '1', value: 'ได้รับคำสั่งซื้อแล้ว', icon: 'pi pi-check', color: '#00bf26', tagCSS: 'bg-green-100 border-0 text-green-700' },
+  //   PendingPayment: { key: '2', value: 'รอชำระเงิน', icon: 'pi pi-hourglass', color: '#607D8B', tagCSS: 'bg-yellow-100 border-0 text-yellow-700' },
+  //   pending: { key: '3', value: 'รอตรวจสอบ', icon: 'pi pi-hourglass', color: '#607D8B', tagCSS: 'bg-blue-100 border-0 text-blue-700' },
+  //   Preparing: { key: '4', value: 'กำลังจัดเตรียมสินค้า', icon: 'pi pi-cart-arrow-down', color: '#607D8B', tagCSS: 'bg-blue-100 border-0 text-blue-700' },
+  //   Packaged: { key: '5', value: 'จัดเตรียมสินค้าเสร็จ', icon: 'pi pi-box', color: '#607D8B', tagCSS: 'bg-blue-100 border-0 text-blue-700' },
+  //   ThaiWarehouseArrival: { key: '6', value: 'ถึงโกดังฝั่งไทยแล้ว', icon: 'pi pi-truck', color: '#607D8B', tagCSS: 'bg-blue-100 border-0 text-blue-700' },
+  //   LaosWarehouseArrival: { key: '7', value: 'ถึงจุดรับสินค้าที่โกดังลาวแล้ว', icon: 'pi pi-warehouse', color: '#607D8B', tagCSS: 'bg-blue-100 border-0 text-blue-700' },
+  //   InTransit: { key: '8', value: 'ขนส่งรับสินค้าที่โกดังแล้ว', icon: 'pi pi-truck', color: '#607D8B', tagCSS: 'bg-blue-100 border-0 text-blue-700' },
+  //   BranchArrival: { key: '9', value: 'ถึงจุดรับสินค้าที่สาขาขนส่งแล้ว', icon: 'pi pi-warehouse', color: '#607D8B', tagCSS: 'bg-blue-100 border-0 text-blue-700' },
+  //   Received: { key: '10', value: 'ลูกค้ารับสินค้าเรียบร้อยแล้ว', icon: 'pi pi-check', color: '#607D8B', tagCSS: 'bg-green-100 border-0 text-green-700' },
+  //   Cancelled: { key: '0', value: 'ถูกยกเลิก', icon: 'pi pi-times', color: '#FF5252', tagCSS: 'bg-red-100 border-0 text-red-700' }
+  // };
 
   const [user, setUser] = useState({});
 
@@ -137,7 +151,7 @@ export const CartProvider = ({ children }) => {
 
     const status = orderDetails.PaymentChannel === "bankCounter"
       ? 'PendingPayment'
-      : 'PendingVerification';
+      : 'pending';
 
     const newOrder = {
       id: `ORD-${Date.now()}`,

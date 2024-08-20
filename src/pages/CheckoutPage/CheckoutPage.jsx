@@ -112,21 +112,23 @@ function CheckoutPage() {
     return (
         <div className="sm:px-2 md:px-4 lg:px-6 xl:px-8">
             <h1 className='flex justify-content-start'>ทำการสั่งซื้อ</h1>
-            <div className='w-full gap-4 xl:flex lg:flex justify-content-between'>
-                <div className='sm:w-full md:w-full lg:w-9 xl:w-9 flex flex-column gap-2'>
+            <div className='w-full gap-4 lg:flex justify-content-between'>
+                <div className='w-full lg:w-9 flex flex-column gap-2'>
                     <div className='address p-3 border-1 surface-border border-round bg-white border-round-mb flex flex-column justify-content-center'>
                         <div className='flex align-items-center'>
                             <i className="m-0 mr-2 pi pi-map-marker"></i>
                             <h2 className='m-0 mb-2'>ข้อมูลผู้สั่งสินค้า</h2>
                         </div>
                         {user ? (
-                            <><p className='m-0'>ชื่อ: {user.name}</p>
-                                <p className='m-0'>เบอร์โทร: {formatLaosPhone(user.phone)}</p></>
+                            <>
+                                <p className='m-0'>ชื่อ: {user.name}</p>
+                                <p className='m-0'>เบอร์โทร: {formatLaosPhone(user.phone)}</p>
+                            </>
                         ) : ("")
                         }
                         {/* <p className="w-fit p-1 border-1 border-cyan-500 text-cyan-500 border-round">ที่อยู่เริ่มต้น</p> */}
                     </div>
-                    <div className='tax flex flex-column p-3 border-1 surface-border border-round  bg-white border-round-mb justify-content-center'>
+                    {/* <div className='tax flex flex-column p-3 border-1 surface-border border-round  bg-white border-round-mb justify-content-center'>
                         <div>
                             <h3 className='m-0  p-1'>ข้อมูลใบกำกับภาษี</h3>
                         </div>
@@ -134,7 +136,7 @@ function CheckoutPage() {
                             <InputText className="w-full border-round p-3" value={taxId} onChange={(e) => setTaxId(e.target.value)} placeholder='เลขประจำตัวผู้เสียภาษี (ถ้ามี)' />
                             <InputText className="w-full border-round p-3" value={branchCode} onChange={(e) => setBranchCode(e.target.value)} placeholder='รหัสสาขา (ถ้ามี)' />
                         </div>
-                    </div>
+                    </div> */}
                     <div className='tax flex flex-column p-3 border-1 surface-border border-round  bg-white border-round-mb justify-content-center'>
                         <h2 className='m-0 mb-2'>สรุปสินค้าและการจัดส่ง</h2>
                         <div className='flex align-items-center justify-content-between border-1 surface-border border-round p-2 mb-2'>
@@ -219,7 +221,7 @@ function CheckoutPage() {
                         </div>
                     </div>
                 </div>
-                <div className='mt-2 sm:mt-2 md:mt-2 lg:mt-0 xl:mt-0 sm:w-full md:w-full lg:w-4 xl:w-4 h-20rem gap-1 flex flex-column border-1 surface-border border-round py-3 px-3 bg-white border-round-mb justify-content-between'>
+                <div className='mt-2 lg:mt-0 w-full lg:w-4 h-20rem gap-1 flex flex-column border-1 surface-border border-round py-3 px-3 bg-white border-round-mb justify-content-between'>
                     <div className="flex justify-content-between pb-2 border-bottom-1 surface-border">
                         <p className='m-0 text-start'>ยอดสั่งซื้อ</p>
                         <div className="flex flex-column gap-1">

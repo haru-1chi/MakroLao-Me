@@ -182,7 +182,7 @@ function Appbar() {
                       style={{ position: 'absolute', top: '-0.4rem', right: '-0.4rem', fontSize: '0.7rem' }} />
                   </span>
                 }
-                rounded text
+                text
                 onClick={() => setVisible2(true)}
               />{user ? (
                 <Link to="/AccountPage">
@@ -437,7 +437,7 @@ function Appbar() {
                         style={{ position: 'absolute', top: '-0.5rem', right: '-0.5rem' }} />
                     </span>
                   }
-                  rounded text
+                  text
                   onClick={() => setVisible2(true)}
                 />
               </div>

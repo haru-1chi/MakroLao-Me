@@ -1,8 +1,11 @@
-export const formatDate = (date, locale = 'th-TH') => {
-  const validDate = new Date(date);
-  if (isNaN(validDate)) {
+export const formatDate = (dateString, locale = 'th-TH') => {
+  if (!dateString) return '';
+
+  const validDate = new Date(dateString);
+  if (isNaN(validDate.getTime())) {
     throw new RangeError('Invalid time value');
   }
+
   const options = {
     weekday: 'long',
     day: '2-digit',
@@ -13,11 +16,7 @@ export const formatDate = (date, locale = 'th-TH') => {
     hour12: false,
   };
 
-  const formattedDate = new Intl.DateTimeFormat(locale, options).format(validDate);
-  const [weekday, day, month, year, time] = formattedDate.split(' ');
-  const [hour, minute] = time.split(':');
-
-  return `${weekday} ${day} ${month} ${parseInt(year)} ${hour}.${minute}`;
+  return new Intl.DateTimeFormat(locale, options).format(validDate);
 };
 
 export const formatTime = (date) => {
@@ -50,10 +49,10 @@ export const setLocalStorageItem = (key, value) => {
 };
 
 export function formatLaosPhone(phoneNumber) {
-  if (phoneNumber.startsWith('0') && phoneNumber.length === 10) {   
-      const formattedNumber = '+856 ' + phoneNumber.slice(1, 3) + ' ' + phoneNumber.slice(3, 6) + ' ' + phoneNumber.slice(6);
-      return formattedNumber;
+  if (phoneNumber.startsWith('0') && phoneNumber.length === 10) {
+    const formattedNumber = '+856 ' + phoneNumber.slice(1, 3) + ' ' + phoneNumber.slice(3, 6) + ' ' + phoneNumber.slice(6);
+    return formattedNumber;
   } else {
-      return phoneNumber;
+    return phoneNumber;
   }
 }

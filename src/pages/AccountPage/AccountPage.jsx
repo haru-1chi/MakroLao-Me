@@ -5,56 +5,90 @@ import { Button } from "primereact/button";
 import StatusShippingPage from './StatusShippingPage';
 import axios from "axios";
 import { formatDate } from '../../utils/DateTimeFormat';
+
 function AccountPage() {
     const location = useLocation();
     const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
     const [activeTab, setActiveTab] = useState('account');
     const [selectedOrderId, setSelectedOrderId] = useState(null);
-
     const [user, setUser] = useState(null);
     const [userOrders, setUserOrders] = useState(null);
-    const { statusEvents, orders, clearOrder } = useCart();
+    const { statusEvents } = useCart();
     const [activeOrderStatus, setActiveOrderStatus] = useState('all');
 
-    const statusCounts = orders.reduce((counts, order) => {
-        const statusDetails = statusEvents[order.status];
-        counts[statusDetails.key] = (counts[statusDetails.key] || 0) + 1;
-        return counts;
-    }, {});
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const token = localStorage.getItem("token");
+            const user_id = localStorage.getItem("user_id");
+            try {
+                const res = await axios.get(`${apiUrl}/users/${user_id}`, {
+                    headers: { "token": token },
+                });
+                setUser(res.data.data);
+            } catch (err) {
+                console.error("Error fetching user data", err.response?.data || err.message);
+            }
+        };
+        fetchUserData();
+    }, [apiUrl]);
+
+    useEffect(() => {
+        const fetchOrders = async () => {
+            const token = localStorage.getItem("token");
+            try {
+                const res = await axios.get(`${apiUrl}/orders`, {
+                    headers: { "token": token },
+                });
+                setUserOrders(res.data.data);
+            } catch (err) {
+                console.error("Error fetching user data", err.response?.data || err.message);
+            }
+        };
+        fetchOrders();
+    }, [apiUrl]);
+
+    const statusCounts = (userOrders ?
+        userOrders.reduce((counts, order) => {
+            const statusDetails = statusEvents[order.status];
+            counts[statusDetails?.key] = (counts[statusDetails?.key] || 0) + 1;
+            return counts;
+        }, {})
+        : ("")
+    )
 
     const filteredOrders = (activeOrderStatus === 'all'
-        ? orders
-        : orders.filter(order => {
+        ? (Array.isArray(userOrders) ? userOrders : []) // Ensure userOrders is an array
+        : (Array.isArray(userOrders) ? userOrders.filter(order => {
             const orderStatus = statusEvents[order.status]; // Lookup status details
             switch (activeOrderStatus) {
                 case 'ต้องชำระเงิน':
-                    return orderStatus.key === statusEvents.PendingPayment.key;
+                    return orderStatus?.key === statusEvents.PendingPayment.key;
                 case 'กำลังจัดเตรียม':
-                    return orderStatus.key === statusEvents.PendingVerification.key || orderStatus.key === statusEvents.Preparing.key;
+                    return [statusEvents.pending.key, statusEvents.Preparing.key].includes(orderStatus?.key);
                 case 'กำลังจัดส่ง':
                     if (order.shipping === 'selfPickup') {
-                        return orderStatus.key === statusEvents.Packaged.key || orderStatus.key === statusEvents.ThaiWarehouseArrival.key;
+                        return orderStatus?.key === statusEvents.Packaged.key || orderStatus?.key === statusEvents.ThaiWarehouseArrival.key;
                     } else {
                         return [
                             statusEvents.Packaged.key,
                             statusEvents.ThaiWarehouseArrival.key,
                             statusEvents.LaosWarehouseArrival.key,
                             statusEvents.InTransit.key
-                        ].includes(orderStatus.key);
+                        ].includes(orderStatus?.key);
                     }
                 case 'ถึงจุดรับสินค้าแล้ว':
                     return order.shipping === 'selfPickup'
-                        ? orderStatus.key === statusEvents.LaosWarehouseArrival.key
-                        : orderStatus.key === statusEvents.BranchArrival.key;
+                        ? orderStatus?.key === statusEvents.LaosWarehouseArrival.key
+                        : orderStatus?.key === statusEvents.BranchArrival.key;
                 case 'รับสินค้าสำเร็จ':
-                    return orderStatus.key === statusEvents.Received.key;
+                    return orderStatus?.key === statusEvents.Received.key;
                 case 'ถูกยกเลิก':
-                    return orderStatus.key === statusEvents.Cancelled.key;
+                    return orderStatus?.key === statusEvents.Cancelled.key;
                 default:
                     return true;
             }
-        })
-    ).sort((a, b) => new Date(b.date) - new Date(a.date));
+        }) : [])
+    ).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     useEffect(() => {
         if (location.state?.activeTab) {
@@ -62,51 +96,13 @@ function AccountPage() {
         }
     }, [location.state]);
 
-    useEffect(() => {
-        const getUserProfile = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                const user_id = localStorage.getItem("user_id");
-                const res = await axios.get(`${apiUrl}/users/${user_id}`, {
-                    headers: {
-                        "token": token,
-                    },
-                });
-                setUser(res.data.data);
-            } catch (err) {
-                console.error("Error fetching user data", err.response?.data || err.message);
-            }
-        };
-        getUserProfile();
-    }, []);
-
-    useEffect(() => {
-        const getUserOrders = async () => {
-            try {
-                console.log(userOrders)
-                const token = localStorage.getItem("token");
-                const res = await axios.get(`${apiUrl}/orders`, {
-                    headers: {
-                        "token": token,
-                    },
-                });
-                setUserOrders(res.data.data);
-            } catch (err) {
-                console.error("Error fetching user data", err.response?.data || err.message);
-            }
-        };
-        getUserOrders();
-    }, []);
-
-    const handleRevertClick = () => {
-        setSelectedOrderId(null);
-    };
+    const handleRevertClick = () => setSelectedOrderId(null);
 
     const StatusBar = () => (
         <ul className='navmenu w-full flex gap-4 overflow-scroll white-space-nowrap justify-content-between font-semibold pl-0 text-center'>
             <li className={`list-none cursor-pointer ${activeOrderStatus === 'all' ? 'border-bottom-3 border-primary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('all')}>
-                ทั้งหมด {orders.length}
+                ทั้งหมด {userOrders?.length}
             </li>
             <li className={`list-none cursor-pointer ${activeOrderStatus === 'ต้องชำระเงิน' ? 'border-bottom-3 border-primary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('ต้องชำระเงิน')}>
@@ -114,7 +110,7 @@ function AccountPage() {
             </li>
             <li className={`list-none cursor-pointer ${activeOrderStatus === 'กำลังจัดเตรียม' ? 'border-bottom-3 border-primary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('กำลังจัดเตรียม')}>
-                กำลังจัดเตรียม {statusCounts[statusEvents.PendingVerification.key] || ''}
+                กำลังจัดเตรียม {statusCounts[statusEvents.pending.key] || ''}
             </li>
             <li className={`list-none cursor-pointer ${activeOrderStatus === 'กำลังจัดส่ง' ? 'border-bottom-3 border-primary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('กำลังจัดส่ง')}>
@@ -136,7 +132,7 @@ function AccountPage() {
     );
 
     const OrderHistory = () => (
-        filteredOrders.length > 0 ? (
+        filteredOrders ? filteredOrders.length > 0 ? (
             selectedOrderId ? (
                 <div>
                     <Button className='text-900' label="กลับไปดูประวัติการซื้อ" icon="pi pi-angle-left" onClick={handleRevertClick} text />
@@ -148,8 +144,8 @@ function AccountPage() {
                     <StatusBar />
                     {filteredOrders.map((order) => (
                         <div
-                            key={order.id}
-                            onClick={() => setSelectedOrderId(order.id)}
+                            key={order._id}
+                            onClick={() => setSelectedOrderId(order._id)}
                             className='cursor-pointer w-full'
                         >
                             <OrderItem order={order} />
@@ -167,7 +163,7 @@ function AccountPage() {
                     <Link to="/"><Button label="หาจากหมวดหมู่สินค้า" rounded /></Link>
                 </div>
             </div>
-        )
+        ) : ("")
     );
 
     const OrderItem = ({ order }) => {
@@ -176,12 +172,12 @@ function AccountPage() {
             <>
                 <div className='hidden md:flex w-full grid-nogutter bg-white border-1 surface-border border-round-xl py-3 px-2 mt-3 align-items-start'>
                     <div className='col-2'>
-                        <p className="m-0 p-0">#{order.id}</p>
+                        <p className="m-0 p-0 text-sm">#{order.code}</p>
                         <p className="m-0 p-0 font-semibold">Makro PRO</p>
                     </div>
                     <div className='col-5'>
                         <div className="w-full flex flex-column text-left gap-2">
-                            {order.items.map((product, index) => (
+                            {order._items.map((product, index) => (
                                 <div key={index} className="cart-items flex justify-content-between align-items-center pb-1 border-bottom-1 surface-border">
                                     <div className="w-full flex align-items-center">
                                         <img
@@ -196,33 +192,32 @@ function AccountPage() {
                                         </div>
                                     </div>
                                     <div className='w-4 text-right'>
-                                        <span className='text-xl'>{product.product_price * product.quantity} ฿</span>
+                                        <span className='text-xl'>{product.ppu * product.quantity} ฿</span>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     </div>
                     <div className='col-3 justify-content-center pl-3'>
-                        <p className={`w-fit m-0 px-1 py-0 border-round-md surface-border ${orderStatus.tagCSS}`}>{orderStatus.value}</p>
-                        <p className="mt-2 p-0"><i className='pi pi-shopping-cart mr-1'></i>{formatDate(order.date)}</p>
+                        <p className={`w-fit m-0 px-1 py-0 border-round-md surface-border ${orderStatus?.tagCSS}`}>{orderStatus?.value}</p>
+                        <p className="mt-2 p-0 text-sm"><i className='pi pi-shopping-cart mr-1'></i>{formatDate(order.createdAt)} น.</p>
                     </div>
                     <div className='col-2'>
-                        <p className="m-0 p-0 text-right font-semibold text-primary text-l">{order.totalPayable?.toLocaleString('en-US')} ₭</p>
+                        <p className="m-0 p-0 text-right font-semibold text-primary text-l">{order.net_price?.toLocaleString('en-US')} ฿</p>
                     </div>
                 </div>
-
+                {/* responsive */}
                 <div className='block md:hidden w-full grid-nogutter bg-white border-1 surface-border border-round-xl py-3 px-2 mt-3 align-items-start'>
                     <div className='w-full pb-2 border-bottom-1 surface-border'>
                         <div className='flex justify-content-between'>
-                            <p className="m-0 p-0">#{order.id}</p>
-
-                            <p className={`w-fit m-0 px-1 py-0 border-round-md surface-border ${orderStatus.tagCSS}`}>{orderStatus.value}</p>
+                            <p className="m-0 p-0">#{order.code}</p>
+                            <p className={`w-fit m-0 px-1 py-0 border-round-md surface-border ${orderStatus?.tagCSS}`}>{orderStatus?.value}</p>
                         </div>
                         <p className="m-0 p-0 font-semibold">Makro PRO</p>
                     </div>
                     <div className='w-full'>
                         <div className="w-full py-2 flex flex-column text-left gap-2">
-                            {order.items.map((product, index) => (
+                            {order._items.map((product, index) => (
                                 <div key={index} className="cart-items flex justify-content-between align-items-center pb-1 border-bottom-1 surface-border">
                                     <div className="w-full flex align-items-center">
                                         <img
@@ -237,17 +232,17 @@ function AccountPage() {
                                         </div>
                                     </div>
                                     <div className='w-4 text-right'>
-                                        <span className='text-xl'>{product.product_price * product.quantity} ฿</span>
+                                        <span className='text-xl'>{product.ppu * product.quantity} ฿</span>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     </div>
                     <div className='w-full border-bottom-1 surface-border justify-content-right'>
-                        <p className="mt-2 p-0"><i className='pi pi-shopping-cart mr-1'></i>{formatDate(order.date)}</p>
+                        <p className="mt-2 p-0"><i className='pi pi-shopping-cart mr-1'></i>{formatDate(order.createdAt)} น.</p>
                     </div>
                     <div className='w-full text-right'>
-                        <p className="m-0 pt-3 text-right font-semibold text-primary text-l">{order.totalPayable?.toLocaleString('en-US')} ₭</p>
+                        <p className="m-0 pt-3 text-right font-semibold text-primary text-l">{order.net_price?.toLocaleString('en-US')} ₭</p>
                     </div>
                 </div>
             </>
