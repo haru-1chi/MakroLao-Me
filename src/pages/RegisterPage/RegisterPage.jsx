@@ -3,44 +3,71 @@ import { InputText } from "primereact/inputtext";
 import { FloatLabel } from "primereact/floatlabel";
 import { Button } from "primereact/button";
 import { Password } from 'primereact/password';
+import { Message } from 'primereact/message';
 import Navbar from "../../component/Navbar";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function RegisterPage() {
   const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
+  const navigate = useNavigate();
+
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [comfirmPassword, setComfirmPassword] = useState("");
+
+  const [formData, setFormData] = useState({
+    phone: "",
+    email: "",
+    username: "",
+    name: "",
+    password: "",
+    confirmPassword: ""
+  });
+
+  const validateForm = () => {
+    const { phone, email, password, confirmPassword } = formData;
+
+    if (!/^\d{10}$/.test(phone)) {
+      return "Phone number should be numeric";
+    }
+
+    if (email && !/\S+@\S+\.\S+/.test(email)) {
+      return "Please enter a valid email address.";
+    }
+
+    if (password !== confirmPassword) {
+      return "Passwords do not match.";
+    }
+
+    return null;
+  };
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [id]: value }));
+  };
 
   const handleRegister = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.post(`${apiUrl}/users`, {
-        phone,
-        email,
-        username,
-        name,
-        password,
-        comfirmPassword
-      });
+    const validationError = validateForm();
+    if (validationError) {
+      setErrorMessage(validationError);
+      return;
+    }
 
+    setLoading(true);
+    setErrorMessage(null);
+
+    try {
+      const response = await axios.post(`${apiUrl}/users`, formData);
       if (response.data.status) {
         console.log("Register successful", response.data);
-
         navigate("/LoginPage");
       } else {
         setErrorMessage(response.data.message || "Register failed");
       }
     } catch (error) {
-      setErrorMessage("An error occurred. Please try again.");
-      console.error("Login error:", error);
+      setErrorMessage(error.response?.data?.message || "An error occurred. Please try again.");
+      console.error("Registration error:", error.response?.data || error.message);
     } finally {
       setLoading(false);
     }
@@ -55,49 +82,41 @@ function RegisterPage() {
           <div className="card my-4 flex flex-column justify-content-center">
 
             <FloatLabel className="w-full mb-3">
-              <label htmlFor="phone">
-                เบอร์มือถือ
-              </label>
+              <label htmlFor="phone">เบอร์มือถือ</label>
               <InputText
                 id="phone"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                value={formData.phone}
+                onChange={handleInputChange}
                 className="w-full"
               />
             </FloatLabel>
 
             <FloatLabel className="w-full mb-3">
-              <label htmlFor="email">
-                อีเมล ไม่บังคับ
-              </label>
+              <label htmlFor="email">อีเมล (ไม่บังคับ)</label>
               <InputText
                 id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={formData.email}
+                onChange={handleInputChange}
                 className="w-full"
               />
             </FloatLabel>
 
             <FloatLabel className="w-full mb-3">
-              <label htmlFor="username">
-                Username
-              </label>
+              <label htmlFor="username">Username</label>
               <InputText
                 id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={formData.username}
+                onChange={handleInputChange}
                 className="w-full"
               />
             </FloatLabel>
 
             <FloatLabel className="w-full mb-3">
-              <label htmlFor="name">
-                ชื่อ
-              </label>
+              <label htmlFor="name">ชื่อ</label>
               <InputText
                 id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={formData.name}
+                onChange={handleInputChange}
                 className="w-full"
               />
             </FloatLabel>
@@ -105,30 +124,28 @@ function RegisterPage() {
             <FloatLabel className="w-full mb-3">
               <Password
                 inputId="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={formData.password}
+                onChange={handleInputChange}
                 feedback={false}
                 className="w-full"
-                toggleMask />
-              <label htmlFor="password">
-                รหัสผ่าน
-              </label>
+                toggleMask
+              />
+              <label htmlFor="password">รหัสผ่าน</label>
             </FloatLabel>
 
             <FloatLabel className="w-full mb-3">
               <Password
-                inputId="comfirmPassword"
-                value={comfirmPassword}
-                onChange={(e) => setComfirmPassword(e.target.value)}
+                inputId="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleInputChange}
                 feedback={false}
                 className="w-full"
-                toggleMask />
-              <label htmlFor="password">
-                ยืนยันรหัสผ่าน
-              </label>
+                toggleMask
+              />
+              <label htmlFor="confirmPassword">ยืนยันรหัสผ่าน</label>
             </FloatLabel>
-            
-            {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+
+            {errorMessage && <Message severity="error" text={errorMessage} />}
             <Button
               className="my-3"
               label={loading ? "กำลังลงทะเบียน..." : "ลงทะเบียน"}
@@ -143,9 +160,8 @@ function RegisterPage() {
           </div>
         </div>
       </div>
-
     </>
-  )
+  );
 }
 
 export default RegisterPage

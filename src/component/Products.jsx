@@ -90,7 +90,7 @@ function Products({ data, startIndex }) {
     const productTemplate = (product) => {
         return (
             product ? (
-                <div className="h-16rem border-1 surface-border m-2 py-5 px-3 bg-white border-round-md flex flex-column justify-content-between">
+                <div className="h-auto border-1 surface-border m-2 py-5 px-3 bg-white border-round-md flex flex-column justify-content-between">
                     <div className="mb-3 flex align-items-center justify-content-center">
                         <img src={product.product_image} alt={product.product_name} className="w-12" />
                     </div>

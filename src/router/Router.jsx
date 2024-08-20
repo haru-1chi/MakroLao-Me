@@ -10,6 +10,7 @@ import CheckoutPage from "../pages/CheckoutPage/CheckoutPage";
 import PaymentPage from "../pages/CheckoutPage/PaymentPage";
 import PaymentSuccessfully from "../pages/CheckoutPage/PaymentSuccessfully";
 import AccountPage from "../pages/AccountPage/AccountPage";
+import EditUserProfile from "../pages/AccountPage/EditUserProfile";
 import StatusShippingPage from "../pages/AccountPage/StatusShippingPage";
 import QRPage from "../pages/CheckoutPage/QRPage";
 import NoPage from "../pages/ErrorPage/NoPage";
@@ -36,7 +37,7 @@ function Router() {
             <Route path="QRPage" element={<QRPage />} />
             <Route path="AccountPage" element={<AccountPage />} />
             <Route path="StatusShippingPage/:orderId" element={<StatusShippingPage />} />
-            
+            <Route path="EditUserProfile" element={<EditUserProfile />} />
             <Route path="*" element={<NoPage />} />
             <Route path="/OrderSummaryPage" element={<OrderSummaryPage />} />
           </Route>

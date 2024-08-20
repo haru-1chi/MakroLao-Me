@@ -8,8 +8,7 @@ import { FileUpload } from 'primereact/fileupload';
 import { Calendar } from 'primereact/calendar';
 import { Card } from 'primereact/card';
 import axios from "axios";
-import { convertTHBtoLAK, formatLaosPhone } from '../../utils/DateTimeFormat';
-
+import { formatDate, convertTHBtoLAK, formatLaosPhone } from '../../utils/DateTimeFormat';
 function StatusShippingPage({ orderId }) {
     const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
     const [user, setUser] = useState(null);
@@ -61,7 +60,7 @@ function StatusShippingPage({ orderId }) {
 
     //status order
     // const [currentStatus, setCurrentStatus] = useState(order.status.key) pi pi-check-circle;
-    const [currentStatus, setCurrentStatus] = useState(order.status.key);
+    const [currentStatus, setCurrentStatus] = useState(statusEvents[order.status]);
     const events = [
         statusEvents.Ordered,
         ...(order.PaymentChannel === 'bankCounter' ? [statusEvents.PendingPayment] : []),
@@ -78,10 +77,10 @@ function StatusShippingPage({ orderId }) {
     const statusesOrder = events.map(event => event.key);
 
     const isStatusOrBefore = (status) => {
-        const currentIndex = statusesOrder.indexOf(currentStatus);
+        const currentIndex = statusesOrder.indexOf(currentStatus.key);
         const statusIndex = statusesOrder.indexOf(status);
 
-        if (currentStatus === 'Ordered' || currentStatus === 'PendingPayment' || currentStatus === 'PendingVerification') {
+        if (currentStatus.key === 'Ordered' || currentStatus.key === 'PendingPayment' || currentStatus.key === 'PendingVerification') {
             const previousStatusIndex = statusIndex > 0 ? statusIndex + 1 : 0;
             return previousStatusIndex <= currentIndex;
         } else {
@@ -114,7 +113,7 @@ function StatusShippingPage({ orderId }) {
                         <h2 className="m-0 mb-0 p-0 font-semibold">Thank you for your order!</h2>
                         <p className='mt-0 font-semibold'>หมายเลขคำสั่งซื้อ {order.id}</p>
                         <p>ได้รับคำสั่งซื้อของคุณแล้ว และเราจะเริ่มตรวจสอบเร็วๆ นี้...</p>
-                        <p className='mb-0 text-sm'>วันที่สั่งซื้อ {order.date} น.</p>
+                        <p className='mb-0 text-sm'>วันที่สั่งซื้อ {formatDate(order.date)} น.</p>
                     </div>
                     <div className="flex">
                         <div className="w-full border-right-1 surface-border pl-3 mt-3">
@@ -124,8 +123,7 @@ function StatusShippingPage({ orderId }) {
                         <div className="w-full flex flex-column pl-5">
                             <div className='mt-7'>
                                 <h3 className='mb-2 font-semibold'>ที่อยู่ Makro สาขาหนองคาย</h3>
-                                <p className='m-0 p-0'>232 ม.12</p>
-                                <p className='m-0 p-0'>พอใจ</p>
+                                <p className='m-0 p-0'>232 ม.12 พอใจ</p>
                                 <p className='m-0 p-0'>เมืองหนองคาย หนองคาย 43000</p>
                             </div>
 
@@ -140,14 +138,14 @@ function StatusShippingPage({ orderId }) {
 
                                 }
                                 {order.shipping === 'courierDelivery' ? (
-                                    <p className='my-1 p-0 font-semibold'>จัดส่งโดยขนส่ง {order.selectedDelivery.name} ไปยังสาขา {order.deliveryBranch}</p>
+                                    <p className='my-2 p-0 font-semibold'>จัดส่งโดยขนส่ง {order.selectedDelivery.name} ไปยังสาขา {order.deliveryBranch}</p>
                                 ) : (
-                                    <p className='my-1 p-0 font-semibold'>รับสินค้าเองที่โกดังลาว</p>
+                                    <p className='my-2 p-0 font-semibold'>รับสินค้าเองที่โกดังลาว</p>
                                 )}
                             </div>
                         </div>
                     </div>
-                    {(order.PaymentChannel === 'bankCounter' && currentStatus === 'PendingPayment') || (order.PaymentChannel === 'QRCode') ? ("") : (<Button className="mt-3 w-fit align-self-center" label="ยกเลิกคำสั่งซื้อ" rounded />)}
+                    {(order.PaymentChannel === 'bankCounter' && currentStatus.key === 'PendingPayment') || (order.PaymentChannel === 'QRCode') ? ("") : (<Button className="mt-3 w-fit align-self-center" label="ยกเลิกคำสั่งซื้อ" rounded />)}
                 </div>
 
                 {order.PaymentChannel === 'bankCounter'
@@ -184,7 +182,7 @@ function StatusShippingPage({ orderId }) {
                         <Button label="เพิ่มสินค้าทั้งหมดลงตะกร้า" outlined rounded />
                     </div>
                     <div className='surface-200'>
-                        <p className='p-0 my-2 mx-3 font-semibold'>{order.status.value}</p>
+                        <p className='p-0 my-2 mx-3 font-semibold'>{currentStatus.value}</p>
                     </div>
                     <div className="flex flex-column mx-5">
                         {order.items.map((product, index) => (
@@ -212,9 +210,13 @@ function StatusShippingPage({ orderId }) {
                     <div className='flex'>
                         <div className='w-full'>
                             <h3 className="m-0 mb-2 p-0 font-semibold">ข้อมูลการชำระเงิน</h3>
-                            <p className='m-0 p-0'>ช่องทางการชำระเงิน: ชำระเงินเมื่อจัดส่งสำเร็จ</p>
-                            <p className='m-0 p-0'>สถานะ: {order.status.value}</p>
-                            <p className='m-0 p-0'>วันที่: {order.date} น.</p>
+                            {order.PaymentChannel === 'bankCounter' ?
+                                <p className='m-0 p-0'>ช่องทางการชำระเงิน: ชำระเงินผ่านเคาท์เตอร์ธนาคาร</p>
+                                :
+                                <p className='m-0 p-0'>ช่องทางการชำระเงิน: ชำระเงินผ่าน OnePay</p>
+                            }
+                            <p className='m-0 p-0'>สถานะ: {currentStatus.value}</p>
+                            <p className='m-0 p-0'>วันที่: {formatDate(order.date)} น.</p>
                         </div>
                         <div className='w-full flex flex-column bg-white border-round-mb justify-content-center'>
                             <h3 className="m-0 mb-2 p-0 font-semibold">สรุปคำสั่งซื้อ</h3>

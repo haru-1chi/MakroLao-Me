@@ -78,24 +78,31 @@ function CheckoutPage() {
             } else {
                 setError(false);
                 const orderDetails = {
-                    taxId,
-                    branchCode,
+                    currency: "THB",
+                    dropoff_id: "66bdd3023208ada843eb3a1c",
+                    // taxId,
+                    // branchCode,
                     shipping,
-                    selectedDelivery,
+                    delivery_id: selectedDelivery._id,
+                    // selectedDelivery,
                     deliveryBranch,
-                    amountPayment: LaostotalPayable
+                    amountPayment: LaostotalPayable,
                 };
                 placeCartDetail(orderDetails);
                 navigate("/PaymentPage");
             }
         } else {
             const orderDetails = {
-                taxId,
-                branchCode,
+                currency: "THB",
+                dropoff_id: "66bdd3023208ada843eb3a1c",
+                // taxId,
+                // branchCode,
                 shipping,
-                selectedDelivery,
+                delivery_id: selectedDelivery._id,
+                // selectedDelivery,
                 deliveryBranch,
-                amountPayment: LaostotalPayable
+                amountPayment: LaostotalPayable,
+
             };
             placeCartDetail(orderDetails);
             navigate("/PaymentPage");
@@ -103,11 +110,10 @@ function CheckoutPage() {
     };
 
     return (
-        <>
-            <h1 className='pl-8'>ทำการสั่งซื้อ</h1>
-            <div className='w-full px-8 gap-4 flex justify-content-between'>
-
-                <div className='checkout-1'>
+        <div className="sm:px-2 md:px-4 lg:px-6 xl:px-8">
+            <h1 className='flex justify-content-start'>ทำการสั่งซื้อ</h1>
+            <div className='w-full gap-4 xl:flex lg:flex justify-content-between'>
+                <div className='sm:w-full md:w-full lg:w-9 xl:w-9 flex flex-column gap-2'>
                     <div className='address p-3 border-1 surface-border border-round bg-white border-round-mb flex flex-column justify-content-center'>
                         <div className='flex align-items-center'>
                             <i className="m-0 mr-2 pi pi-map-marker"></i>
@@ -150,8 +156,8 @@ function CheckoutPage() {
                                             <span>{product.quantity} หน่วย</span>
                                         </div>
                                     </div>
-                                    <div>
-                                        <span className='text-2xl'>{product.product_price * product.quantity} ฿</span>
+                                    <div className='w-4 text-right'>
+                                        <span className='text-xl'>{product.product_price * product.quantity} ฿</span>
                                     </div>
                                 </div>
                             ))}
@@ -199,7 +205,7 @@ function CheckoutPage() {
                                 </div>
                             ) : (
                                 <div>
-                                    <p className='m-0'>รับสินค้าที่: โกดัง</p>
+                                    <p className='m-0'>รับสินค้าที่: โกดังลาว</p>
                                     <p className='m-0'>ที่อยู่โกดัง</p>
                                 </div>
                             )}
@@ -213,8 +219,8 @@ function CheckoutPage() {
                         </div>
                     </div>
                 </div>
-                <div className='checkout-2 flex flex-column border-1 surface-border border-round py-5 px-3 bg-white border-round-mb justify-content-center'>
-                    <div className="flex justify-content-between pb-3 border-bottom-1 surface-border">
+                <div className='mt-2 sm:mt-2 md:mt-2 lg:mt-0 xl:mt-0 sm:w-full md:w-full lg:w-4 xl:w-4 h-20rem gap-1 flex flex-column border-1 surface-border border-round py-3 px-3 bg-white border-round-mb justify-content-between'>
+                    <div className="flex justify-content-between pb-2 border-bottom-1 surface-border">
                         <p className='m-0 text-start'>ยอดสั่งซื้อ</p>
                         <div className="flex flex-column gap-1">
                             <p className='m-0 text-right'>{Number(totalBeforeDiscount.toFixed(2)).toLocaleString('en-US')} ฿</p>
@@ -222,14 +228,14 @@ function CheckoutPage() {
                         </div>
 
                     </div>
-                    <div className="flex justify-content-between pb-3 border-bottom-1 surface-border">
+                    <div className="flex justify-content-between pb-2 border-bottom-1 surface-border">
                         <p className='m-0'>ค่า COD 3%</p>
                         <div className="flex flex-column gap-1">
                             <p className='m-0 text-right'>{Number(CODCost.toFixed(2)).toLocaleString('en-US')} ฿</p>
                             <p className='m-0 text-right font-bold'>{Number(LaosCODCost.toFixed(2)).toLocaleString('en-US')} ₭</p>
                         </div>
                     </div>
-                    <div className="flex justify-content-between pb-3 border-bottom-1 surface-border">
+                    <div className="flex justify-content-between pb-2 border-bottom-1 surface-border">
                         <p className='m-0'>ยอดชำระ</p>
                         <div className="flex flex-column gap-1">
                             <p className='m-0 text-right'>{Number(totalPayable.toFixed(2)).toLocaleString('en-US')} ฿</p>
@@ -237,11 +243,9 @@ function CheckoutPage() {
                         </div>
                     </div>
                     <Button className="w-full" label="ไปหน้าชำระสินค้า" size="small" rounded onClick={handleConfirmPayment} />
-
-
                 </div>
             </div >
-        </>
+        </div>
     )
 }
 

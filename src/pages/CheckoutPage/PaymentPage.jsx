@@ -7,11 +7,11 @@ function PaymentPage() {
     const { cartDetails, placeCartDetail } = useCart();
     const navigate = useNavigate();
     const totalPayable = cartDetails.amountPayment;
-    
-    const handleConfirmPayment = (PaymentChannel) => {
+
+    const handleConfirmPayment = (paymentChannel) => {
         const orderDetails = {
             ...cartDetails,
-            PaymentChannel
+            paymentChannel
         };
         placeCartDetail(orderDetails);
         navigate("/QRPage");
@@ -48,7 +48,7 @@ function PaymentPage() {
                     </Link>
                     <div className="mt-3 flex flex-column">
                         <p className='m-0'>ยอด</p>
-                        <p className='m-0 font-bold text-xl'>{Number(totalPayable.toFixed(2)).toLocaleString('en-US')} ₭</p>
+                        {totalPayable ? (<p className='m-0 font-bold text-xl'>{Number(totalPayable.toFixed(2)).toLocaleString('en-US')} ₭</p>) : ("")}
                     </div>
                 </div>
             </div>

@@ -72,22 +72,22 @@ function Filter({ onFilterChange, products, visible, setVisible }) {
 
     const getInitialFilters = () => ({
         priceRanges: { key: 'allRange', value: `${all}` },
-        stocks: { key: 'allStock', value: `${all}`, inStock: null },
+        // stocks: { key: 'allStock', value: `${all}`, inStock: null },
         selectedSubCategories: [],
         selectedBrands: [],
-        promotions: { key: 'allPromotion', value: `${all}`, onSale: null }
+        // promotions: { key: 'allPromotion', value: `${all}`, onSale: null }
     });
 
     const priceRanges = generatePriceRanges(products);
-    const stocks = [
-        { key: 'allStock', value: `${all}`, inStock: null },
-        { key: 'inStock', value: `${instock}`, inStock: true }
-    ];
+    // const stocks = [
+    //     { key: 'allStock', value: `${all}`, inStock: null },
+    //     { key: 'inStock', value: `${instock}`, inStock: true }
+    // ];
     const { subCategoryOptions, brandOptions } = generateFiltersFromData(products);
-    const promotions = [
-        { key: 'allPromotion', value: `${all}`, onSale: null },
-        { key: 'onSale', value: `${onSale}`, onSale: true }
-    ];
+    // const promotions = [
+    //     { key: 'allPromotion', value: `${all}`, onSale: null },
+    //     { key: 'onSale', value: `${onSale}`, onSale: true }
+    // ];
 
     const [filters, setFilters] = useState(getInitialFilters());
 
@@ -114,18 +114,18 @@ function Filter({ onFilterChange, products, visible, setVisible }) {
 
     const sectionLabels = {
         priceRanges: `${priceRange}`,
-        stocks: `${stock}`,
+        // stocks: `${stock}`,
         selectedSubCategories: `${subCategory}`,
         selectedBrands: `${brand}`,
-        promotions: `${promotion}`
+        // promotions: `${promotion}`
     };
 
     const [expandedSections, setExpandedSections] = useState({
         priceRanges: true,
-        stocks: true,
+        // stocks: true,
         selectedSubCategories: true,
         selectedBrands: true,
-        promotions: true,
+        // promotions: true,
     });
 
     const toggleSection = (section) => {
@@ -157,9 +157,9 @@ function Filter({ onFilterChange, products, visible, setVisible }) {
                                 <p>{sectionLabels[section]}</p>
                                 <p><i className={`pi ${expanded ? 'pi-minus' : 'pi-plus'}`}></i></p>
                             </div>
-                            {expanded && (section === 'priceRanges' ? priceRanges : section === 'stocks' ? stocks : section === 'promotions' ? promotions : section === 'selectedSubCategories' ? subCategoryOptions : brandOptions).map((option) => (
+                            {expanded && (section === 'priceRanges' ? priceRanges : section === 'selectedSubCategories' ? subCategoryOptions : brandOptions).map((option) => (
                                 <div className="mb-2" key={option.key}>
-                                    {section === 'priceRanges' || section === 'stocks' || section === 'promotions' ? (
+                                    {section === 'priceRanges' ? (
                                         <RadioButton
                                             inputId={option.key}
                                             value={option}
@@ -215,9 +215,9 @@ function Filter({ onFilterChange, products, visible, setVisible }) {
                             <p>{sectionLabels[section] || section}</p>
                             <p><i className={`pi ${expanded ? 'pi-minus' : 'pi-plus'}`}></i></p>
                         </div>
-                        {expanded && (section === 'priceRanges' ? priceRanges : section === 'stocks' ? stocks : section === 'promotions' ? promotions : section === 'selectedSubCategories' ? subCategoryOptions : brandOptions).map((option) => (
+                        {expanded && (section === 'priceRanges' ? priceRanges : section === 'selectedSubCategories' ? subCategoryOptions : brandOptions).map((option) => (
                             <div className="mb-2" key={option.key}>
-                                {section === 'priceRanges' || section === 'stocks' || section === 'promotions' ? (
+                                {section === 'priceRanges' ? (
                                     <RadioButton
                                         inputId={option.key}
                                         value={option}

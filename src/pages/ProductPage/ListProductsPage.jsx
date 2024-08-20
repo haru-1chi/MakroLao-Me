@@ -113,9 +113,9 @@ function ListProductsPage() {
       filtered = filtered.filter(product => product.product_price >= filters.priceRanges.min && product.product_price <= filters.priceRanges.max);
     }
 
-    if (filters.stocks.key !== 'allStock') {
-      filtered = filtered.filter(product => product.inStock === filters.stocks.inStock);
-    }
+    // if (filters.stocks.key !== 'allStock') {
+    //   filtered = filtered.filter(product => product.inStock === filters.stocks.inStock);
+    // }
 
     if (filters.selectedSubCategories.length > 0) {
       filtered = filtered.filter(product => filters.selectedSubCategories.includes(product.subCategory));
@@ -125,9 +125,9 @@ function ListProductsPage() {
       filtered = filtered.filter(product => filters.selectedBrands.includes(product.product_brand));
     }
 
-    if (filters.promotions.key !== 'allPromotion') {
-      filtered = filtered.filter(product => product.onSale === filters.promotions.onSale);
-    }
+    // if (filters.promotions.key !== 'allPromotion') {
+    //   filtered = filtered.filter(product => product.onSale === filters.promotions.onSale);
+    // }
 
     setFilteredData(filtered);
     setPaginatedData(filtered.slice(first, first + rows));

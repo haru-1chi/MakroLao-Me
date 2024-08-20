@@ -34,7 +34,7 @@
 // "delivery": "ไอเดีย"
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { formatDate, getLocalStorageItem, setLocalStorageItem, convertTHBtoLAK } from '../utils/DateTimeFormat';
+import { getLocalStorageItem, setLocalStorageItem, convertTHBtoLAK } from '../utils/DateTimeFormat';
 
 const CartContext = createContext();
 
@@ -45,17 +45,17 @@ export const CartProvider = ({ children }) => {
   const COD_COST_RATE = 0.03;
 
   const statusEvents = {
-    Ordered: { key: 'Ordered', value: 'ได้รับคำสั่งซื้อแล้ว', icon: 'pi pi-check', color: '#00bf26' },
-    PendingPayment: { key: 'PendingPayment', value: 'รอชำระเงิน', icon: 'pi pi-hourglass', color: '#607D8B' },
-    PendingVerification: { key: 'PendingVerification', value: 'รอตรวจสอบ', icon: 'pi pi-hourglass', color: '#607D8B' },
-    Preparing: { key: 'Preparing', value: 'กำลังจัดเตรียมสินค้า', icon: 'pi pi-cart-arrow-down', color: '#607D8B' },
-    Packaged: { key: 'Packaged', value: 'จัดเตรียมสินค้าเสร็จ', icon: 'pi pi-box', color: '#607D8B' },
-    ThaiWarehouseArrival: { key: 'ThaiWarehouseArrival', value: 'ถึงโกดังฝั่งไทยแล้ว', icon: 'pi pi-truck', color: '#607D8B' },
-    LaosWarehouseArrival: { key: 'LaosWarehouseArrival', value: 'ถึงจุดรับสินค้าที่โกดังลาวแล้ว', icon: 'pi pi-warehouse', color: '#607D8B' },
-    InTransit: { key: 'InTransit', value: 'ขนส่งรับสินค้าที่โกดังแล้ว', icon: 'pi pi-truck', color: '#607D8B' },
-    BranchArrival: { key: 'BranchArrival', value: 'ถึงจุดรับสินค้าที่สาขาขนส่งแล้ว', icon: 'pi pi-warehouse', color: '#607D8B' },
-    Received: { key: 'Received', value: 'ลูกค้ารับสินค้าเรียบร้อยแล้ว', icon: 'pi pi-check', color: '#607D8B' },
-    Cancelled: { key: 'Cancelled', value: 'ถูกยกเลิก', icon: 'pi pi-times', color: '#FF5252' }
+    Ordered: { key: 'Ordered', value: 'ได้รับคำสั่งซื้อแล้ว', icon: 'pi pi-check', color: '#00bf26', tagCSS: 'bg-green-100 border-0 text-green-700' },
+    PendingPayment: { key: 'PendingPayment', value: 'รอชำระเงิน', icon: 'pi pi-hourglass', color: '#607D8B', tagCSS: 'bg-yellow-100 border-0 text-yellow-700' },
+    PendingVerification: { key: 'PendingVerification', value: 'รอตรวจสอบ', icon: 'pi pi-hourglass', color: '#607D8B', tagCSS: 'bg-blue-100 border-0 text-blue-700' },
+    Preparing: { key: 'Preparing', value: 'กำลังจัดเตรียมสินค้า', icon: 'pi pi-cart-arrow-down', color: '#607D8B', tagCSS: 'bg-blue-100 border-0 text-blue-700' },
+    Packaged: { key: 'Packaged', value: 'จัดเตรียมสินค้าเสร็จ', icon: 'pi pi-box', color: '#607D8B', tagCSS: 'bg-blue-100 border-0 text-blue-700' },
+    ThaiWarehouseArrival: { key: 'ThaiWarehouseArrival', value: 'ถึงโกดังฝั่งไทยแล้ว', icon: 'pi pi-truck', color: '#607D8B', tagCSS: 'bg-blue-100 border-0 text-blue-700' },
+    LaosWarehouseArrival: { key: 'LaosWarehouseArrival', value: 'ถึงจุดรับสินค้าที่โกดังลาวแล้ว', icon: 'pi pi-warehouse', color: '#607D8B', tagCSS: 'bg-blue-100 border-0 text-blue-700' },
+    InTransit: { key: 'InTransit', value: 'ขนส่งรับสินค้าที่โกดังแล้ว', icon: 'pi pi-truck', color: '#607D8B', tagCSS: 'bg-blue-100 border-0 text-blue-700' },
+    BranchArrival: { key: 'BranchArrival', value: 'ถึงจุดรับสินค้าที่สาขาขนส่งแล้ว', icon: 'pi pi-warehouse', color: '#607D8B', tagCSS: 'bg-blue-100 border-0 text-blue-700' },
+    Received: { key: 'Received', value: 'ลูกค้ารับสินค้าเรียบร้อยแล้ว', icon: 'pi pi-check', color: '#607D8B', tagCSS: 'bg-green-100 border-0 text-green-700' },
+    Cancelled: { key: 'Cancelled', value: 'ถูกยกเลิก', icon: 'pi pi-times', color: '#FF5252', tagCSS: 'bg-red-100 border-0 text-red-700' }
   };
 
   const [user, setUser] = useState({});
@@ -101,11 +101,14 @@ export const CartProvider = ({ children }) => {
   const addToCart = (product) => {
     setCart(prevCart => {
       const existingProduct = prevCart.find(item => item.product_id === product.product_id);
+
       return existingProduct
-        ? prevCart.map(item => item.product_id === product.product_id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item)
-        : [...prevCart, { ...product, quantity: 1 }];
+        ? prevCart.map(item =>
+          item.product_id === product.product_id
+            ? { ...item, quantity: item.quantity + 1, ppu: product.product_price }
+            : item
+        )
+        : [...prevCart, { ...product, quantity: 1, ppu: product.product_price }];
     });
   };
 
@@ -133,13 +136,13 @@ export const CartProvider = ({ children }) => {
     const totalPayable = totalBeforeDiscount + CODCost;
 
     const status = orderDetails.PaymentChannel === "bankCounter"
-      ? statusEvents.PendingPayment
-      : statusEvents.PendingVerification;
+      ? 'PendingPayment'
+      : 'PendingVerification';
 
     const newOrder = {
       id: `ORD-${Date.now()}`,
       user,
-      date: formatDate(new Date()),
+      date: new Date(),
       ...orderDetails,
       items: [...cart],
       status,
@@ -148,9 +151,21 @@ export const CartProvider = ({ children }) => {
       totalPayable: totalPayable,
     };
 
-    setOrders(prevOrders => [...prevOrders, newOrder]);
-    clearCart();
-    clearCartDetails();
+    // const newOrder = { for endpoint
+    //   code: user.code,
+    //   user_id: user._id,
+    //   date: new Date(),
+    //   ...orderDetails,
+    //   items: [...cart],
+    //   status,
+    //   items_price: totalBeforeDiscount,
+    //   cod_price: CODCost,
+    //   net_price: totalPayable,
+    // };
+
+    // setOrders(prevOrders => [...prevOrders, newOrder]);
+    // clearCart();
+    // clearCartDetails();
   };
 
   const clearCart = () => setCart([]);

@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
 import { Button } from "primereact/button";
 import { useCart } from '../../router/CartContext';
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { convertTHBtoLAK } from '../../utils/DateTimeFormat';
 
 const EXPIRE_TIME = 60;
 
 function QRPage() {
     const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
-    const { cart, placeOrder, cartDetails } = useCart();
+    const { cart, cartDetails, user, clearCart, clearCartDetails } = useCart();
     const navigate = useNavigate();
     const [qrCodeUrl, setQrCodeUrl] = useState('');
     const [paymentCode, setPaymentCode] = useState('');
@@ -19,89 +21,131 @@ function QRPage() {
     const paymentUUID = "BCELBANK";
     const totalPayable = cartDetails.amountPayment;
 
-    useEffect(() => {
-        async function fetchQrCode() {
-            try {
-                setLoading(true);
-                const response = await fetch(`${apiUrl}/payment/qrcode`, {
-                    method: 'POST',
+    // useEffect(() => {
+    //     async function fetchQrCode() {
+    //         try {
+    //             setLoading(true);
+    //             const response = await fetch(`${apiUrl}/payment/qrcode`, {
+    //                 method: 'POST',
+    //                 headers: {
+    //                     'Content-Type': 'application/json',
+    //                 },
+    //                 body: JSON.stringify({
+    //                     amount: totalPayable,
+    //                     description: 'user123',
+    //                 }),
+    //             });
+
+    //             const result = await response.json();
+
+    //             setQrCodeUrl(result.qrCodeUrl);
+    //             setPaymentCode(result.data.transactionid);
+    //             setExpireTime(result.data.expiretime || EXPIRE_TIME);
+    //             setRemainingTime(result.data.expiretime || EXPIRE_TIME);
+    //             setError(null);
+    //         } catch (error) {
+    //             console.error('Error generating QR code:', error);
+    //             setError('Failed to generate QR code. Please try again.');
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     }
+
+    //     fetchQrCode();
+    // }, [totalPayable]);
+
+    // useEffect(() => {
+    //     if (remainingTime > 0) {
+    //         const timerId = setInterval(() => {
+    //             setRemainingTime(prevTime => prevTime - 1);
+    //         }, 1000);
+
+    //         return () => clearInterval(timerId);
+    //     }
+    // }, [remainingTime]);
+
+    // useEffect(() => {
+    //     let pollingInterval;
+    //     if (remainingTime > 0) {
+    //         pollingInterval = setInterval(async () => {
+    //             try {
+    //                 const response = await fetch(`${apiUrl}/payment/subscription`, {
+    //                     method: 'POST',
+    //                     headers: {
+    //                         'Content-Type': 'application/json',
+    //                     },
+    //                     body: JSON.stringify({
+    //                         uuid: paymentUUID,
+    //                         tid: "001",
+    //                         shopcode: "12345678"
+    //                     })
+    //                 });
+
+    //                 const data = await response.json();
+
+    //                 setPaymentStatus(data.message);
+
+    //                 if (response.status === 200) {
+    //                     const data = await response.json();
+    //                     setPaymentStatus(data.message);
+    //                     handleCreateOrder();
+    //                 } else {
+    //                     console.log(data.message)
+    //                 }
+    //             } catch (error) {
+    //                 console.error('Error checking payment status:', error);
+    //             }
+    //         }, 5000);
+    //     }
+
+    //     return () => clearInterval(pollingInterval);
+    // }, [paymentCode, apiUrl]);
+
+    const handleCreateOrder = async () => {
+        setLoading(true);
+        try {
+            // const totalBeforeDiscount = convertTHBtoLAK(cart.reduce((total, product) => total + product.product_price * product.quantity, 0));
+            // const CODCost = Math.max(totalBeforeDiscount * 0.03, 30);
+            // const totalPayable = totalBeforeDiscount + CODCost;
+
+            const newOrder = {
+                line_items: cart,
+                ...cartDetails,
+                status: cartDetails.PaymentChannel === "bankCounter" ? "PendingPayment" : "PendingVerification",
+                // totalBeforeDiscount,
+                // CODCost,
+                // totalPayable,
+                
+            };
+
+            const token = localStorage.getItem("token");
+            if (!token) {
+                setError("User not authenticated. Please log in.");
+                return;
+            }
+            console.log(newOrder)
+            const response = await axios.post(`${apiUrl}/orders`,
+                newOrder,
+                {
                     headers: {
-                        'Content-Type': 'application/json',
+                        "token": token,
                     },
-                    body: JSON.stringify({
-                        amount: totalPayable,
-                        description: 'user123',
-                    }),
                 });
 
-                const result = await response.json();
-
-                setQrCodeUrl(result.qrCodeUrl);
-                setPaymentCode(result.data.transactionid);
-                setExpireTime(result.data.expiretime || EXPIRE_TIME);
-                setRemainingTime(result.data.expiretime || EXPIRE_TIME);
-                setError(null);
-            } catch (error) {
-                console.error('Error generating QR code:', error);
-                setError('Failed to generate QR code. Please try again.');
-            } finally {
-                setLoading(false);
+            if (response.data && response.data.status) {
+                console.log("Order successful", response.data);
+                clearCart();
+                clearCartDetails();
+                navigate("/PaymentSuccessfully");
+            } else {
+                setError(response.data.message || "Order failed");
             }
+        } catch (error) {
+            console.error("Order error:", error.response?.data || error.message);
+            setError(error.response?.data?.message || "An error occurred. Please try again.");
+        } finally {
+            setLoading(false);
         }
-
-        fetchQrCode();
-    }, [totalPayable]);
-
-    useEffect(() => {
-        if (remainingTime > 0) {
-            const timerId = setInterval(() => {
-                setRemainingTime(prevTime => prevTime - 1);
-            }, 1000);
-
-            return () => clearInterval(timerId);
-        }
-    }, [remainingTime]);
-
-    useEffect(() => {
-        let pollingInterval;
-        if (remainingTime > 0) {
-            pollingInterval = setInterval(async () => {
-                try {
-                    const response = await fetch(`${apiUrl}/payment/subscription`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            uuid: paymentUUID,
-                            tid: "001",
-                            shopcode: "12345678"
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    setPaymentStatus(data.message);
-
-                    if (response.status === 200) {
-                        const data = await response.json();
-                        setPaymentStatus(data.message);
-                        handlePaymentSuccess();
-                    } else {
-                        console.log(data.message)
-                    }
-                } catch (error) {
-                    console.error('Error checking payment status:', error);
-                }
-            }, 5000);
-        }
-
-        return () => clearInterval(pollingInterval);
-    }, [paymentCode, apiUrl]);
-
-    const handlePaymentSuccess = () => {
-        placeOrder(cartDetails);
-        navigate("/PaymentSuccessfully");
     };
 
     const renderPaymentDetails = () => (
@@ -122,7 +166,7 @@ function QRPage() {
             <div className="flex">
                 <div className="block flex-grow-1 flex flex-column text-center">
                     <p className="m-0">Amount (LAK)</p>
-                    <p className="my-3 text-2xl font-bold">{Number(totalPayable.toFixed(2)).toLocaleString('en-US')}</p>
+                    {totalPayable ? (<p className="my-3 text-2xl font-bold">{Number(totalPayable.toFixed(2)).toLocaleString('en-US')}</p>) : ("")}
                     <p className="m-0">เลขที่รายการ {paymentCode}</p>
                     {qrCodeUrl && (
                         <div className="p-0 my-2 surface-200 border-round flex justify-content-center align-content-center">
@@ -145,7 +189,8 @@ function QRPage() {
                 </div>
                 <div className="w-full block flex-grow-1 flex flex-column text-center">
                     <p className="m-0">Amount (LAK)</p>
-                    <p className="my-3 text-2xl font-bold">{Number(totalPayable.toFixed(2)).toLocaleString('en-US')}</p>
+                    {totalPayable ? (<p className="my-3 text-2xl font-bold">{Number(totalPayable.toFixed(2)).toLocaleString('en-US')}</p>) : ("")}
+
                 </div>
             </div>
             <div className="my-5">
@@ -158,7 +203,7 @@ function QRPage() {
 
     return (
         <>
-            <div className='w-full px-8 pt-5 flex justify-content-center'>
+            <div className='w-full sm:px-3 lg:px-8 pt-5 flex justify-content-center'>
                 <div className='bg-section-product flex flex-column border-1 surface-border border-round py-5 px-3 bg-white border-round-mb '>
                     <h1 className="m-0 p-0">Makro</h1>
                     <p>CP AXTRA PUBLIC COMPANY LIMITED</p>
@@ -176,9 +221,9 @@ function QRPage() {
                     )}
 
                     <div className="flex align-items-center justify-content-center">
-                        <Link to="/PaymentSuccessfully">
-                            <Button label="Return to Merchant" size="small" rounded onClick={handlePaymentSuccess} />
-                        </Link>
+                        {/* <Link to="/PaymentSuccessfully"> */}
+                        <Button label="Return to Merchant" size="small" rounded onClick={handleCreateOrder} />
+                        {/* </Link> */}
                     </div>
                 </div>
             </div>

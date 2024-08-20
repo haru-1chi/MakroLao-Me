@@ -20,35 +20,35 @@ function Appbar() {
     {
       label: 'บัญชีของฉัน',
       command: () => {
-        setVisible1(false)
-        navigate("/AccountPage");
+        setVisible1(false);
+        navigate("/AccountPage", { state: { activeTab: 'account' } });
       }
     },
     {
       label: 'ประวัติการสั่งซื้อ',
       command: () => {
-        setVisible1(false)
-        navigate("/AccountPage");
+        setVisible1(false);
+        navigate("/AccountPage", { state: { activeTab: 'orderHistory' } });
       }
     },
     {
       label: 'จัดการข้อมูลส่วนบุคคล',
       command: () => {
-        setVisible1(false)
-        navigate("/AccountPage");
+        setVisible1(false);
+        navigate("/AccountPage", { state: { activeTab: 'privacySettings' } });
       }
     },
     {
       label: 'ติดต่อเรา',
       command: () => {
-        setVisible1(false)
-        navigate("/AccountPage");
+        setVisible1(false);
+        navigate("/AccountPage", { state: { activeTab: 'contactUs' } });
       }
     },
     {
       label: 'ออกจากระบบ',
       command: () => {
-        handleLogout()
+        handleLogout();
       }
     },
   ];
@@ -144,7 +144,7 @@ function Appbar() {
 
   return (
     <>
-    <Toast ref={toast} position="top-center" />
+      <Toast ref={toast} position="top-center" />
       <div className="hidden lg:block section-appbar">
         <div className="pt-3 pr-3 pl-3">
           <div className="flex justify-content-end">

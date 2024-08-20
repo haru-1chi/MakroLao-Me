@@ -163,7 +163,7 @@ function HomePage() {
         <BannerSlider />
         <div className="bg-section-product text-center mx-2">
           <img
-            className="w-7 align-self-center"
+            className="w-8 align-self-center"
             src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FFlash_Sale_Middle_Banner_TH_Electro_0e168c_d08d74be82.png&w=1200&q=90"
             alt=""
           />
@@ -182,7 +182,7 @@ function HomePage() {
 
         <div className="bg-section-new-product text-center m-2">
           <img
-            className="w-7"
+            className="w-8"
             src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FFlash_Sale_Fresh_Middle_TH_016100_8a83bd308a.png&w=1200&q=90"
             alt=""
           />
@@ -193,7 +193,7 @@ function HomePage() {
             <b>เปิดตัวแบรนด์ใหม่</b>
           </span>
           <div class="flex category-scrllo w-full mt-4 justify-items-center">
-            <div className="flex justify-content-between sm:col-12 gap-3">
+            <div className="flex justify-content-between sm:col-12 gap-3 section-all-brand">
               {newBrabd.map((item) => (
                 <Brand data={item} />
               ))}

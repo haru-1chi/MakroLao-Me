@@ -19,17 +19,17 @@ function BannerSlider() {
   const responsiveOptions = [
     {
       breakpoint: "1400px",
-      numVisible: 2,
+      numVisible: 1,
       numScroll: 1,
     },
     {
       breakpoint: "1199px",
-      numVisible: 3,
+      numVisible: 1,
       numScroll: 1,
     },
     {
       breakpoint: "767px",
-      numVisible: 2,
+      numVisible: 1,
       numScroll: 1,
     },
     {
@@ -48,7 +48,7 @@ function BannerSlider() {
   const productTemplate = (product) => {
     return (
       <div className="border-none surface-border text-center">
-        <div className="h-20rem bg-red-500">
+        <div className="h-7rem md:h-16rem sm:h-13rem lg:h-20rem xl:h-20rem bg-red-500">
           <img
             src={product.imgURL}
             className="h-full"

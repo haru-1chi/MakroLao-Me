@@ -39,6 +39,7 @@ function LoginPage() {
       setLoading(false);
     }
   };
+  
   return (
     <div className='w-full flex flex-column gap-2 justify-content-center'>
       <div className='bg-section-product w-fit flex flex-column border-1 surface-border border-round mt-5 py-3 px-3 bg-white border-round-mb justify-content-center align-self-center'>
@@ -47,7 +48,7 @@ function LoginPage() {
         <div className="card my-5 flex flex-column gap-3 justify-content-center">
           <FloatLabel className="w-full">
             <label htmlFor="username">
-              เบอร์มือถือหรืออีเมล์
+              Username
             </label>
             <InputText
               id="username"

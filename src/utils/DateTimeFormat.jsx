@@ -1,4 +1,8 @@
 export const formatDate = (date, locale = 'th-TH') => {
+  const validDate = new Date(date);
+  if (isNaN(validDate)) {
+    throw new RangeError('Invalid time value');
+  }
   const options = {
     weekday: 'long',
     day: '2-digit',
@@ -9,7 +13,7 @@ export const formatDate = (date, locale = 'th-TH') => {
     hour12: false,
   };
 
-  const formattedDate = new Intl.DateTimeFormat(locale, options).format(date);
+  const formattedDate = new Intl.DateTimeFormat(locale, options).format(validDate);
   const [weekday, day, month, year, time] = formattedDate.split(' ');
   const [hour, minute] = time.split(':');
 
