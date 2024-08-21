@@ -28,15 +28,15 @@ function RegisterPage() {
     const { phone, email, password, confirmPassword } = formData;
 
     if (!/^\d{10}$/.test(phone)) {
-      return "Phone number should be numeric";
+      return "เบอร์โทรศัพท์ต้องเป็นตัวเลข";
     }
 
     if (email && !/\S+@\S+\.\S+/.test(email)) {
-      return "Please enter a valid email address.";
+      return "กรุณาป้อนอีเมลในรูปแบบที่ถูกต้อง";
     }
 
     if (password !== confirmPassword) {
-      return "Passwords do not match.";
+      return "รหัสผ่านไม่ตรงกัน";
     }
 
     return null;

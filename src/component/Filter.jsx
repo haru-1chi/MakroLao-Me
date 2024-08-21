@@ -39,7 +39,11 @@ function Filter({ onFilterChange, products, visible, setVisible }) {
             }
         }
 
-        const lastRangeMax = ranges[ranges.length - 2].max;
+        let lastRangeMax = 0;
+        if (ranges.length > 1 && ranges[ranges.length - 2]) {
+            lastRangeMax = ranges[ranges.length - 2].max || ranges[ranges.length - 1].max;
+        }
+
         ranges.pop();
         ranges.push({
             key: `${lastRangeMax}`,
@@ -163,6 +167,7 @@ function Filter({ onFilterChange, products, visible, setVisible }) {
                                         <RadioButton
                                             inputId={option.key}
                                             value={option}
+                                            name={section}
                                             checked={filters[section].key === option.key}
                                             onChange={(e) => handleFilterChange(section, e.value)}
                                         />

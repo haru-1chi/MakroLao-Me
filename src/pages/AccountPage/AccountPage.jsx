@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../../router/CartContext';
 import { Button } from "primereact/button";
 import StatusShippingPage from './StatusShippingPage';
+import MyAccount from './MyAccount';
 import axios from "axios";
 import { formatDate } from '../../utils/DateTimeFormat';
 
@@ -11,26 +12,18 @@ function AccountPage() {
     const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
     const [activeTab, setActiveTab] = useState('account');
     const [selectedOrderId, setSelectedOrderId] = useState(null);
-    const [user, setUser] = useState(null);
+   
     const [userOrders, setUserOrders] = useState(null);
     const { statusEvents } = useCart();
     const [activeOrderStatus, setActiveOrderStatus] = useState('all');
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            const token = localStorage.getItem("token");
-            const user_id = localStorage.getItem("user_id");
-            try {
-                const res = await axios.get(`${apiUrl}/users/${user_id}`, {
-                    headers: { "token": token },
-                });
-                setUser(res.data.data);
-            } catch (err) {
-                console.error("Error fetching user data", err.response?.data || err.message);
-            }
-        };
-        fetchUserData();
-    }, [apiUrl]);
+    const tabs = [
+        { id: 'account', label: 'บัญชีของฉัน' },
+        { id: 'orderHistory', label: 'ประวัติการสั่งซื้อ' },
+        { id: 'favorites', label: 'รายการโปรด' },
+        { id: 'privacySettings', label: 'จัดการข้อมูลส่วนบุคคล' },
+        { id: 'contactUs', label: 'ติดต่อเรา' },
+    ];
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -57,9 +50,9 @@ function AccountPage() {
     )
 
     const filteredOrders = (activeOrderStatus === 'all'
-        ? (Array.isArray(userOrders) ? userOrders : []) // Ensure userOrders is an array
+        ? (Array.isArray(userOrders) ? userOrders : [])
         : (Array.isArray(userOrders) ? userOrders.filter(order => {
-            const orderStatus = statusEvents[order.status]; // Lookup status details
+            const orderStatus = statusEvents[order.status];
             switch (activeOrderStatus) {
                 case 'ต้องชำระเงิน':
                     return orderStatus?.key === statusEvents.PendingPayment.key;
@@ -67,7 +60,7 @@ function AccountPage() {
                     return [statusEvents.pending.key, statusEvents.Preparing.key].includes(orderStatus?.key);
                 case 'กำลังจัดส่ง':
                     if (order.shipping === 'selfPickup') {
-                        return orderStatus?.key === statusEvents.Packaged.key || orderStatus?.key === statusEvents.ThaiWarehouseArrival.key;
+                        return [statusEvents.Packaged.key, statusEvents.ThaiWarehouseArrival.key].includes(orderStatus?.key);
                     } else {
                         return [
                             statusEvents.Packaged.key,
@@ -249,56 +242,16 @@ function AccountPage() {
         )
     }
 
-    const MyAccount = () => (
-        <div>
-            <h1 className="m-0 mb-2 p-0 font-semibold">บัญชีของฉัน</h1>
-            <div className='bg-section-product w-full flex flex-column border-1 surface-border border-round mt-4 py-3 px-3 bg-white border-round-mb justify-content-center align-self-center'>
-                <h2 className="m-0 p-0 font-medium">ข้อมูลบัญชี</h2>
-                <div className="card mt-3 flex flex-column gap-3 justify-content-center">
-                    {user ? (
-                        <div className='w-full'>
-                            <div className='grid align-items-center border-bottom-1 surface-border'>
-                                <p className='col-3'>ชื่อ</p>
-                                <p className='col'>{user.name}</p>
-                            </div>
-                            <div className='grid align-items-center border-bottom-1 surface-border'>
-                                <p className='col-3'>อีเมล</p>
-                                <p className='col'>{user.email}</p>
-                            </div>
-                            <div className='grid align-items-center border-bottom-1 surface-border'>
-                                <p className='col-3'>เบอร์โทรศัพท์</p>
-                                <p className='col'>{user.phone}</p>
-                            </div>
-                            <div className='grid align-items-center border-bottom-1 surface-border'>
-                                <p className='col-3'>เลขประจำตัวผู้เสียภาษีอากร</p>
-                                <p className='col text-sm'><i className='pi pi-minus text-sm'></i><br />คุณสามารถแก้ไขค่านี้ได้ขณะสั่งซื้อสินค้า</p>
-                            </div>
-                            <div className='grid align-items-center'>
-                                <p className='col-3'>รหัสสาขา</p>
-                                <p className='col text-sm'><i className='pi pi-minus text-sm'></i><br />คุณสามารถแก้ไขค่านี้ได้ขณะสั่งซื้อสินค้า</p>
-                            </div>
-                        </div>
-                    ) : (
-                        "loading..."
-                    )}
-
-                </div>
-            </div>
-        </div>
-    )
-
-
-    const Favorites = () => (
-        <div>รายการโปรด</div>
-    )
+    const Favorites = () => (<div>รายการโปรด</div>)
 
     const PrivacySettings = () => <div>จัดการข้อมูลส่วนบุคคล</div>;
+
     const ContactUs = () => <div>ติดต่อเรา</div>;
 
     const renderActiveComponent = () => {
         switch (activeTab) {
             case 'account':
-                return <MyAccount />;
+                return <MyAccount/>;
             case 'orderHistory':
                 return <OrderHistory />;
             case 'favorites':
@@ -312,42 +265,20 @@ function AccountPage() {
         }
     };
 
-
     return (
         <>
             <div className="flex my-5 mx-4 lg:mx-8 gap-4">
                 <div className="hidden xl:block w-20rem h-fit bg-white border-1 surface-border border-round-xl">
                     <ul className='font-semibold'>
-                        <li
-                            className={`list-none py-3 cursor-pointer ${activeTab === 'account' ? 'text-primary' : ''}`}
-                            onClick={() => setActiveTab('account')}
-                        >
-                            บัญชีของฉัน
-                        </li>
-                        <li
-                            className={`list-none py-3 cursor-pointer ${activeTab === 'orderHistory' ? 'text-primary' : ''}`}
-                            onClick={() => setActiveTab('orderHistory')}
-                        >
-                            ประวัติการสั่งซื้อ
-                        </li>
-                        <li
-                            className={`list-none py-3 cursor-pointer ${activeTab === 'favorites' ? 'text-primary' : ''}`}
-                            onClick={() => setActiveTab('favorites')}
-                        >
-                            รายการโปรด
-                        </li>
-                        <li
-                            className={`list-none py-3 cursor-pointer ${activeTab === 'privacySettings' ? 'text-primary' : ''}`}
-                            onClick={() => setActiveTab('privacySettings')}
-                        >
-                            จัดการข้อมูลส่วนบุคคล
-                        </li>
-                        <li
-                            className={`list-none py-3 cursor-pointer ${activeTab === 'contactUs' ? 'text-primary' : ''}`}
-                            onClick={() => setActiveTab('contactUs')}
-                        >
-                            ติดต่อเรา
-                        </li>
+                        {tabs.map((tab) => (
+                            <li
+                                key={tab.id}
+                                className={`list-none py-3 cursor-pointer ${activeTab === tab.id ? 'text-primary' : ''}`}
+                                onClick={() => setActiveTab(tab.id)}
+                                >
+                                {tab.label}
+                            </li>
+                        ))}
                     </ul>
                 </div>
                 <div className='w-full'>

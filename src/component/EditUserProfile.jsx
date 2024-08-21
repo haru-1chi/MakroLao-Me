@@ -4,7 +4,7 @@ import { FloatLabel } from "primereact/floatlabel";
 import { Button } from "primereact/button";
 import { Password } from 'primereact/password';
 import { Message } from 'primereact/message';
-import Navbar from "../../component/Navbar";
+import Navbar from "./Navbar";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 

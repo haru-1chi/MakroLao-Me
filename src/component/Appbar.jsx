@@ -66,6 +66,13 @@ function Appbar() {
     });
   };
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const handleSearchKeyPress = (event) => {
+    if (event.key === 'Enter' && searchTerm.trim() !== "") {
+      navigate(`/List-Product?search=${searchTerm}`);
+    }
+  };
+
   const calculateTotalBeforeDiscount = () => {
     if (!Array.isArray(cart)) return 0;
     return cart.reduce((total, product) => total + product.product_price * product.quantity, 0);
@@ -169,7 +176,14 @@ function Appbar() {
             <div className="w-5 mx-4">
               <IconField iconPosition="left">
                 <InputIcon className="pi pi-search"> </InputIcon>
-                <InputText v-model="value1" placeholder="ค้นหาสินค้า" className="w-full border-round-3xl" />
+                <InputText
+                  className="w-full border-round-3xl"
+                  type="text"
+                  placeholder="ค้นหาสินค้า"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyPress={handleSearchKeyPress}
+                />
               </IconField>
             </div>
             <div className="flex gap-4">
@@ -454,7 +468,14 @@ function Appbar() {
             <div className="w-9">
               <IconField iconPosition="left">
                 <InputIcon className="pi pi-search"> </InputIcon>
-                <InputText v-model="value1" placeholder="ค้นหาสินค้า" className="w-full p-inputtext-sm border-round-3xl" />
+                <InputText
+                  className="w-full border-round-3xl"
+                  type="text"
+                  placeholder="ค้นหาสินค้า"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyPress={handleSearchKeyPress}
+                />
               </IconField>
             </div>
           </div>

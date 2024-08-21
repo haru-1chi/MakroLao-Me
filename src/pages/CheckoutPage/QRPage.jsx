@@ -6,11 +6,13 @@ import { useNavigate } from "react-router-dom";
 import { convertTHBtoLAK } from '../../utils/DateTimeFormat';
 
 const EXPIRE_TIME = 60;
+const paymentUUID = "BCELBANK";
 
 function QRPage() {
     const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
     const { cart, cartDetails, user, clearCart, clearCartDetails } = useCart();
     const navigate = useNavigate();
+
     const [qrCodeUrl, setQrCodeUrl] = useState('');
     const [paymentCode, setPaymentCode] = useState('');
     const [expireTime, setExpireTime] = useState(EXPIRE_TIME);
@@ -18,88 +20,84 @@ function QRPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [paymentStatus, setPaymentStatus] = useState(null);
-    const paymentUUID = "BCELBANK";
     const totalPayable = cartDetails.amountPayment;
 
-    useEffect(() => {
-        async function fetchQrCode() {
-            try {
-                setLoading(true);
-                const response = await fetch(`${apiUrl}/payment/qrcode`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        amount: totalPayable,
-                        description: 'user123',
-                    }),
-                });
+    // useEffect(() => {
+    //     let pollingInterval;
+    //     let expirationTimeout;
 
-                const result = await response.json();
+    //     async function fetchQrCode() {
+    //         try {
+    //             setLoading(true);
+    //             const response = await axios.post(`${apiUrl}/payment/qrcode`, {
+    //                 amount: totalPayable,
+    //                 description: 'user123',
+    //             });
+    //             const result = response.data;
+    //             setQrCodeUrl(result.qrCodeUrl);
+    //             setPaymentCode(result.data.transactionid);
 
-                setQrCodeUrl(result.qrCodeUrl);
-                setPaymentCode(result.data.transactionid);
-                setExpireTime(result.data.expiretime || EXPIRE_TIME);
-                setRemainingTime(result.data.expiretime || EXPIRE_TIME);
-                setError(null);
-            } catch (error) {
-                console.error('Error generating QR code:', error);
-                setError('Failed to generate QR code. Please try again.');
-            } finally {
-                setLoading(false);
-            }
-        }
+    //             const newExpireTime = result.data.expiretime || EXPIRE_TIME;
+    //             setExpireTime(newExpireTime);
+    //             setRemainingTime(newExpireTime);
 
-        fetchQrCode();
-    }, [totalPayable]);
+    //             startPolling();
 
-    useEffect(() => {
-        if (remainingTime > 0) {
-            const timerId = setInterval(() => {
-                setRemainingTime(prevTime => prevTime - 1);
-            }, 1000);
+    //             expirationTimeout = setTimeout(() => {
+    //                 fetchQrCode();
+    //             }, expireTime * 1000);
 
-            return () => clearInterval(timerId);
-        }
-    }, [remainingTime]);
+    //         } catch (error) {
+    //             console.error('Error generating QR code:', error);
+    //             setError('Failed to generate QR code. Please try again.');
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     }
 
-    useEffect(() => {
-        let pollingInterval;
-        if (remainingTime > 0) {
-            pollingInterval = setInterval(async () => {
-                try {
-                    const response = await fetch(`${apiUrl}/payment/subscription`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            uuid: paymentUUID,
-                            tid: "001",
-                            shopcode: "12345678"
-                        })
-                    });
+    //     function startPolling() {
+    //         if (pollingInterval) clearInterval(pollingInterval);
 
-                    const data = await response.json();
+    //         pollingInterval = setInterval(async () => {
+    //             try {
+    //                 const response = await axios.post(`${apiUrl}/payment/subscription`, {
+    //                     uuid: PAYMENT_UUID,
+    //                     tid: "001",
+    //                     shopcode: "12345678"
+    //                 });
 
-                    setPaymentStatus(data.message);
+    //                 const data = response.data;
+    //                 if (response.status === 200 && data.message === 'SUCCESS') {
+    //                     setPaymentStatus(data.message);
+    //                     handleCreateOrder();
+    //                     clearInterval(pollingInterval);
+    //                     clearTimeout(expirationTimeout);
+    //                 } else {
+    //                     console.log(data.message);
+    //                 }
+    //             } catch (error) {
+    //                 console.error('Error checking payment status:', error);
+    //             }
+    //         }, 5000);
+    //     }
 
-                    if (response.status === 200) {
-                        const data = await response.json();
-                        setPaymentStatus(data.message);
-                        handleCreateOrder();
-                    } else {
-                        console.log(data.message)
-                    }
-                } catch (error) {
-                    console.error('Error checking payment status:', error);
-                }
-            }, 5000);
-        }
+    //     fetchQrCode();
 
-        return () => clearInterval(pollingInterval);
-    }, [paymentCode, apiUrl]);
+    //     return () => {
+    //         clearInterval(pollingInterval);
+    //         clearTimeout(expirationTimeout);
+    //     };
+    // }, [totalPayable, apiUrl]);
+
+    // useEffect(() => {
+    //     if (remainingTime > 0) {
+    //         const timerId = setInterval(() => {
+    //             setRemainingTime(prevTime => prevTime - 1);
+    //         }, 1000);
+
+    //         return () => clearInterval(timerId);
+    //     }
+    // }, [remainingTime]);
 
     const handleCreateOrder = async () => {
         setLoading(true);
@@ -164,7 +162,11 @@ function QRPage() {
             <div className="flex">
                 <div className="block flex-grow-1 flex flex-column text-center">
                     <p className="m-0">Amount (LAK)</p>
-                    {totalPayable ? (<p className="my-3 text-2xl font-bold">{Number(totalPayable.toFixed(2)).toLocaleString('en-US')}</p>) : ("")}
+                    {totalPayable && (
+                        <p className="my-3 text-2xl font-bold">
+                            {Number(totalPayable.toFixed(2)).toLocaleString('en-US')}
+                        </p>
+                    )}
                     <p className="m-0">เลขที่รายการ {paymentCode}</p>
                     {qrCodeUrl && (
                         <div className="p-0 my-2 surface-200 border-round flex justify-content-center align-content-center">
@@ -187,7 +189,11 @@ function QRPage() {
                 </div>
                 <div className="w-full block flex-grow-1 flex flex-column text-center">
                     <p className="m-0">Amount (LAK)</p>
-                    {totalPayable ? (<p className="my-3 text-2xl font-bold">{Number(totalPayable.toFixed(2)).toLocaleString('en-US')}</p>) : ("")}
+                    {totalPayable && (
+                        <p className="my-3 text-2xl font-bold">
+                            {Number(totalPayable.toFixed(2)).toLocaleString('en-US')}
+                        </p>
+                    )}
 
                 </div>
             </div>
