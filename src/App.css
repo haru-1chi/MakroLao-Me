@@ -311,6 +311,10 @@ body {
   white-space: break-spaces;
 }
 
+.carousel-product-items {
+  height: 95%;
+}
+
 .filter-card {
   width: 16rem;
 }

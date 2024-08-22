@@ -136,7 +136,7 @@ function HomePage() {
     })
       .then((response) => {
         const shuffledData = shuffleArray(response.data);
-      setData(shuffledData);
+        setData(shuffledData);
       })
       .catch((error) => {
         console.log(error);
@@ -161,13 +161,15 @@ function HomePage() {
       </div> */}
       <div>
         <BannerSlider />
-        <div className="bg-section-product text-center mx-2">
-          <img
-            className="w-8 align-self-center"
-            src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FFlash_Sale_Middle_Banner_TH_Electro_0e168c_d08d74be82.png&w=1200&q=90"
-            alt=""
-          />
-          <Products data={data} startIndex={0} /> 
+        <div className="bg-section-product mx-2">
+          <div className="flex justify-content-center">
+            <img
+              className="w-8"
+              src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FFlash_Sale_Middle_Banner_TH_Electro_0e168c_d08d74be82.png&w=1200&q=90"
+              alt=""
+            />
+          </div>
+          <Products data={data} startIndex={0} />
         </div>
 
         <div className="mt-5">
@@ -180,12 +182,14 @@ function HomePage() {
           <Products data={data} startIndex={5} />
         </div>
 
-        <div className="bg-section-new-product text-center m-2">
-          <img
-            className="w-8"
-            src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FFlash_Sale_Fresh_Middle_TH_016100_8a83bd308a.png&w=1200&q=90"
-            alt=""
-          />
+        <div className="bg-section-new-product m-2">
+          <div className="flex justify-content-center">
+            <img
+              className="w-8"
+              src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FFlash_Sale_Fresh_Middle_TH_016100_8a83bd308a.png&w=1200&q=90"
+              alt=""
+            />
+          </div>
           <Products data={data} startIndex={10} />
         </div>
         <div className="mt-4 pl-3 pr-3">

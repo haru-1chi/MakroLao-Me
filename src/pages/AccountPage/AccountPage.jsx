@@ -6,13 +6,15 @@ import StatusShippingPage from './StatusShippingPage';
 import MyAccount from './MyAccount';
 import axios from "axios";
 import { formatDate } from '../../utils/DateTimeFormat';
+import ContactUs from '../../component/ContactUs';
 
 function AccountPage() {
     const location = useLocation();
     const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
     const [activeTab, setActiveTab] = useState('account');
     const [selectedOrderId, setSelectedOrderId] = useState(null);
-   
+    const [isContactUsVisible, setContactUsVisible] = useState(false);
+
     const [userOrders, setUserOrders] = useState(null);
     const { statusEvents } = useCart();
     const [activeOrderStatus, setActiveOrderStatus] = useState('all');
@@ -246,20 +248,16 @@ function AccountPage() {
 
     const PrivacySettings = () => <div>จัดการข้อมูลส่วนบุคคล</div>;
 
-    const ContactUs = () => <div>ติดต่อเรา</div>;
-
     const renderActiveComponent = () => {
         switch (activeTab) {
             case 'account':
-                return <MyAccount/>;
+                return <MyAccount />;
             case 'orderHistory':
                 return <OrderHistory />;
             case 'favorites':
                 return <Favorites />;
             case 'privacySettings':
                 return <PrivacySettings />;
-            case 'contactUs':
-                return <ContactUs />;
             default:
                 return <MyAccount />;
         }
@@ -274,15 +272,22 @@ function AccountPage() {
                             <li
                                 key={tab.id}
                                 className={`list-none py-3 cursor-pointer ${activeTab === tab.id ? 'text-primary' : ''}`}
-                                onClick={() => setActiveTab(tab.id)}
-                                >
+                                onClick={() => {
+                                    setActiveTab(tab.id);
+                                    if (tab.id === 'contactUs') {
+                                        setContactUsVisible(true); // Show ContactUs dialog when clicking
+                                    }
+                                }}
+                            >
                                 {tab.label}
+
                             </li>
                         ))}
                     </ul>
                 </div>
                 <div className='w-full'>
                     {renderActiveComponent()}
+                    <ContactUs visible={isContactUsVisible} setVisible={setContactUsVisible} />
                 </div>
             </div>
         </>

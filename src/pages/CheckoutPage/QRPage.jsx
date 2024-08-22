@@ -108,6 +108,7 @@ function QRPage() {
 
             const newOrder = {
                 _items: cart,
+                line_items: cart,
                 ...cartDetails,
                 status: 1
                 // status: cartDetails.paymentChannel === "bankCounter" ? "PendingPayment" : "pending",

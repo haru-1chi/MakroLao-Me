@@ -13,9 +13,10 @@ import LanguageSelector from "./LanguageSelector";
 import { useTranslation } from "react-i18next";
 import { useCart } from '../router/CartContext';
 import axios from "axios";
+import ContactUs from "./ContactUs";
 //
-
 function Appbar() {
+  const [isContactUsVisible, setContactUsVisible] = useState(false);
   const itemsMenu = [
     {
       label: 'บัญชีของฉัน',
@@ -35,14 +36,15 @@ function Appbar() {
       label: 'จัดการข้อมูลส่วนบุคคล',
       command: () => {
         setVisible1(false);
+        
         navigate("/AccountPage", { state: { activeTab: 'privacySettings' } });
       }
     },
     {
       label: 'ติดต่อเรา',
       command: () => {
-        setVisible1(false);
-        navigate("/AccountPage", { state: { activeTab: 'contactUs' } });
+        setContactUsVisible(true);
+        // navigate("/AccountPage", { state: { activeTab: 'contactUs' } });
       }
     },
     {
@@ -69,7 +71,8 @@ function Appbar() {
   const [searchTerm, setSearchTerm] = useState('');
   const handleSearchKeyPress = (event) => {
     if (event.key === 'Enter' && searchTerm.trim() !== "") {
-      navigate(`/List-Product?search=${searchTerm}`);
+      window.location.href = `/List-Product?search=${searchTerm}`;
+      // navigate(`/List-Product?search=${searchTerm}`);
     }
   };
 
@@ -177,7 +180,7 @@ function Appbar() {
               <IconField iconPosition="left">
                 <InputIcon className="pi pi-search"> </InputIcon>
                 <InputText
-                  className="w-full border-round-3xl"
+                  className="w-full border-round-3xl py-2"
                   type="text"
                   placeholder="ค้นหาสินค้า"
                   value={searchTerm}
@@ -267,6 +270,7 @@ function Appbar() {
                         <hr />
                         <div className="flex flex-column p-2">
                           <Menu model={itemsMenu} className="p-menu" />
+                          <ContactUs visible={isContactUsVisible} setVisible={setContactUsVisible} />
                         </div>
                         <hr />
                         <div className="flex justify-content-between">
@@ -462,14 +466,14 @@ function Appbar() {
             <div className="bg-post flex align-items-center text-center gap-2">
               {/* <Button className="p-1" label="รหัสไปรษณีย์" icon="pi pi-truck"/> */}
               <i className="pi pi-truck"></i>
-              <p className="white-space-nowrap overflow-hidden text-overflow-clip">{zipcode}</p>
+              <p className="white-space-nowrap overflow-hidden text-overflow-clip">สาขาหนองคาย</p>
               <i className="pi pi-angle-down"></i>
             </div>
             <div className="w-9">
               <IconField iconPosition="left">
                 <InputIcon className="pi pi-search"> </InputIcon>
                 <InputText
-                  className="w-full border-round-3xl"
+                  className="w-full border-round-3xl py-2"
                   type="text"
                   placeholder="ค้นหาสินค้า"
                   value={searchTerm}

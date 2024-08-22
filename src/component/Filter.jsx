@@ -114,7 +114,7 @@ function Filter({ onFilterChange, products, visible, setVisible }) {
 
     useEffect(() => {
         onFilterChange(filters);
-    }, [filters]);
+    }, [filters, onFilterChange]);
 
     const sectionLabels = {
         priceRanges: `${priceRange}`,

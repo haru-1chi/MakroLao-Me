@@ -13,17 +13,27 @@ function ListProductsPage() {
   const apiUrl = import.meta.env.VITE_REACT_APP_API_PRODUCT;
   const product_token = import.meta.env.VITE_REACT_APP_PRODUCT_TOKEN;
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true); 
   const [searchParams] = useSearchParams();
-  const searchTerm = searchParams.get("search") || "";
+  const searchTerm = searchParams.get("search") || ""; //search
+
   const { addToCart } = useCart();
+
   const [data, setData] = useState([]);
-  const [sortOption, setSortOption] = useState('default');
-  const [filteredData, setFilteredData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);  //filter
   const [paginatedData, setPaginatedData] = useState([]);
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(20);
   const [visible, setVisible] = useState(false);
   const toast = useRef(null);
+
+  const defaultFilters = {
+    priceRanges: { key: 'allRange', value: 'All' },
+    selectedSubCategories: [],
+    selectedBrands: []
+  };
+  const [filters, setFilters] = useState(defaultFilters);
+  const [sortOption, setSortOption] = useState('default'); //sort
 
   const showSuccessToast = () => {
     toast.current.show({
@@ -37,46 +47,24 @@ function ListProductsPage() {
     });
   };
 
-  const fetchData = () => {
-    axios({
-      method: "post",
-      url: `${apiUrl}/api_product`,
-      headers: {
-        "auth-token": `${product_token}`,
-      },
-    })
-      .then((response) => {
-        const filtered = filterProducts(response.data, searchTerm);
-        const sorted = sortProducts(filtered, sortOption);
-        setData(response.data);
-        setFilteredData(sorted);
-        setPaginatedData(sorted.slice(first, first + rows));
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
   const filterProducts = (products, searchTerm) => {
     if (!searchTerm) return products;
     return products.filter((product) =>
-      product.product_name.toLowerCase().includes(searchTerm.toLowerCase())
+      product.product_name.toLowerCase().includes(searchTerm.toLowerCase())   //search
     );
   };
 
-  const sortProducts = (products, sortOption) => {
+  const sortProducts = (products, sortOption) => {   //sort
     if (sortOption === 'lowToHigh') {
       return [...products].sort((a, b) => a.product_price - b.product_price);
     } else if (sortOption === 'highToLow') {
       return [...products].sort((a, b) => b.product_price - a.product_price);
-    } else if (sortOption === 'default') {
-      return products;
     }
     return products;
   };
 
   const applyFilters = (filters) => {
-    let filtered = filteredData;
+    let filtered = data;
 
     if (filters.priceRanges.key !== 'allRange') {
       filtered = filtered.filter(product => product.product_price >= filters.priceRanges.min && product.product_price <= filters.priceRanges.max);
@@ -98,19 +86,46 @@ function ListProductsPage() {
     //   filtered = filtered.filter(product => product.onSale === filters.promotions.onSale);
     // }
 
-    const sorted = sortProducts(filtered, sortOption);
-    setPaginatedData(sorted.slice(first, first + rows));
+    filtered = sortProducts(filtered, sortOption);
+
+    setFilteredData(filtered);
+    setPaginatedData(filtered.slice(first, first + rows));
+
   };
 
   const handleFilterChange = (filters) => {
     applyFilters(filters);
   };
 
-  const handleSortChange = (selectedOption) => {
-    setSortOption(selectedOption);
-    const sorted = sortProducts(data, selectedOption);
-    setFilteredData(sorted);
-    setPaginatedData(sorted.slice(first, first + rows));
+  const handleSortChange = (sortOption) => {
+    setSortOption(sortOption);
+    applyFilters({ ...filters, sortOption });
+  };
+
+  const fetchData = () => {
+    setLoading(true); 
+    axios({
+      method: "post",
+      url: `${apiUrl}/api_product`,
+      headers: {
+        "auth-token":
+          `${product_token}`,
+      },
+    })
+      .then((response) => {
+        const filtered = filterProducts(response.data, searchTerm);
+        setData(filtered);
+        setFilteredData(filtered);
+        setPaginatedData(filtered.slice(first, first + rows));
+        // setFilteredData(response.data);
+        // setPaginatedData(response.data.slice(first, first + rows));
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(apiUrl);
+      }).finally(() => {
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -118,14 +133,14 @@ function ListProductsPage() {
   }, [searchTerm]);
 
   useEffect(() => {
-    const sorted = sortProducts(filteredData, sortOption);
-    setPaginatedData(sorted.slice(first, first + rows));
-  }, [first, rows, filteredData, sortOption]);
+    setPaginatedData(filteredData.slice(first, first + rows));
+  }, [first, rows, filteredData]);
 
   const onPageChange = (event) => {
     setFirst(event.first);
     setRows(event.rows);
   };
+
 
   const addCart = (product) => {
     const token = localStorage.getItem("token");
@@ -144,7 +159,7 @@ function ListProductsPage() {
       <Toast ref={toast} position="top-center" />
       <div className="p-3">
         <div className="flex justify-content-between">
-          <div className="w-full flex justify-content-between">
+          <div className="w-full flex justify-content-between align-items-center">
             <h1 className="font-semibold">รายการสินค้า</h1>
             <FilterSort onSortChange={handleSortChange} />
           </div>
@@ -161,45 +176,74 @@ function ListProductsPage() {
             {data.length > 0 && (
               <Filter
                 onFilterChange={handleFilterChange}
-                products={filteredData}
+                products={data} //ส่ง data ทั้งหมดไป gen, อาจเป็น data จาก search
                 visible={visible}
                 setVisible={setVisible}
               />
             )}
           </div>
-          {filteredData ? (
-            <div className="w-full">
-              {searchTerm && <h2 className="mt-0 font-semibold">ผลการค้นหา "{searchTerm}"</h2>}
-              <div className="product-list">
-                {paginatedData.map((product, index) => (
-                  <div key={index} className="relative flex h-24rem md:h-28rem">
-                    <div className="w-full border-1 surface-border border-round py-5 px-3 bg-white border-round-mb flex flex-column justify-content-between">
-                      <Link to={`product/${product.product_id}`} state={{ product }}>
-                        <img
-                          src={product.product_image}
-                          alt={product.product_name}
-                          className="w-12"
-                        />
-                      </Link>
-                      <div>
-                        <h4 className="pb-1 border-bottom-1 surface-border">{product.product_name}</h4>
-                        <div className="flex align-items-center justify-content-between p-2 mt-2 bg-product">
-                          <div className="font-bold">{product.product_price} ฿</div>
-                          <Button
-                            className="btn-plus-product"
-                            icon="pi pi-plus"
-                            rounded
-                            onClick={() => addCart(product)}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+          {loading ? (
+            <div className="w-full flex justify-content-center align-items-center">
+              <h2 className="mt-0 font-semibold">Loading...</h2>
             </div>
           ) : (
-            <p>ไม่พบสินค้า</p>
+            <>
+              {filteredData.length ? (
+                <div className="w-full">
+                  {searchTerm && <h2 className="mt-0 font-semibold">ผลการค้นหา "{searchTerm}"</h2>}
+                  <div className="product-list">
+                    {paginatedData.map((product, index) => (
+                      <div key={index} className="relative flex h-24rem md:h-28rem">
+                        <div className="w-full border-1 surface-border border-round py-5 px-3 bg-white border-round-mb flex flex-column justify-content-between">
+                          <Link to={`product/${product.product_id}`} state={{ product }}>
+                            <img
+                              src={product.product_image}
+                              alt={product.product_name}
+                              className="w-12"
+                            />
+                          </Link>
+                          <div>
+                            <h4 className="m-0 pb-1 border-bottom-1 surface-border">{product.product_name}</h4>
+                            <div className="flex align-items-center justify-content-between p-2 mt-2 bg-product">
+                              <div className="font-bold">{product.product_price} ฿</div>
+                              <Button
+                                className="btn-plus-product"
+                                icon="pi pi-plus"
+                                rounded
+                                onClick={() => addCart(product)}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="w-full">
+                  {searchTerm && <h2 className="mt-0 font-semibold">ผลการค้นหา "{searchTerm}"</h2>}
+                  <div className="w-full flex justify-content-center">
+                    <div className="flex flex-column justify-content-center align-items-center">
+                      <h2 className="font-semibold mt-0 mb-2">ขออภัย</h2>
+                      <p className="mt-0">ไม่พบข้อมูลจากการค้นหา</p>
+                      <Link to="/"><Button
+                        className="w-12rem mb-3"
+                        label="ค้นหาตามหมวดหมู่"
+                        rounded
+                        onClick="" /></Link>
+                      <Link to="/">
+                        <Button
+                          className="w-12rem"
+                          label="ลองค้นหาด้วยคำอื่นๆ"
+                          rounded
+                          outlined
+                          onClick="" />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
