@@ -1,13 +1,43 @@
 import Products from "../../component/Products";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useCart } from '../../router/CartContext';
 import { Galleria } from "primereact/galleria";
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import Footer from "../../component/Footer";
 import { useLocation } from 'react-router-dom';
+import axios from "axios";
 
 function ProductPage() {
+  const [dataCarousel, setDataCarousel] = useState([]);
+  const apiUrl = import.meta.env.VITE_REACT_APP_API_PRODUCT;
+  const product_token = import.meta.env.VITE_REACT_APP_PRODUCT_TOKEN;
+  const shuffleArray = (array) => {
+    return array.sort(() => 0.5 - Math.random());
+  };
+
+  const fetchData = () => {
+    axios({
+      method: "post",
+      url: `${apiUrl}/api_product`,
+      headers: {
+        "auth-token":
+          `${product_token}`,
+      },
+    })
+      .then((response) => {
+        const shuffledData = shuffleArray(response.data);
+        setDataCarousel(shuffledData);
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(apiUrl);
+      });
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   const location = useLocation();
   const product = location.state?.product;
   const { addToCart } = useCart();
@@ -64,7 +94,7 @@ function ProductPage() {
       <Toast ref={toast} position="top-center" />
       <div className="m-3 flex justify-content-center flex-wrap">
         <div className="w-9 flex gap-2">
-          <div className="card w-full shadow-2 border-round-lg bg-white p-4 mb-3">
+          <div className="h-full w-full shadow-2 border-round-lg bg-white p-4 mb-3">
             <Galleria
               value={data}
               responsiveOptions={responsiveOptions}
@@ -88,7 +118,8 @@ function ProductPage() {
 
 
         <div>
-          {/* <Products /> */}
+          <h2 className="font-semibold">สินค้าอื่นๆ</h2>
+          <Products data={dataCarousel} startIndex={0}/>
         </div>
       </div>
       <Footer />

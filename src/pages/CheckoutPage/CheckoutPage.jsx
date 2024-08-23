@@ -159,7 +159,7 @@ function CheckoutPage() {
                                         </div>
                                     </div>
                                     <div className='w-4 text-right'>
-                                        <span className='text-xl'>{product.product_price * product.quantity} ฿</span>
+                                        <span className='text-xl'>{Number(product.product_price * product.quantity).toLocaleString('en-US')} ฿</span>
                                     </div>
                                 </div>
                             ))}

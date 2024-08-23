@@ -112,7 +112,7 @@ function Pagepoint() {
   return (
     <>
     <div className="p-3 mb-4">
-      <h1>จัดเต็มความคุ้ม แม็คโครโปรพอยท์</h1>
+      <h1 className="font-semibold">จัดเต็มความคุ้ม แม็คโครโปรพอยท์</h1>
       <div className="section-point-product w-full text-center gap-2">
         {products.map((Item) => (
           <Link to="/List-Product">

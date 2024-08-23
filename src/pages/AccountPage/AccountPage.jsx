@@ -28,6 +28,7 @@ function AccountPage() {
     ];
 
     useEffect(() => {
+        console.log(userOrders)
         const fetchOrders = async () => {
             const token = localStorage.getItem("token");
             try {
@@ -44,7 +45,8 @@ function AccountPage() {
 
     const statusCounts = (userOrders ?
         userOrders.reduce((counts, order) => {
-            const statusDetails = statusEvents[order.status];
+            // const statusDetails = statusEvents[order.status];
+            const statusDetails = Object.values(statusEvents).find(status => status.key === order.status);
             counts[statusDetails?.key] = (counts[statusDetails?.key] || 0) + 1;
             return counts;
         }, {})
@@ -54,7 +56,7 @@ function AccountPage() {
     const filteredOrders = (activeOrderStatus === 'all'
         ? (Array.isArray(userOrders) ? userOrders : [])
         : (Array.isArray(userOrders) ? userOrders.filter(order => {
-            const orderStatus = statusEvents[order.status];
+            const orderStatus = Object.values(statusEvents).find(status => status.key === order.status);
             switch (activeOrderStatus) {
                 case 'ต้องชำระเงิน':
                     return orderStatus?.key === statusEvents.PendingPayment.key;
@@ -101,7 +103,8 @@ function AccountPage() {
             </li>
             <li className={`list-none cursor-pointer ${activeOrderStatus === 'ต้องชำระเงิน' ? 'border-bottom-3 border-primary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('ต้องชำระเงิน')}>
-                ต้องชำระเงิน {statusCounts[statusEvents.PendingPayment.key] || ''}
+                ต้องชำระเงิน
+                {/* ต้องชำระเงิน {statusCounts[statusEvents.PendingPayment.key] || ''} */}
             </li>
             <li className={`list-none cursor-pointer ${activeOrderStatus === 'กำลังจัดเตรียม' ? 'border-bottom-3 border-primary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('กำลังจัดเตรียม')}>
@@ -162,7 +165,7 @@ function AccountPage() {
     );
 
     const OrderItem = ({ order }) => {
-        const orderStatus = statusEvents[order.status];
+        const orderStatus = Object.values(statusEvents).find(status => status.key === order.status);
         return (
             <>
                 <div className='hidden md:flex w-full grid-nogutter bg-white border-1 surface-border border-round-xl py-3 px-2 mt-3 align-items-start'>
@@ -187,7 +190,7 @@ function AccountPage() {
                                         </div>
                                     </div>
                                     <div className='w-4 text-right'>
-                                        <span className='text-xl'>{product.ppu * product.quantity} ฿</span>
+                                        <span className='text-xl'>{Number(product.ppu * product.quantity).toLocaleString('en-US')} ฿</span>
                                     </div>
                                 </div>
                             ))}

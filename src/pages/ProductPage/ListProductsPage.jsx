@@ -8,12 +8,13 @@ import Footer from "../../component/Footer";
 import { Paginator } from 'primereact/paginator';
 import { Button } from "primereact/button";
 import { Toast } from 'primereact/toast';
+import { ProgressSpinner } from 'primereact/progressspinner';
 
 function ListProductsPage() {
   const apiUrl = import.meta.env.VITE_REACT_APP_API_PRODUCT;
   const product_token = import.meta.env.VITE_REACT_APP_PRODUCT_TOKEN;
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
   const searchTerm = searchParams.get("search") || ""; //search
 
@@ -103,7 +104,7 @@ function ListProductsPage() {
   };
 
   const fetchData = () => {
-    setLoading(true); 
+    setLoading(true);
     axios({
       method: "post",
       url: `${apiUrl}/api_product`,
@@ -163,6 +164,13 @@ function ListProductsPage() {
             <h1 className="font-semibold">รายการสินค้า</h1>
             <FilterSort onSortChange={handleSortChange} />
           </div>
+          {/* <Button
+            className="lg:hidden"
+            onClick={() => setVisible(true)}
+            aria-label="Clear Filters"
+            label="กรอง" icon="pi pi-sort-alt"
+            text
+          /> */}
           <Button
             className="lg:hidden"
             onClick={() => setVisible(true)}
@@ -184,11 +192,11 @@ function ListProductsPage() {
           </div>
           {loading ? (
             <div className="w-full flex justify-content-center align-items-center">
-              <h2 className="mt-0 font-semibold">Loading...</h2>
+              <ProgressSpinner />
             </div>
           ) : (
             <>
-              {filteredData.length ? (
+              {data.length ? (
                 <div className="w-full">
                   {searchTerm && <h2 className="mt-0 font-semibold">ผลการค้นหา "{searchTerm}"</h2>}
                   <div className="product-list">

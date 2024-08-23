@@ -32,7 +32,7 @@ function LoginPage() {
         setErrorMessage(response.data.message || "Login failed");
       }
     } catch (error) {
-      setErrorMessage(error.response?.data?.message || "An error occurred. Please try again.");
+      setErrorMessage(error.response?.data?.message || "มีปัญหาบางอย่างเกิดขึ้น กรุณาลองใหม่อีกครั้งในภายหลัง");
       console.error("Login error:", error.response?.data || error.message);
     } finally {
       setLoading(false);
@@ -79,7 +79,7 @@ function LoginPage() {
           />
           <span className="text-center">OR</span>
           <Button className="mt-2 mb-4" label="เข้าสู่ระบบด้วย OTP" rounded />
-          <p className="text-center m-0 p-0">ไม่มีบัญชีผู้ใช้ <span>สร้างบัญชี</span></p>
+          <p className="text-center m-0 p-0">ไม่มีบัญชีผู้ใช้ <a href="/RegisterPage">สร้างบัญชี</a></p>
           <p className="text-center m-0 p-0">ต้องการความช่วยเหลือใช่ไหม? <a href="#">แตะที่นี้</a></p>
         </div>
       </div>

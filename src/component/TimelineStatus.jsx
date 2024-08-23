@@ -8,8 +8,8 @@ function TimelineStatus({ order, currentStatus, user }) {
     const { statusEvents } = useCart();
 
     const events = [
-        statusEvents.Ordered,
-        ...(order?.paymentChannel === 'bankCounter' ? [statusEvents.PendingPayment] : []),
+        // statusEvents.Ordered,
+        // ...(order?.paymentChannel === 'bankCounter' ? [statusEvents.PendingPayment] : []),
         statusEvents.pending,
         statusEvents.Preparing,
         statusEvents.Packaged,
@@ -26,7 +26,8 @@ function TimelineStatus({ order, currentStatus, user }) {
         const currentIndex = statusesOrder.indexOf(currentStatus?.key);
         const statusIndex = statusesOrder.indexOf(status);
 
-        if (currentStatus?.key === 'Ordered' || currentStatus?.key === 'PendingPayment' || currentStatus?.key === 'pending') {
+        // if (currentStatus?.key === 1 || currentStatus?.key === 2 || currentStatus?.key === 3) {
+        if (currentStatus?.key === 1 || currentStatus?.key === 2) {
             const previousStatusIndex = statusIndex > 0 ? statusIndex + 1 : 0;
             return previousStatusIndex <= currentIndex;
         } else {
@@ -86,7 +87,7 @@ function TimelineStatus({ order, currentStatus, user }) {
                     </div>
                 </div>
             </div>
-            {(order?.paymentChannel === 'bankCounter' && currentStatus?.key === 'PendingPayment') ? (
+            {(order?.paymentChannel === 'bankCounter' && currentStatus?.key === 2) ? (
                 <Button className="mt-3 w-fit align-self-center" label="ยกเลิกคำสั่งซื้อ" rounded />
             ) : null}
         </div>

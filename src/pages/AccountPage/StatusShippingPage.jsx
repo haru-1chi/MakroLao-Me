@@ -54,7 +54,7 @@ function StatusShippingPage({ orderId }) {
         fetchOrder();
     }, [apiUrl, orderId]);
 
-    const currentStatus = order ? statusEvents[order.status] : null;
+    const currentStatus = order ? Object.values(statusEvents).find(status => status.key === order.status) : null;
 
     return (
         <>
@@ -72,7 +72,7 @@ function StatusShippingPage({ orderId }) {
                     <div className='p-2 lg:flex justify-content-between'>
                         <div>
                             <p className="m-0 p-0 text-xl font-semibold">ผู้ขาย: CP Axtra Public Company Limited. Branch สาขาหนองคาย</p>
-                            <p className="m-0 p-0">{order?.line_items?.length} รายการ</p>
+                            <p className="m-0 p-0">{order?._items?.length} รายการ</p>
                         </div>
                         <Button label="เพิ่มสินค้าทั้งหมดลงตะกร้า" outlined rounded className='w-full lg:w-fit' />
                     </div>
@@ -80,7 +80,7 @@ function StatusShippingPage({ orderId }) {
                         <p className='p-0 my-2 mx-3 font-semibold'>{currentStatus?.value}</p>
                     </div>
                     <div className="flex flex-column mx-5">
-                        {order?.line_items?.map((product, index) => (
+                        {order?._items?.map((product, index) => (
                             <div key={index} className="cart-items flex justify-content-between align-items-center py-2 border-bottom-1 surface-border">
                                 <div className="w-full flex align-items-center">
                                     <img

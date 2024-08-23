@@ -41,18 +41,19 @@ function Filter({ onFilterChange, products, visible, setVisible }) {
 
         let lastRangeMax = 0;
         if (ranges.length > 1 && ranges[ranges.length - 2]) {
-            lastRangeMax = ranges[ranges.length - 2].max || ranges[ranges.length - 1].max;
+            lastRangeMax = ranges[ranges.length - 2].max || null;
         }
 
         ranges.pop();
-        ranges.push({
-            key: `${lastRangeMax}`,
-            value: `${lastRangeMax} ฿+`,
-            min: lastRangeMax,
-            max: Infinity,
-            hasData: true
-        });
-
+        if (lastRangeMax !== null) {
+            ranges.push({
+                key: `${lastRangeMax}`,
+                value: `${lastRangeMax} ฿+`,
+                min: lastRangeMax,
+                max: Infinity,
+                hasData: true
+            });
+        }
         return ranges;
     };
 

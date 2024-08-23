@@ -3,6 +3,7 @@ import axios from "axios";
 import { Button } from "primereact/button";
 import { InputText } from 'primereact/inputtext';
 import { Message } from 'primereact/message';
+import { ProgressSpinner } from 'primereact/progressspinner';
 
 function MyAccount() {
     const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
@@ -120,7 +121,7 @@ function MyAccount() {
                                 <p className='col-3'>อีเมล</p>
                                 <div className='col'>
                                     {editMode ? (
-                                        <InputText name="email" value={formData.email} onChange={handleInputChange} />
+                                        <InputText name="email" value={formData.email} onChange={handleInputChange} keyfilter="email"/>
                                     ) : (
                                         <p>{user.email}</p>
                                     )}
@@ -130,7 +131,7 @@ function MyAccount() {
                                 <p className='col-3'>เบอร์โทรศัพท์</p>
                                 <div className='col'>
                                     {editMode ? (
-                                        <InputText name="phone" value={formData.phone} onChange={handleInputChange} />
+                                        <InputText name="phone" value={formData.phone} onChange={handleInputChange} keyfilter="pint"/>
                                     ) : (
                                         <p>{user.phone}</p>
                                     )}
@@ -146,7 +147,9 @@ function MyAccount() {
                             </div>
                         </div>
                     ) : (
-                        "loading..."
+                        <>
+                        <ProgressSpinner />
+                        </>
                     )}
 
                 </div>

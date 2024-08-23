@@ -36,7 +36,7 @@ function Appbar() {
       label: 'จัดการข้อมูลส่วนบุคคล',
       command: () => {
         setVisible1(false);
-        
+
         navigate("/AccountPage", { state: { activeTab: 'privacySettings' } });
       }
     },
@@ -178,9 +178,9 @@ function Appbar() {
             </div>
             <div className="w-5 mx-4">
               <IconField iconPosition="left">
-                <InputIcon className="pi pi-search"> </InputIcon>
+                <InputIcon className="pi pi-search text-900"> </InputIcon>
                 <InputText
-                  className="w-full border-round-3xl py-2"
+                  className="w-full border-round-3xl py-2 surface-100 border-none"
                   type="text"
                   placeholder="ค้นหาสินค้า"
                   value={searchTerm}
@@ -364,7 +364,8 @@ function Appbar() {
                             <img
                               src={product.product_image}
                               alt={product.product_name}
-                              className="w-4 m-2"
+                              width={50}
+                              height={50}
                             />
                             <div className="flex flex-column">
                               <span className="mb-3 font-bold">{product.product_name}</span>
@@ -471,9 +472,9 @@ function Appbar() {
             </div>
             <div className="w-9">
               <IconField iconPosition="left">
-                <InputIcon className="pi pi-search"> </InputIcon>
+                <InputIcon className="pi pi-search text-900"> </InputIcon>
                 <InputText
-                  className="w-full border-round-3xl py-2"
+                  className="w-full border-round-3xl py-2 surface-100 border-none"
                   type="text"
                   placeholder="ค้นหาสินค้า"
                   value={searchTerm}
