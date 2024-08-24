@@ -33,14 +33,14 @@ function Appbar() {
         navigate("/AccountPage", { state: { activeTab: 'orderHistory' } });
       }
     },
-    {
-      label: 'จัดการข้อมูลส่วนบุคคล',
-      command: () => {
-        setVisible1(false);
+    // {
+    //   label: 'จัดการข้อมูลส่วนบุคคล',
+    //   command: () => {
+    //     setVisible1(false);
 
-        navigate("/AccountPage", { state: { activeTab: 'privacySettings' } });
-      }
-    },
+    //     navigate("/AccountPage", { state: { activeTab: 'privacySettings' } });
+    //   }
+    // },
     {
       label: 'ติดต่อเรา',
       command: () => {

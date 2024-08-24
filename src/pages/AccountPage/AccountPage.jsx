@@ -22,8 +22,8 @@ function AccountPage() {
     const tabs = [
         { id: 'account', label: 'บัญชีของฉัน' },
         { id: 'orderHistory', label: 'ประวัติการสั่งซื้อ' },
-        { id: 'favorites', label: 'รายการโปรด' },
-        { id: 'privacySettings', label: 'จัดการข้อมูลส่วนบุคคล' },
+        // { id: 'favorites', label: 'รายการโปรด' },
+        // { id: 'privacySettings', label: 'จัดการข้อมูลส่วนบุคคล' },
         { id: 'contactUs', label: 'ติดต่อเรา' },
     ];
 
@@ -246,9 +246,9 @@ function AccountPage() {
         )
     }
 
-    const Favorites = () => (<div>รายการโปรด</div>)
+    // const Favorites = () => (<div>รายการโปรด</div>)
 
-    const PrivacySettings = () => <div>จัดการข้อมูลส่วนบุคคล</div>;
+    // const PrivacySettings = () => <div>จัดการข้อมูลส่วนบุคคล</div>;
 
     const renderActiveComponent = () => {
         switch (activeTab) {
@@ -256,10 +256,10 @@ function AccountPage() {
                 return <MyAccount />;
             case 'orderHistory':
                 return <OrderHistory />;
-            case 'favorites':
-                return <Favorites />;
-            case 'privacySettings':
-                return <PrivacySettings />;
+            // case 'favorites':
+            //     return <Favorites />;
+            // case 'privacySettings':
+            //     return <PrivacySettings />;
             default:
                 return <MyAccount />;
         }
