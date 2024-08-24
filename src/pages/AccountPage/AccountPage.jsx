@@ -28,7 +28,6 @@ function AccountPage() {
     ];
 
     useEffect(() => {
-        console.log(userOrders)
         const fetchOrders = async () => {
             const token = localStorage.getItem("token");
             try {
@@ -230,7 +229,7 @@ function AccountPage() {
                                         </div>
                                     </div>
                                     <div className='w-4 text-right'>
-                                        <span className='text-xl'>{product.ppu * product.quantity} ฿</span>
+                                        <span className='text-xl'>{Number(product.ppu * product.quantity).toLocaleString('en-US')} ฿</span>
                                     </div>
                                 </div>
                             ))}
@@ -240,7 +239,7 @@ function AccountPage() {
                         <p className="mt-2 p-0"><i className='pi pi-shopping-cart mr-1'></i>{formatDate(order.createdAt)} น.</p>
                     </div>
                     <div className='w-full text-right'>
-                        <p className="m-0 pt-3 text-right font-semibold text-primary text-l">{order.net_price?.toLocaleString('en-US')} ₭</p>
+                        <p className="m-0 pt-3 text-right font-semibold text-primary text-l">{order.net_price?.toLocaleString('en-US')} ฿</p>
                     </div>
                 </div>
             </>
@@ -268,7 +267,7 @@ function AccountPage() {
 
     return (
         <>
-            <div className="flex my-5 mx-4 lg:mx-8 gap-4">
+            <div className="flex my-5 mx-2 lg:mx-8 gap-4">
                 <div className="hidden xl:block w-20rem h-fit bg-white border-1 surface-border border-round-xl">
                     <ul className='font-semibold'>
                         {tabs.map((tab) => (

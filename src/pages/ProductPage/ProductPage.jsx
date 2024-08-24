@@ -115,10 +115,8 @@ function ProductPage() {
               }} />
           </div>
         </div>
-
-
-        <div>
-          <h2 className="font-semibold">สินค้าอื่นๆ</h2>
+        <div className="w-9">
+          <h2 className="mb-2 font-semibold">สินค้าอื่นๆ</h2>
           <Products data={dataCarousel} startIndex={0}/>
         </div>
       </div>

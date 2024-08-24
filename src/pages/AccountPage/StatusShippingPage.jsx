@@ -71,7 +71,7 @@ function StatusShippingPage({ orderId }) {
                 <div className='bg-section-product flex flex-column border-1 surface-border border-round py-2 px-2 bg-white border-round-mb justify-content-center'>
                     <div className='p-2 lg:flex justify-content-between'>
                         <div>
-                            <p className="m-0 p-0 text-xl font-semibold">ผู้ขาย: CP Axtra Public Company Limited. Branch สาขาหนองคาย</p>
+                            <p className="m-0 p-0 text-xl font-semibold">ผู้ขาย: Makro สาขาหนองคาย</p>
                             <p className="m-0 p-0">{order?._items?.length} รายการ</p>
                         </div>
                         <Button label="เพิ่มสินค้าทั้งหมดลงตะกร้า" outlined rounded className='w-full lg:w-fit' />

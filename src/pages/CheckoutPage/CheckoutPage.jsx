@@ -6,6 +6,8 @@ import { RadioButton } from 'primereact/radiobutton';
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Dropdown } from 'primereact/dropdown';
+import LogoMakro from "../../assets/macro-laos1.png"
+
 import axios from "axios";
 
 function CheckoutPage() {
@@ -98,7 +100,7 @@ function CheckoutPage() {
                 // taxId,
                 // branchCode,
                 shipping,
-                delivery_id: selectedDelivery._id,
+                delivery_id: "66bdd415203788461da41f81",
                 // selectedDelivery,
                 deliveryBranch,
                 amountPayment: LaostotalPayable,
@@ -110,14 +112,14 @@ function CheckoutPage() {
     };
 
     return (
-        <div className="sm:px-2 md:px-4 lg:px-6 xl:px-8">
+        <div className="mx-2 sm:px-2 md:px-4 lg:px-6 xl:px-8">
             <h1 className='flex justify-content-start'>ทำการสั่งซื้อ</h1>
             <div className='w-full gap-4 lg:flex justify-content-between'>
                 <div className='w-full lg:w-9 flex flex-column gap-2'>
                     <div className='address p-3 border-1 surface-border border-round bg-white border-round-mb flex flex-column justify-content-center'>
-                        <div className='flex align-items-center'>
+                        <div className='flex align-items-center mb-2'>
                             <i className="m-0 mr-2 pi pi-map-marker"></i>
-                            <h2 className='m-0 mb-2'>ข้อมูลผู้สั่งสินค้า</h2>
+                            <h2 className='m-0'>ข้อมูลผู้สั่งสินค้า</h2>
                         </div>
                         {user ? (
                             <>
@@ -138,9 +140,20 @@ function CheckoutPage() {
                         </div>
                     </div> */}
                     <div className='tax flex flex-column p-3 border-1 surface-border border-round  bg-white border-round-mb justify-content-center'>
-                        <h2 className='m-0 mb-2'>สรุปสินค้าและการจัดส่ง</h2>
+                        <div className='flex align-items-center mb-2'>
+                            <i className="m-0 mr-2 pi pi-truck"></i>
+                            <h2 className='m-0'>สรุปสินค้าและการจัดส่ง</h2>
+                        </div>
                         <div className='flex align-items-center justify-content-between border-1 surface-border border-round p-2 mb-2'>
-                            <h4 className='m-0'>Makro Pro</h4>
+                            {/* <h4 className='m-0'>Makro Pro</h4> */}
+                            <div className="flex align-items-center">
+                                <i className="pi pi-shop mr-1"></i>
+                                <img
+                                    src={LogoMakro}
+                                    alt="Logo"
+                                    height={25}
+                                />
+                            </div>
                             <p className='m-0'>{num_total} รายการ</p>
                         </div>
                         <div className="flex flex-column">
@@ -208,7 +221,7 @@ function CheckoutPage() {
                             ) : (
                                 <div>
                                     <p className='m-0'>รับสินค้าที่: โกดังลาว</p>
-                                    <p className='m-0'>ที่อยู่โกดัง</p>
+                                    {/* <p className='m-0'>ที่อยู่โกดัง</p> */}
                                 </div>
                             )}
 

@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { useCart } from '../router/CartContext';
 import axios from "axios";
 import ContactUs from "./ContactUs";
+import LogoMakro from "../assets/macro-laos1.png"
 //
 function Appbar() {
   const [isContactUsVisible, setContactUsVisible] = useState(false);
@@ -75,6 +76,11 @@ function Appbar() {
       // navigate(`/List-Product?search=${searchTerm}`);
     }
   };
+  const handleSearchClick = () => {
+    if (searchTerm.trim() !== "") {
+      window.location.href = `/List-Product?search=${searchTerm}`;
+    }
+  };
 
   const calculateTotalBeforeDiscount = () => {
     if (!Array.isArray(cart)) return 0;
@@ -120,7 +126,13 @@ function Appbar() {
 
   const customHeader = (
     <div className="flex align-items-center gap-2">
-      <a href="/" className="font-bold">Logo</a>
+      <a href="/">
+        <img
+          src={LogoMakro}
+          alt="Logo"
+          className="w-7 p-0 m-0"
+        />
+      </a>
     </div>
   );
 
@@ -132,13 +144,25 @@ function Appbar() {
 
   const customHeader3 = (
     <div className="flex align-items-center gap-2">
-      <a href="/" className="font-bold">Logo</a>
+      <a href="/">
+        <img
+          src={LogoMakro}
+          alt="Logo"
+          className="w-7 p-0 m-0"
+        />
+      </a>
     </div>
   );
 
   const customHeader4 = (
     <div className="flex align-items-center gap-2">
-      <a href="/" className="font-bold">Logo</a>
+      <a href="/">
+        <img
+          src={LogoMakro}
+          alt="Logo"
+          className="w-7 p-0 m-0"
+        />
+      </a>
     </div>
   );
 
@@ -161,20 +185,17 @@ function Appbar() {
             <LanguageSelector />
           </div>
           <div className="card flex justify-content-between mb-2 border-solid align-items-center">
-            <div className="flex gap-4">
+            <div className="flex justify-content-between align-items-center">
               <div className="block">
                 <Button icon="pi pi-bars" onClick={() => setVisible1(true)} rounded text />
               </div>
-              <div className="flex justify-content-between align-items-center">
-                <h1 className="m-0 mr-4">
-                  <Link to="/">Logo</Link>
-                </h1>
-                <div className="bg-post flex align-items-center text-center gap-2 px-2">
-                  <i className="pi pi-truck"></i>
-                  <p className="text-sm font-semibold">สาขาหนองคาย {zipcode}: 43000</p>
-                </div>
-              </div>
-
+              <Link to="/">
+                <img
+                  src={LogoMakro}
+                  alt="Logo"
+                  height={40}
+                />
+              </Link>
             </div>
             <div className="w-5 mx-4">
               <IconField iconPosition="left">
@@ -190,7 +211,7 @@ function Appbar() {
               </IconField>
             </div>
             <div className="flex gap-4">
-              <Button icon="pi pi-heart" rounded text />
+              {/* <Button icon="pi pi-heart" rounded text /> */}
               <Button
                 icon={
                   <span style={{ position: 'relative', display: 'inline-block' }}>
@@ -219,9 +240,10 @@ function Appbar() {
                 <Link to="/LoginPage"><Button icon="pi pi-user" rounded text /></Link>)}
             </div>
           </div>
-          <div className="navmenu w-full border-solid pb-1">
+          <div className="navmenu w-full border-solid pb-1 text-l">
             <div>
               <Button
+                className="text-l"
                 label={category}
                 icon="pi pi-chevron-down"
                 iconPos="right"
@@ -232,7 +254,7 @@ function Appbar() {
               <Link to="/Pagepoint">{makroProPoint}</Link>
             </div>
             <div>
-              <Button label={makromail} onClick={() => setVisible3(true)} />
+              <Button className="text-l" label={makromail} onClick={() => setVisible3(true)} />
             </div>
           </div>
         </div >
@@ -244,31 +266,30 @@ function Appbar() {
         <div className="pt-2 pr-3 pl-3">
           <div className="card flex justify-content-between mb-2 border-solid align-items-center">
 
-            <div className="block flex gap-2">
+            <div className="block flex">
               <Sidebar
                 header={customHeader}
                 visible={visible1}
                 onHide={() => setVisible1(false)}
-                icons={customIcons}
               >
                 <div>
                   <div>
                     {user ? (
                       <>
-                        <div className="flex pt-2 pb-4 align-items-center">
+                        <div className="flex pt-0 pb-2 align-items-center">
                           <div class="flex flex-wrap justify-content-center">
                             <div class="border-circle w-4rem h-4rem m-2 bg-primary font-bold flex align-items-center justify-content-center">{user.name.charAt(0).toUpperCase()}</div>
                           </div>
                           <h4 className="ml-3">{user.name}</h4>
                         </div>
                         <div>
-                          <Button className="w-full flex justify-content-between" onClick={() => setVisible4(true)}>
+                          <Button className="w-full flex justify-content-between" onClick={() => setVisible4(true)} text>
                             <span>ทั้งหมด</span>
                             <i className="pi pi-angle-right"></i>
                           </Button>
                         </div>
                         <hr />
-                        <div className="flex flex-column p-2">
+                        <div className="flex flex-column">
                           <Menu model={itemsMenu} className="p-menu" />
                           <ContactUs visible={isContactUsVisible} setVisible={setContactUsVisible} />
                         </div>
@@ -352,7 +373,6 @@ function Appbar() {
                 visible={visible2}
                 position="right"
                 onHide={() => setVisible2(false)}
-                icons={customIcons}
               >
 
                 <div className={cart.length > 0 ? "cart-items w-full" : "cart flex gap-1"}>
@@ -439,15 +459,19 @@ function Appbar() {
               </Sidebar>
               <Button icon="pi pi-bars" onClick={() => setVisible1(true)} rounded text />
               <div className="flex justify-content-start">
-                <h1 className="m-0 mr-4">
-                  <Link to="/">Logo</Link>
-                </h1>
+                <Link to="/">
+                  <img
+                    src={LogoMakro}
+                    alt="Logo"
+                    height={40}
+                  />
+                </Link>
               </div>
             </div>
 
             <div className="flex justify-content-between align-items-center">
               <div className="flex justify-content-end">
-                <Button icon="pi pi-heart" rounded text />
+                {/* <Button icon="pi pi-heart" rounded text /> */}
                 <Button
                   icon={
                     <span style={{ position: 'relative', display: 'inline-block' }}>
@@ -464,24 +488,23 @@ function Appbar() {
           </div>
 
           <div className="flex justify-content-between align-items-center gap-2">
-            <div className="bg-post flex align-items-center text-center gap-2">
-              {/* <Button className="p-1" label="รหัสไปรษณีย์" icon="pi pi-truck"/> */}
-              <i className="pi pi-truck"></i>
-              <p className="white-space-nowrap overflow-hidden text-overflow-clip">สาขาหนองคาย</p>
-              <i className="pi pi-angle-down"></i>
-            </div>
-            <div className="w-9">
-              <IconField iconPosition="left">
-                <InputIcon className="pi pi-search text-900"> </InputIcon>
+            <div className="w-full flex justify-content-between align-items-center">
+              <IconField className="w-10" iconPosition="left">
+                <InputIcon className="pi pi-search text-900"></InputIcon>
                 <InputText
                   className="w-full border-round-3xl py-2 surface-100 border-none"
                   type="text"
                   placeholder="ค้นหาสินค้า"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyPress={handleSearchKeyPress}
                 />
               </IconField>
+              <Button
+                className="p-0 m-0"
+                icon="pi pi-search"
+                onClick={handleSearchClick}
+                rounded
+              />
             </div>
           </div>
 

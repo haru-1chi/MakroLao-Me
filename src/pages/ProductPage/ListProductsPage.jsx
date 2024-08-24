@@ -26,6 +26,7 @@ function ListProductsPage() {
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(20);
   const [visible, setVisible] = useState(false);
+  const [visibleSort, setVisibleSort] = useState(false);
   const toast = useRef(null);
 
   const defaultFilters = {
@@ -162,29 +163,33 @@ function ListProductsPage() {
         <div className="flex justify-content-between">
           <div className="w-full flex justify-content-between align-items-center">
             <h1 className="font-semibold">รายการสินค้า</h1>
-            <FilterSort onSortChange={handleSortChange} />
+            <div className="hidden lg:block">
+              <FilterSort onSortChange={handleSortChange} visibleSort={visibleSort}
+                setVisibleSort={setVisibleSort} />
+            </div>
           </div>
-          {/* <Button
-            className="lg:hidden"
-            onClick={() => setVisible(true)}
-            aria-label="Clear Filters"
-            label="กรอง" icon="pi pi-sort-alt"
-            text
-          /> */}
-          <Button
-            className="lg:hidden"
-            onClick={() => setVisible(true)}
-            aria-label="Clear Filters"
-            label="กรอง" icon="pi pi-sliders-h"
-            text
-          />
+          <div className="lg:hidden flex">
+            <Button
+              className="px-2"
+              onClick={() => setVisibleSort(true)}
+              label="เรียง" icon="pi pi-sort-alt"
+              text
+            />
+            <Button
+              className="px-2"
+              onClick={() => setVisible(true)}
+              label="กรอง" icon="pi pi-sliders-h"
+              text
+            />
+          </div>
+
         </div>
         <div className="panel w-full flex">
           <div className="hidden lg:block mr-3">
             {data.length > 0 && (
               <Filter
                 onFilterChange={handleFilterChange}
-                products={data} //ส่ง data ทั้งหมดไป gen, อาจเป็น data จาก search
+                products={data}
                 visible={visible}
                 setVisible={setVisible}
               />

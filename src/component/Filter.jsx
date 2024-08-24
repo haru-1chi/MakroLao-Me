@@ -153,7 +153,7 @@ function Filter({ onFilterChange, products, visible, setVisible }) {
                     <div className="flex justify-content-between">
                         <div className="flex align-items-center">
                             <i className="pi pi-sliders-h"></i>
-                            <p className='ml-2'>{filter}</p>
+                            <p className='ml-2 font-semibold text-l'>{filter}</p>
                         </div>
                     </div>
                     {Object.entries(expandedSections).map(([section, expanded]) => (
