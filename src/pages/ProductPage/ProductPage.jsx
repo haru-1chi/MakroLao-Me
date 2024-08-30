@@ -7,7 +7,6 @@ import { Toast } from 'primereact/toast';
 import Footer from "../../component/Footer";
 import { useLocation } from 'react-router-dom';
 import axios from "axios";
-import WT from "../../assets/wt.jpg"
 
 function ProductPage() {
   const [dataCarousel, setDataCarousel] = useState([]);

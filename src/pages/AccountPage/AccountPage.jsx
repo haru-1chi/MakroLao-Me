@@ -58,7 +58,8 @@ function AccountPage() {
             const orderStatus = Object.values(statusEvents).find(status => status.key === order.status);
             switch (activeOrderStatus) {
                 case 'ต้องชำระเงิน':
-                    return orderStatus?.key === statusEvents.PendingPayment.key;
+                    return null
+                    // orderStatus?.key === statusEvents.PendingPayment?.key;
                 case 'กำลังจัดเตรียม':
                     return [statusEvents.pending.key, statusEvents.Preparing.key].includes(orderStatus?.key);
                 case 'กำลังจัดส่ง':
@@ -103,7 +104,7 @@ function AccountPage() {
             <li className={`list-none cursor-pointer ${activeOrderStatus === 'ต้องชำระเงิน' ? 'border-bottom-3 border-primary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('ต้องชำระเงิน')}>
                 ต้องชำระเงิน
-                {/* ต้องชำระเงิน {statusCounts[statusEvents.PendingPayment.key] || ''} */}
+                {/* {statusCounts[statusEvents?.PendingPayment.key] || ''} */}
             </li>
             <li className={`list-none cursor-pointer ${activeOrderStatus === 'กำลังจัดเตรียม' ? 'border-bottom-3 border-primary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('กำลังจัดเตรียม')}>
