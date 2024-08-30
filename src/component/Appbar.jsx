@@ -5,6 +5,7 @@ import { Toast } from 'primereact/toast';
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
+import { OverlayPanel } from 'primereact/overlaypanel';
 import { Badge } from 'primereact/badge';
 import { Menu } from 'primereact/menu';
 import { Outlet, Link, useNavigate } from "react-router-dom";
@@ -17,12 +18,14 @@ import ContactUs from "./ContactUs";
 import LogoMakro from "../assets/macro-laos1.png"
 //
 function Appbar() {
+  const op = useRef(null);
   const [isContactUsVisible, setContactUsVisible] = useState(false);
   const itemsMenu = [
     {
       label: 'บัญชีของฉัน',
       command: () => {
         setVisible1(false);
+        op.current.hide();
         navigate("/AccountPage", { state: { activeTab: 'account' } });
       }
     },
@@ -30,6 +33,7 @@ function Appbar() {
       label: 'ประวัติการสั่งซื้อ',
       command: () => {
         setVisible1(false);
+        op.current.hide();
         navigate("/AccountPage", { state: { activeTab: 'orderHistory' } });
       }
     },
@@ -98,6 +102,7 @@ function Appbar() {
 
   const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
   const [user, setUser] = useState(null);
+  const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -116,6 +121,23 @@ function Appbar() {
     getUserProfile();
   }, [apiUrl]);
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.post(`${apiUrl}/categories`);
+        setCategories(response.data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+
+
+  const handleCategorySelect = (categoryName) => {
+    navigate('/List-Product', { state: { categoryName } });
+  };
   const customIcons = (
     <React.Fragment>
       <button className="p-sidebar-icon p-link mr-2">
@@ -210,7 +232,7 @@ function Appbar() {
                 />
               </IconField>
             </div>
-            <div className="flex gap-4">
+            <div className="flex gap-4 align-items-center">
               {/* <Button icon="pi pi-heart" rounded text /> */}
               <Button
                 icon={
@@ -220,23 +242,42 @@ function Appbar() {
                       style={{ position: 'absolute', top: '-0.4rem', right: '-0.4rem', fontSize: '0.7rem' }} />
                   </span>
                 }
+                rounded
                 text
                 onClick={() => setVisible2(true)}
               />{user ? (
-                <Link to="/AccountPage">
-                  <Button
-                    className="py-2 px-3 surface-border"
-                    icon="pi pi-user"
-                    rounded
-                    outlined
-                    label={
-                      <div className="flex align-items-center gap-2 white-space-nowrap text-overflow-ellipsis">
-                        {user.name}
-                        <i className="pi pi-angle-down"></i>
+                <>
+                  <div>
+                    <Button
+                      className="py-2 px-3 surface-border"
+                      icon="pi pi-user"
+                      rounded
+                      outlined
+                      label={
+                        <div className="flex align-items-center gap-2 white-space-nowrap text-overflow-ellipsis">
+                          {user.name}
+                          <i className="pi pi-angle-down"></i>
+                        </div>
+                      }
+                      onClick={(e) => op.current.toggle(e)}
+                    />
+                  </div>
+                  <OverlayPanel ref={op} closeOnEscape>
+                    <div className='w-16rem'>
+                      <div className="flex p-0 pb-2 border-bottom-1 surface-border align-items-center">
+                        <div class="flex flex-wrap justify-content-center">
+                          <div class="border-circle w-4rem h-4rem m-2 bg-primary font-bold flex align-items-center justify-content-center">{user.name.charAt(0).toUpperCase()}</div>
+                        </div>
+                        <h4 className="ml-3">{user.name}</h4>
                       </div>
-                    }
-                  />
-                </Link>) : (
+                      <div className="flex flex-column">
+                        <Menu model={itemsMenu} className="p-menu" />
+                        <ContactUs visible={isContactUsVisible} setVisible={setContactUsVisible} />
+                      </div>
+                    </div>
+                  </OverlayPanel>
+                </>
+              ) : (
                 <Link to="/LoginPage"><Button icon="pi pi-user" rounded text /></Link>)}
             </div>
           </div>
@@ -384,12 +425,12 @@ function Appbar() {
                             <img
                               src={product.product_image}
                               alt={product.product_name}
-                              width={50}
-                              height={50}
+                              width={70}
+                              height={70}
                             />
-                            <div className="flex flex-column">
+                            <div className="ml-3 flex flex-column">
                               <span className="mb-3 font-bold">{product.product_name}</span>
-                              <span>{product.product_price} ฿</span>
+                              <span>{Number(product.product_price).toLocaleString('en-US')} ฿</span>
                             </div>
                           </div>
                           <div className="flex align-items-center justify-content-between mb-2">
@@ -526,21 +567,14 @@ function Appbar() {
                   <div className="box-menu mt-5">
                     <Link to="List-Product" className="flex justify-content-between" onClick={() => setVisible4(false)}><span><i className="pi pi-hashtag mr-2" />สินค้าทุกหมวดหมู่</span> <i className="pi pi-angle-right mr-2"></i></Link>
                   </div>
-                  <div className="box-menu mt-5">
-                    <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />เนื้อสัตว์</span> <i className="pi pi-angle-right mr-2"></i></a>
-                  </div>
-                  <div className="box-menu mt-5">
-                    <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />อาหารทะเล</span> <i className="pi pi-angle-right mr-2"></i></a>
-                  </div>
-                  <div className="box-menu mt-5">
-                    <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />ผักและผลไม้</span> <i className="pi pi-angle-right mr-2"></i></a>
-                  </div>
-                  <div className="box-menu mt-5">
-                    <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />เครื่องดื่มและนม</span> <i className="pi pi-angle-right mr-2"></i></a>
-                  </div>
-                  <div className="box-menu mt-5">
-                    <a href="#" className="flex justify-content-between"><span><i className="pi pi-hashtag mr-2" />อาหารและเครื่องปรุง</span> <i className="pi pi-angle-right mr-2"></i></a>
-                  </div>
+                  {categories.map((Item) => (
+                    <div className="box-menu mt-5" onClick={() => handleCategorySelect(Item.name)}>
+                      <Link className="flex justify-content-between" onClick={() => setVisible4(false)}>
+                        <span><i className="pi pi-hashtag mr-2" />{Item.name}</span>
+                        <i className="pi pi-angle-right mr-2"></i>
+                      </Link>
+                    </div>
+                  ))}
                 </div>
               </Sidebar>
               <Button

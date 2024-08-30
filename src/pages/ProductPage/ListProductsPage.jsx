@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Link, useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import axios from "axios";
 import { useCart } from '../../router/CartContext';
 import Filter from "../../component/Filter";
@@ -11,27 +11,26 @@ import { Toast } from 'primereact/toast';
 import { ProgressSpinner } from 'primereact/progressspinner';
 
 function ListProductsPage() {
-  const apiUrl = import.meta.env.VITE_REACT_APP_API_PRODUCT;
-  const product_token = import.meta.env.VITE_REACT_APP_PRODUCT_TOKEN;
+  const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
+  const location = useLocation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
   const searchTerm = searchParams.get("search") || ""; //search
-
   const { addToCart } = useCart();
 
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);  //filter
   const [paginatedData, setPaginatedData] = useState([]);
   const [first, setFirst] = useState(0);
-  const [rows, setRows] = useState(20);
+  const [rows, setRows] = useState(40);
   const [visible, setVisible] = useState(false);
   const [visibleSort, setVisibleSort] = useState(false);
   const toast = useRef(null);
-
+  const categoriesLocation = location.state?.categoryName ? location.state.categoryName : [];
   const defaultFilters = {
     priceRanges: { key: 'allRange', value: 'All' },
-    selectedSubCategories: [],
+    selectedCategories: [],
     selectedBrands: []
   };
   const [filters, setFilters] = useState(defaultFilters);
@@ -64,39 +63,50 @@ function ListProductsPage() {
     }
     return products;
   };
+  const [categories, setCategories] = useState([]);
 
-  const applyFilters = (filters) => {
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.post(`${apiUrl}/categories`);
+        setCategories(response.data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  const getCategoryName = (categoryId) => {
+    const category = categories.find(cat => cat._id === categoryId);
+    return category ? category.name : categoryId;
+  };
+
+  const applyFilters = useCallback((filters) => {
     let filtered = data;
 
     if (filters.priceRanges.key !== 'allRange') {
       filtered = filtered.filter(product => product.product_price >= filters.priceRanges.min && product.product_price <= filters.priceRanges.max);
     }
 
-    // if (filters.stocks.key !== 'allStock') {
-    //   filtered = filtered.filter(product => product.inStock === filters.stocks.inStock);
-    // }
-
-    if (filters.selectedSubCategories.length > 0) {
-      filtered = filtered.filter(product => filters.selectedSubCategories.includes(product.subCategory));
+    if (filters.selectedCategories.length > 0) {
+      filtered = filtered.filter(product => filters.selectedCategories.includes(getCategoryName(product.product_category)));
     }
 
     if (filters.selectedBrands.length > 0) {
       filtered = filtered.filter(product => filters.selectedBrands.includes(product.product_brand));
     }
 
-    // if (filters.promotions.key !== 'allPromotion') {
-    //   filtered = filtered.filter(product => product.onSale === filters.promotions.onSale);
-    // }
-
     filtered = sortProducts(filtered, sortOption);
 
     setFilteredData(filtered);
     setPaginatedData(filtered.slice(first, first + rows));
 
-  };
+  }, [data, sortOption, first, rows]);
 
-  const handleFilterChange = (filters) => {
-    applyFilters(filters);
+  const handleFilterChange = (updatedFilters) => {
+    setFilters(updatedFilters);
+    applyFilters(updatedFilters);
   };
 
   const handleSortChange = (sortOption) => {
@@ -108,19 +118,13 @@ function ListProductsPage() {
     setLoading(true);
     axios({
       method: "post",
-      url: `${apiUrl}/api_product`,
-      headers: {
-        "auth-token":
-          `${product_token}`,
-      },
+      url: `${apiUrl}/products`
     })
       .then((response) => {
         const filtered = filterProducts(response.data, searchTerm);
         setData(filtered);
         setFilteredData(filtered);
         setPaginatedData(filtered.slice(first, first + rows));
-        // setFilteredData(response.data);
-        // setPaginatedData(response.data.slice(first, first + rows));
       })
       .catch((error) => {
         console.log(error);
@@ -133,6 +137,16 @@ function ListProductsPage() {
   useEffect(() => {
     fetchData();
   }, [searchTerm]);
+
+  useEffect(() => {
+    const categoryName = location.state?.categoryName;
+    const updatedFilters = {
+      ...filters,
+      selectedCategories: categoryName ? [categoryName, ...(filters.selectedCategories)] : filters.selectedCategories,
+    };
+    setFilters(updatedFilters);
+    applyFilters(updatedFilters);
+  }, [location.state?.categoryName, applyFilters, filters]);
 
   useEffect(() => {
     setPaginatedData(filteredData.slice(first, first + rows));
@@ -154,7 +168,6 @@ function ListProductsPage() {
       showSuccessToast();
     }
   };
-
 
   return (
     <>
@@ -192,6 +205,8 @@ function ListProductsPage() {
                 products={data}
                 visible={visible}
                 setVisible={setVisible}
+                initialFilters={filters}
+                categoriesLocation={categoriesLocation}
               />
             )}
           </div>
@@ -204,11 +219,12 @@ function ListProductsPage() {
               {data.length ? (
                 <div className="w-full">
                   {searchTerm && <h2 className="mt-0 font-semibold">ผลการค้นหา "{searchTerm}"</h2>}
+                  {location.state?.categoryName && <h2 className="mt-0 font-semibold">ผลการค้นหาตามหมวดหมู่ "{location.state?.categoryName}"</h2>}
                   <div className="product-list">
                     {paginatedData.map((product, index) => (
-                      <div key={index} className="relative flex h-24rem md:h-28rem">
-                        <div className="w-full border-1 surface-border border-round py-5 px-3 bg-white border-round-mb flex flex-column justify-content-between">
-                          <Link to={`product/${product.product_id}`} state={{ product }}>
+                      <div key={index} className="relative flex h-22rem md:h-28rem">
+                        <div className="w-full border-1 surface-border border-round p-3 bg-white border-round-mb flex flex-column justify-content-between">
+                          <Link to={`/List-Product/product/${product.product_id}`} state={{ product }}>
                             <img
                               src={product.product_image}
                               alt={product.product_name}
@@ -218,7 +234,7 @@ function ListProductsPage() {
                           <div>
                             <h4 className="m-0 pb-1 border-bottom-1 surface-border">{product.product_name}</h4>
                             <div className="flex align-items-center justify-content-between p-2 mt-2 bg-product">
-                              <div className="font-bold">{product.product_price} ฿</div>
+                              <div className="font-bold">{Number(product.product_price).toLocaleString('en-US')} ฿</div>
                               <Button
                                 className="btn-plus-product"
                                 icon="pi pi-plus"
@@ -261,7 +277,7 @@ function ListProductsPage() {
         </div>
       </div>
       <div className="card">
-        <Paginator first={first} rows={rows} totalRecords={filteredData.length} onPageChange={onPageChange} />
+        <Paginator first={first} rows={rows} totalRecords={filteredData.length} onPageChange={onPageChange} template="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" />
       </div>
       <Footer />
     </>

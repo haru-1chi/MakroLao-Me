@@ -7,10 +7,11 @@ import { Toast } from 'primereact/toast';
 import Footer from "../../component/Footer";
 import { useLocation } from 'react-router-dom';
 import axios from "axios";
+import WT from "../../assets/wt.jpg"
 
 function ProductPage() {
   const [dataCarousel, setDataCarousel] = useState([]);
-  const apiUrl = import.meta.env.VITE_REACT_APP_API_PRODUCT;
+  const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
   const product_token = import.meta.env.VITE_REACT_APP_PRODUCT_TOKEN;
   const shuffleArray = (array) => {
     return array.sort(() => 0.5 - Math.random());
@@ -19,11 +20,7 @@ function ProductPage() {
   const fetchData = () => {
     axios({
       method: "post",
-      url: `${apiUrl}/api_product`,
-      headers: {
-        "auth-token":
-          `${product_token}`,
-      },
+      url: `${apiUrl}/products`
     })
       .then((response) => {
         const shuffledData = shuffleArray(response.data);
@@ -76,7 +73,14 @@ function ProductPage() {
     },
   ];
 
+  // const itemTemplate = (item) => {
+  //   return <img src={WT} alt='' width={300} />
+  // }
 
+  // const thumbnailTemplate = (item) => {
+  //   return <img src={WT} alt='' width={100} />
+  // }
+  
   const itemTemplate = (item) => {
     return <img src={item.imgURL} alt='' width={300} />
   }
@@ -93,31 +97,34 @@ function ProductPage() {
     <>
       <Toast ref={toast} position="top-center" />
       <div className="m-3 flex justify-content-center flex-wrap">
-        <div className="w-9 flex gap-2">
-          <div className="h-full w-full shadow-2 border-round-lg bg-white p-4 mb-3">
-            <Galleria
-              value={data}
-              responsiveOptions={responsiveOptions}
-              numVisible={5}
-              style={{ maxWidth: "640px" }}
-              item={itemTemplate}
-              thumbnail={thumbnailTemplate}
-            />
+        <div className="lg:flex gap-4">
+          <div className="md:w-full lg:w-30rem shadow-2 border-round-lg bg-white p-4 mb-3 lg:mb-0 flex justify-content-center">
+            <img src={product.product_image} alt='' className="w-8 md:w-5 lg:w-12" />
           </div>
-          <div className="w-full p-4 bg-white border-round-lg shadow-2">
-            <h1>{product.product_name}</h1>
-            <h2>{product.product_price} ฿</h2>
-            <p>{product.product_detail}</p>
-            <Button className="w-fit" label="+ เพิ่มสินค้าในตะกร้า"
+          <div className="md:w-full lg:w-30rem p-4 bg-white border-round-lg shadow-2">
+            <div className="border-bottom-1 surface-border">
+              <h1 className="mt-0 font-semibold">{product.product_name}</h1>
+              <div className="w-fit px-3 bg-primary border-round-md">
+                <h2 className="text-white">{Number(product.product_price).toLocaleString('en-US')} ฿</h2>
+              </div>
+              <p>{product.product_detail}</p>
+            </div>
+            {/* <p>{product.product_detail}</p> */}
+            <Button
+              className="w-fit mt-3"
+              icon="pi pi-plus"
+              label="เพิ่มสินค้าในตะกร้า"
               onClick={() => {
                 addToCart(product)
                 show()
-              }} />
+              }}
+              rounded
+            />
           </div>
         </div>
-        <div className="w-9">
+        <div className="w-full">
           <h2 className="mb-2 font-semibold">สินค้าอื่นๆ</h2>
-          <Products data={dataCarousel} startIndex={0}/>
+          <Products data={dataCarousel} startIndex={0} />
         </div>
       </div>
       <Footer />

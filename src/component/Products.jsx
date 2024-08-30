@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from "react-router-dom";
 import { Button } from 'primereact/button';
 import { Carousel } from 'primereact/carousel';
 import { useCart } from '../router/CartContext';
@@ -89,14 +90,19 @@ function Products({ data, startIndex }) {
     const productTemplate = (product) => {
         return (
             product ? (
-                <div className="carousel-product-items border-1 surface-border m-2 py-5 px-3 bg-white border-round-md flex flex-column justify-content-between">
-                    <div className="mb-3 flex align-items-center justify-content-center">
-                        <img src={product.product_image} alt={product.product_name} className="w-12" />
+                <div className="carousel-product-items border-1 surface-border m-2 py-3 px-3 bg-white border-round-md flex flex-column justify-content-between">
+                    <div className="flex align-items-center justify-content-center">
+                        <Link to={`/List-Product/product/${product.product_id}`} state={{ product }}>
+                            <img
+                                src={product.product_image}
+                                alt={product.product_name}
+                                className="w-12" />
+                        </Link>
                     </div>
                     <div>
                         <h4 className="m-0 pb-1 border-bottom-1 surface-border">{product.product_name}</h4>
                         <div className="bg-product flex align-items-center justify-content-between p-2 mt-2">
-                            <div className='font-bold'>{product.product_price} ฿</div>
+                            <div className='font-bold'>{Number(product.product_price).toLocaleString('en-US')} ฿</div>
                             <Button
                                 className='btn-plus-product'
                                 icon="pi pi-plus"

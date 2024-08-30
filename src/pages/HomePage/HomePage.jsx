@@ -119,7 +119,7 @@ function HomePage() {
   ];
 
   const [data, setData] = useState([]);
-  const apiUrl = import.meta.env.VITE_REACT_APP_API_PRODUCT;
+  const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
   const product_token = import.meta.env.VITE_REACT_APP_PRODUCT_TOKEN;
   const shuffleArray = (array) => {
     return array.sort(() => 0.5 - Math.random());
@@ -128,11 +128,7 @@ function HomePage() {
   const fetchData = () => {
     axios({
       method: "post",
-      url: `${apiUrl}/api_product`,
-      headers: {
-        "auth-token":
-          `${product_token}`,
-      },
+      url: `${apiUrl}/products`
     })
       .then((response) => {
         const shuffledData = shuffleArray(response.data);

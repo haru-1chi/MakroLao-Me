@@ -1,15 +1,38 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
 import { RadioButton } from 'primereact/radiobutton';
 import { Checkbox } from 'primereact/checkbox';
 import { Sidebar } from 'primereact/sidebar';
 import { Button } from "primereact/button";
+import axios from 'axios';
 //
 import { useTranslation } from "react-i18next";
 //
 
-function Filter({ onFilterChange, products, visible, setVisible }) {
+function Filter({ onFilterChange, products, visible, setVisible, initialFilters, categoriesLocation }) {
+    const navigate = useNavigate();
     const { t } = useTranslation()
-    const { filter, clearFilter, priceRange, all, stock, instock, subCategory, brand, promotion, onSale, show } = t("Filter")
+    const { filter, clearFilter, priceRange, all, stock, instock, category_name, brand, promotion, onSale, show } = t("Filter")
+
+    const [categories, setCategories] = useState([]);
+    const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.post(`${apiUrl}/categories`);
+                setCategories(response.data);
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    const getCategoryName = (categoryId) => {
+        const category = categories.find(cat => cat._id === categoryId);
+        return category ? category.name : categoryId;
+    };
 
     const generatePriceRanges = (products) => {
         const prices = products.map(product => product.product_price);
@@ -57,80 +80,78 @@ function Filter({ onFilterChange, products, visible, setVisible }) {
         return ranges;
     };
 
-    const getUniqueValues = (products, key) => {
-        return [...new Set(products.map(item => item[key]))];
-    };
-
     const generateFiltersFromData = (products) => {
-        const uniqueSubCategories = getUniqueValues(products, 'subCategory');
-        const uniqueBrands = getUniqueValues(products, 'product_brand');
+        const uniqueCategories = [
+            ...new Set(products.map(product => getCategoryName(product.product_category)))
+        ];
+        const uniqueBrands = [...new Set(products.map(item => item.product_brand))];
 
         return {
-            subCategoryOptions: [
-                ...uniqueSubCategories.map(subCategory => ({ key: subCategory, value: subCategory }))
-            ],
-            brandOptions: [
-                ...uniqueBrands.map(brand => ({ key: brand, value: brand }))
-            ]
+            categoryOptions: uniqueCategories.map(categoryName => ({
+                key: categoryName,
+                value: categoryName
+            })),
+            brandOptions: uniqueBrands.map(brand => ({
+                key: brand,
+                value: brand
+            }))
         };
     };
 
-    const getInitialFilters = () => ({
+    const priceRanges = generatePriceRanges(products);
+    const { categoryOptions, brandOptions } = generateFiltersFromData(products);
+
+    const [filters, setFilters] = useState(initialFilters || {
         priceRanges: { key: 'allRange', value: `${all}` },
-        // stocks: { key: 'allStock', value: `${all}`, inStock: null },
-        selectedSubCategories: [],
+        selectedCategories: [],
         selectedBrands: [],
-        // promotions: { key: 'allPromotion', value: `${all}`, onSale: null }
     });
 
-    const priceRanges = generatePriceRanges(products);
-    // const stocks = [
-    //     { key: 'allStock', value: `${all}`, inStock: null },
-    //     { key: 'inStock', value: `${instock}`, inStock: true }
-    // ];
-    const { subCategoryOptions, brandOptions } = generateFiltersFromData(products);
-    // const promotions = [
-    //     { key: 'allPromotion', value: `${all}`, onSale: null },
-    //     { key: 'onSale', value: `${onSale}`, onSale: true }
-    // ];
-
-    const [filters, setFilters] = useState(getInitialFilters());
+    useEffect(() => {
+        setFilters(initialFilters);
+    }, [initialFilters]);
 
     const clearFilters = () => {
-        setFilters(getInitialFilters());
+        const clearedFilters = {
+            priceRanges: { key: 'allRange', value: `${all}` },
+            selectedCategories: [],
+            selectedBrands: [],
+        };
+        setFilters(clearedFilters);
+        onFilterChange(clearedFilters);
+        navigate(location.pathname, { replace: true });
     };
 
     const handleFilterChange = (key, value) => {
-        setFilters(prevFilters => ({ ...prevFilters, [key]: value }));
+        const updatedFilters = { ...filters, [key]: value };
+        setFilters(updatedFilters);
+        onFilterChange(updatedFilters);
     };
 
     const handleCheckboxChange = (key, value, checked) => {
-        setFilters(prevFilters => {
-            const updatedList = checked
-                ? [...prevFilters[key], value]
-                : prevFilters[key].filter(item => item !== value);
-            return { ...prevFilters, [key]: updatedList };
-        });
+        const updatedList = checked
+            ? [...filters[key], value]
+            : filters[key].filter(item => item !== value);
+    
+        const updatedFilters = { ...filters, [key]: updatedList };
+        setFilters(updatedFilters);
+        onFilterChange(updatedFilters);
+        
+        if (!checked && value === categoriesLocation) {
+            navigate(location.pathname, { replace: true });
+        }
     };
-
-    useEffect(() => {
-        onFilterChange(filters);
-    }, [filters, onFilterChange]);
 
     const sectionLabels = {
         priceRanges: `${priceRange}`,
-        // stocks: `${stock}`,
-        selectedSubCategories: `${subCategory}`,
+        selectedCategories: `${category_name}`,
         selectedBrands: `${brand}`,
-        // promotions: `${promotion}`
     };
 
     const [expandedSections, setExpandedSections] = useState({
         priceRanges: true,
-        // stocks: true,
-        selectedSubCategories: true,
+        selectedCategories: true,
         selectedBrands: true,
-        // promotions: true,
     });
 
     const toggleSection = (section) => {
@@ -162,7 +183,7 @@ function Filter({ onFilterChange, products, visible, setVisible }) {
                                 <p>{sectionLabels[section]}</p>
                                 <p><i className={`pi ${expanded ? 'pi-minus' : 'pi-plus'}`}></i></p>
                             </div>
-                            {expanded && (section === 'priceRanges' ? priceRanges : section === 'selectedSubCategories' ? subCategoryOptions : brandOptions).map((option) => (
+                            {expanded && (section === 'priceRanges' ? priceRanges : section === 'selectedCategories' ? categoryOptions : brandOptions).map((option) => (
                                 <div className="mb-2" key={option.key}>
                                     {section === 'priceRanges' ? (
                                         <RadioButton
@@ -221,7 +242,7 @@ function Filter({ onFilterChange, products, visible, setVisible }) {
                             <p>{sectionLabels[section] || section}</p>
                             <p><i className={`pi ${expanded ? 'pi-minus' : 'pi-plus'}`}></i></p>
                         </div>
-                        {expanded && (section === 'priceRanges' ? priceRanges : section === 'selectedSubCategories' ? subCategoryOptions : brandOptions).map((option) => (
+                        {expanded && (section === 'priceRanges' ? priceRanges : section === 'selectedCategories' ? categoryOptions : brandOptions).map((option) => (
                             <div className="mb-2" key={option.key}>
                                 {section === 'priceRanges' ? (
                                     <RadioButton
@@ -250,4 +271,3 @@ function Filter({ onFilterChange, products, visible, setVisible }) {
 }
 
 export default Filter;
-
