@@ -1,17 +1,18 @@
 import Products from "../../component/Products";
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useCart } from '../../router/CartContext';
-import { Galleria } from "primereact/galleria";
+//import { Galleria } from "primereact/galleria";
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import Footer from "../../component/Footer";
 import { useLocation } from 'react-router-dom';
 import axios from "axios";
+//import WT from "../../assets/wt.jpg"
 
 function ProductPage() {
   const [dataCarousel, setDataCarousel] = useState([]);
   const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
-  const product_token = import.meta.env.VITE_REACT_APP_PRODUCT_TOKEN;
+  //const product_token = import.meta.env.VITE_REACT_APP_PRODUCT_TOKEN;
   const shuffleArray = (array) => {
     return array.sort(() => 0.5 - Math.random());
   };
