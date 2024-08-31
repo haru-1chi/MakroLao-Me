@@ -58,27 +58,30 @@ function AccountPage() {
             const orderStatus = Object.values(statusEvents).find(status => status.key === order.status);
             switch (activeOrderStatus) {
                 case 'ต้องชำระเงิน':
-                    return null
-                    // orderStatus?.key === statusEvents.PendingPayment?.key;
+                    return orderStatus?.key === statusEvents.PendingPayment?.key;
                 case 'กำลังจัดเตรียม':
                     return [statusEvents.pending.key, statusEvents.Preparing.key].includes(orderStatus?.key);
+                case 'กำลังแพ็คสินค้า':
+                    return orderStatus?.key === statusEvents.Packaged?.key;
                 case 'กำลังจัดส่ง':
-                    if (order.shipping === 'selfPickup') {
-                        return [statusEvents.Packaged.key, statusEvents.ThaiWarehouseArrival.key].includes(orderStatus?.key);
-                    } else {
-                        return [
-                            statusEvents.Packaged.key,
-                            statusEvents.ThaiWarehouseArrival.key,
-                            statusEvents.LaosWarehouseArrival.key,
-                            statusEvents.InTransit.key
-                        ].includes(orderStatus?.key);
-                    }
+                    // if (order.shipping === 'selfPickup') {
+                    //     return [statusEvents.Packaged.key, statusEvents.ThaiWarehouseArrival.key].includes(orderStatus?.key);
+                    // } else {
+                    //     return [
+                    //         statusEvents.Packaged.key,
+                    //         statusEvents.ThaiWarehouseArrival.key,
+                    //         statusEvents.LaosWarehouseArrival.key,
+                    //         statusEvents.InTransit.key
+                    //     ].includes(orderStatus?.key);
+                    // }
+                    return orderStatus?.key === statusEvents.Delivering?.key;
                 case 'ถึงจุดรับสินค้าแล้ว':
-                    return order.shipping === 'selfPickup'
-                        ? orderStatus?.key === statusEvents.LaosWarehouseArrival.key
-                        : orderStatus?.key === statusEvents.BranchArrival.key;
+                    // return order.shipping === 'selfPickup'
+                    //     ? orderStatus?.key === statusEvents.LaosWarehouseArrival.key
+                    //     : orderStatus?.key === statusEvents.BranchArrival.key;
+                    return orderStatus?.key === statusEvents.Delivering?.key;
                 case 'รับสินค้าสำเร็จ':
-                    return orderStatus?.key === statusEvents.Received.key;
+                    return orderStatus?.key === statusEvents.Arrival.key;
                 case 'ถูกยกเลิก':
                     return orderStatus?.key === statusEvents.Cancelled.key;
                 default:
@@ -104,19 +107,23 @@ function AccountPage() {
             <li className={`list-none cursor-pointer ${activeOrderStatus === 'ต้องชำระเงิน' ? 'border-bottom-3 border-primary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('ต้องชำระเงิน')}>
                 ต้องชำระเงิน
-                {/* {statusCounts[statusEvents?.PendingPayment.key] || ''} */}
+                {statusCounts[statusEvents?.PendingPayment.key] || ''}
             </li>
             <li className={`list-none cursor-pointer ${activeOrderStatus === 'กำลังจัดเตรียม' ? 'border-bottom-3 border-primary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('กำลังจัดเตรียม')}>
                 กำลังจัดเตรียม {statusCounts[statusEvents.pending.key] || ''}
             </li>
+            <li className={`list-none cursor-pointer ${activeOrderStatus === 'กำลังแพ็คสินค้า' ? 'border-bottom-3 border-primary text-primary' : ''}`}
+                onClick={() => setActiveOrderStatus('กำลังแพ็คสินค้า')}>
+                กำลังแพ็คสินค้า {statusCounts[statusEvents.Packaged.key] || ''}
+            </li>
             <li className={`list-none cursor-pointer ${activeOrderStatus === 'กำลังจัดส่ง' ? 'border-bottom-3 border-primary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('กำลังจัดส่ง')}>
-                กำลังจัดส่ง {statusCounts[statusEvents.InTransit.key] || ''}
+                กำลังจัดส่ง {statusCounts[statusEvents.Delivering.key] || ''}
             </li>
             <li className={`list-none cursor-pointer ${activeOrderStatus === 'ถึงจุดรับสินค้าแล้ว' ? 'border-bottom-3 border-primary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('ถึงจุดรับสินค้าแล้ว')}>
-                ถึงจุดรับสินค้าแล้ว {statusCounts[statusEvents.BranchArrival.key] || ''}
+                ถึงจุดรับสินค้าแล้ว {statusCounts[statusEvents.Arrival.key] || ''}
             </li>
             <li className={`list-none cursor-pointer ${activeOrderStatus === 'รับสินค้าสำเร็จ' ? 'border-bottom-3 border-primary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('รับสินค้าสำเร็จ')}>

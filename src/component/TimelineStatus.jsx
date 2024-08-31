@@ -9,15 +9,17 @@ function TimelineStatus({ order, currentStatus, user }) {
 
     const events = [
         // statusEvents.Ordered,
-        // ...(order?.paymentChannel === 'bankCounter' ? [statusEvents.PendingPayment] : []),
+        ...(order?.paymentChannel === 'bankCounter' ? [statusEvents.PendingPayment] : []),
         statusEvents.pending,
         statusEvents.Preparing,
         statusEvents.Packaged,
-        statusEvents.ThaiWarehouseArrival,
-        ...(order?.shipping === 'selfPickup'
-            ? [statusEvents.LaosWarehouseArrival, statusEvents.Received]
-            : [statusEvents.LaosWarehouseArrival, statusEvents.InTransit, statusEvents.BranchArrival, statusEvents.Received]
-        )
+        statusEvents.Delivering,
+        // ...(order?.shipping === 'selfPickup'
+        //     ? [statusEvents.LaosWarehouseArrival, statusEvents.Received]
+        //     : [statusEvents.LaosWarehouseArrival, statusEvents.InTransit, statusEvents.BranchArrival, statusEvents.Received]
+        // )
+        statusEvents.Arrival,
+        statusEvents.Received,
     ];
 
     const statusesOrder = events.map(event => event.key);

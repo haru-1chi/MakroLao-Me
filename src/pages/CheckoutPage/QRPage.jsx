@@ -112,7 +112,7 @@ function QRPage() {
                 line_items: cart,
                 ...cartDetails,
                 // status: 1
-                status: cartDetails.paymentChannel === "bankCounter" ? 2 : 3,
+                status: cartDetails.paymentChannel === "bankCounter" ? 1 : 2,
                 // totalBeforeDiscount,
                 // CODCost,
                 // totalPayable,
