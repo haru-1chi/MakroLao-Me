@@ -2,15 +2,15 @@ import React from "react";
 
 function category({ data }) {
   return (
-    <div className="block">
+    <div className="w-5rem">
       <img
         src={data.imgURL}
         alt=""
         className="border-circle "
-        width={60}
-        height={60}
+        width={35}
+        height={35}
       />
-      <div className="category-title">{data.title}</div>
+      <div className="category-title">{data.name}</div>
     </div>
   );
 }

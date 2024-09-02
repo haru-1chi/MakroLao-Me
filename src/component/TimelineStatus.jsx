@@ -89,7 +89,7 @@ function TimelineStatus({ order, currentStatus, user }) {
                     </div>
                 </div>
             </div>
-            {(order?.paymentChannel === 'bankCounter' && currentStatus?.key === 2) ? (
+            {(order?.paymentChannel === 'bankCounter' && currentStatus?.key === 1) ? (
                 <Button className="mt-3 w-fit align-self-center" label="ยกเลิกคำสั่งซื้อ" rounded />
             ) : null}
         </div>

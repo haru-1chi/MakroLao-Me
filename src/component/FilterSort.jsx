@@ -7,7 +7,7 @@ function FilterSort({ onSortChange, visibleSort, setVisibleSort }) {
     const [selectedSort, setSelectedSort] = useState('default');
 
     const sortOptions = [
-        { label: 'เรียงตามความใกล้เคียง', value: 'default' },
+        { label: 'ความใกล้เคียง', value: 'default' },
         { label: 'ราคาต่ำไปสูง', value: 'lowToHigh' },
         { label: 'ราคาสูงไปต่ำ', value: 'highToLow' }
     ];

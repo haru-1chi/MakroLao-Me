@@ -119,7 +119,14 @@ function Products({ data, startIndex }) {
     return (
         <div className="card p-1">
             <Toast ref={toast} position="top-center" />
-            <Carousel value={productSubset} numVisible={5} numScroll={5} responsiveOptions={responsiveOptions} showIndicators={false} showNavigators={false} itemTemplate={productTemplate} />
+            <Carousel
+                value={productSubset}
+                numVisible={5}
+                numScroll={5}
+                responsiveOptions={responsiveOptions}
+                showIndicators={false}
+                showNavigators={false}
+                itemTemplate={productTemplate} />
         </div>
     )
 }

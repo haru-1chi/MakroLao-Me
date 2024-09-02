@@ -177,8 +177,11 @@ function ListProductsPage() {
           <div className="w-full flex justify-content-between align-items-center">
             <h1 className="font-semibold">รายการสินค้า</h1>
             <div className="hidden lg:block">
-              <FilterSort onSortChange={handleSortChange} visibleSort={visibleSort}
-                setVisibleSort={setVisibleSort} />
+              <div className="flex gap-2">
+                <p className="text-sm">เรียงตาม</p>
+                <FilterSort onSortChange={handleSortChange} visibleSort={visibleSort}
+                  setVisibleSort={setVisibleSort} />
+              </div>
             </div>
           </div>
           <div className="lg:hidden flex">
@@ -253,6 +256,9 @@ function ListProductsPage() {
                   {searchTerm && <h2 className="mt-0 font-semibold">ผลการค้นหา "{searchTerm}"</h2>}
                   <div className="w-full flex justify-content-center">
                     <div className="flex flex-column justify-content-center align-items-center">
+                      <div className='flex justify-content-center'>
+                        <img src="https://www.makro.pro/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fpage-not-found.7cd1edd1.png&w=1920&q=75" alt="" className='w-16rem' />
+                      </div>
                       <h2 className="font-semibold mt-0 mb-2">ขออภัย</h2>
                       <p className="mt-0">ไม่พบข้อมูลจากการค้นหา</p>
                       <Link to="/"><Button

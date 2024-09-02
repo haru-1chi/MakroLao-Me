@@ -107,7 +107,7 @@ function ProductPage() {
               <div className="w-fit px-3 bg-primary border-round-md">
                 <h2 className="text-white">{Number(product.product_price).toLocaleString('en-US')} ฿</h2>
               </div>
-              <p>{product.product_detail}</p>
+              <p dangerouslySetInnerHTML={{ __html: product.product_detail }}></p>
             </div>
             {/* <p>{product.product_detail}</p> */}
             <Button

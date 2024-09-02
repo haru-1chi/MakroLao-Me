@@ -46,7 +46,7 @@
 body {
   margin: 0;
   padding: 0;
-  background: #ededed;
+  background: #f4f4f4;
   font-family: "noto Sans Thai", sans-serif;
   font-optical-sizing: auto;
   font-style: normal;
@@ -62,7 +62,7 @@ body {
   background-color: #fff;
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 5;
 }
 
 .p-password {
@@ -89,7 +89,7 @@ body {
 }
 
 .bg-product {
-  background: #ededed;
+  background: #f4f4f4;
   border-radius: 10px !important;
 }
 
@@ -136,7 +136,6 @@ body {
 
 .bg-section-product {
   background-color: rgb(14, 22, 140);
-  border-radius: 20px;
 }
 
 .footer-data-list {
@@ -178,7 +177,6 @@ body {
 
 .bg-section-new-product {
   background-color: rgb(1, 97, 0);
-  border-radius: 20px;
 }
 
 .section-all-brand {
@@ -316,9 +314,8 @@ body {
 
 .category-title {
   font-weight: 500;
-  font-size: 16px;
-  padding-top: 8px;
-  line-height: 22.4px;
+  font-size: 12px;
+  line-height: 18px;
   text-align: center;
   text-overflow: ellipsis;
   overflow: hidden;

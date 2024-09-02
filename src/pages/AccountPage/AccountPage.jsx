@@ -106,12 +106,11 @@ function AccountPage() {
             </li>
             <li className={`list-none cursor-pointer ${activeOrderStatus === 'ต้องชำระเงิน' ? 'border-bottom-3 border-primary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('ต้องชำระเงิน')}>
-                ต้องชำระเงิน
-                {statusCounts[statusEvents?.PendingPayment.key] || ''}
+                ต้องชำระเงิน {statusCounts[statusEvents?.PendingPayment.key] || ''}
             </li>
             <li className={`list-none cursor-pointer ${activeOrderStatus === 'กำลังจัดเตรียม' ? 'border-bottom-3 border-primary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('กำลังจัดเตรียม')}>
-                กำลังจัดเตรียม {statusCounts[statusEvents.pending.key] || ''}
+                กำลังจัดเตรียม {statusCounts[statusEvents.Preparing.key] || ''}
             </li>
             <li className={`list-none cursor-pointer ${activeOrderStatus === 'กำลังแพ็คสินค้า' ? 'border-bottom-3 border-primary text-primary' : ''}`}
                 onClick={() => setActiveOrderStatus('กำลังแพ็คสินค้า')}>
@@ -163,9 +162,10 @@ function AccountPage() {
                 <h2 className="m-0 mb-2 p-0">ประวัติการสั่งซื้อ</h2>
                 <StatusBar />
                 <div className='h-full text-center align-content-center'>
-                    <h2>ยังไม่มีรายการสั่งซื้อขณะนี้</h2>
-                    <p className='mb-5'>คุณจะเห็นคำสั่งซื้อเมื่อมีคำสั่งซื้อที่ตรงตามเมนูสถานะที่คุณเลือก</p>
-                    <Link to="/"><Button label="หาจากหมวดหมู่สินค้า" rounded /></Link>
+                    <img src="https://www.makro.pro/_next/image?url=%2F_next%2Fstatic%2Fmedia%2FemptyOrders.b84ad154.png&w=300&q=75" alt="" />
+                    <h2 className='my-0 font-semibold'>ยังไม่มีรายการสั่งซื้อขณะนี้</h2>
+                    <p className='mb-5 mt-2'>คุณจะเห็นคำสั่งซื้อเมื่อมีคำสั่งซื้อที่ตรงตามเมนูสถานะที่คุณเลือก</p>
+                    <Link to="/"><Button label="หาจากหมวดหมู่สินค้า" rounded className='font-semibold' /></Link>
                 </div>
             </div>
         ) : ("")

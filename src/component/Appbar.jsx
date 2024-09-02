@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { useCart } from '../router/CartContext';
 import axios from "axios";
 import ContactUs from "./ContactUs";
+import CategoriesIcon from "./CategoriesIcon";
 import LogoMakro from "../assets/macro-laos1.png"
 //
 function Appbar() {
@@ -77,7 +78,6 @@ function Appbar() {
   const handleSearchKeyPress = (event) => {
     if (event.key === 'Enter' && searchTerm.trim() !== "") {
       window.location.href = `/List-Product?search=${searchTerm}`;
-      // navigate(`/List-Product?search=${searchTerm}`);
     }
   };
   const handleSearchClick = () => {
@@ -125,15 +125,18 @@ function Appbar() {
     const fetchCategories = async () => {
       try {
         const response = await axios.post(`${apiUrl}/categories`);
-        setCategories(response.data);
+        const dataWithImages = response.data.map((category) => ({
+          ...category,
+          imgURL: CategoriesIcon[category.name] || 'default-image-url.png',
+        }));
+
+        setCategories(dataWithImages);
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
     };
     fetchCategories();
   }, []);
-
-
 
   const handleCategorySelect = (categoryName) => {
     navigate('/List-Product', { state: { categoryName } });
@@ -291,11 +294,23 @@ function Appbar() {
                 onClick={() => setVisible4(true)}
               />
             </div>
-            <div>
-              <Link to="/Pagepoint">{makroProPoint}</Link>
+            <div className="flex align-items-center">
+              <img src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FMakro_PRO_Points_GIF_fe64aa9600.gif&w=32&q=75" width={20} height={20} />
+              <Link to="/Pagepoint" className="ml-2">{makroProPoint}</Link>
             </div>
-            <div>
-              <Button className="text-l" label={makromail} onClick={() => setVisible3(true)} />
+            <div className="flex align-items-center">
+              <Button className="text-l ml-2" label={
+                <span>
+                  <img
+                    src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2Fmakromail_9348ebf95a.png&w=16&q=75"
+                    width={20}
+                    height={20}
+                    alt="Makromail"
+                    style={{ marginRight: '8px', verticalAlign: 'middle' }}
+                  />
+                  makromail
+                </span>}
+                onClick={() => setVisible3(true)} />
             </div>
           </div>
         </div >
@@ -376,8 +391,12 @@ function Appbar() {
                           </Button>
                         </div>
                         <hr />
-                        <div className="flex flex-column p-2">
-                          แม็คโครโปรพอยท์<span>เรียนรู้เพิ่มเติม</span>
+                        <div className="flex align-items-start p-2">
+                          <img src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FMakro_PRO_Points_GIF_fe64aa9600.gif&w=32&q=75" width={20} height={20} />
+                          <div className="flex flex-column ml-2">
+                            <span className="font-semibold">แม็คโครโปรพอยท์</span>
+                            <span>เรียนรู้เพิ่มเติม</span>
+                          </div>
                         </div>
                         <hr />
                         <div className="flex justify-content-between">
@@ -564,31 +583,39 @@ function Appbar() {
                       <span><b>ย้อนกลับ</b></span>
                     </a>
                   </div>
-                  <div className="box-menu mt-5">
-                    <Link to="List-Product" className="flex justify-content-between" onClick={() => setVisible4(false)}><span><i className="pi pi-hashtag mr-2" />สินค้าทุกหมวดหมู่</span> <i className="pi pi-angle-right mr-2"></i></Link>
+                  <div className="box-menu mt-2 py-3 hover:surface-hover">
+                    <Link to="List-Product" className="flex justify-content-between" onClick={() => setVisible4(false)}>
+                      <div className="flex align-items-center">
+                        <img src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FL1_Makro_House_Brand_4a70c6e25a.png&w=32&q=75" alt="สินค้าทุกหมวดหมู่" width={30} height={30} />
+                        <span className="ml-3">สินค้าทุกหมวดหมู่</span>
+                      </div>
+                      <i className="pi pi-angle-right mr-2"></i></Link>
                   </div>
                   {categories.map((Item) => (
-                    <div className="box-menu mt-5" onClick={() => handleCategorySelect(Item.name)}>
-                      <Link className="flex justify-content-between" onClick={() => setVisible4(false)}>
-                        <span><i className="pi pi-hashtag mr-2" />{Item.name}</span>
+                    <div className="box-menu py-3 hover:surface-hover" onClick={() => handleCategorySelect(Item.name)}>
+                      <Link className="flex justify-content-between align-items-center" onClick={() => setVisible4(false)}>
+                        <div className="flex align-items-center">
+                          <img src={Item.imgURL} alt="Item.name" width={30} height={30} />
+                          <span className="ml-3">{Item.name}</span>
+                        </div>
                         <i className="pi pi-angle-right mr-2"></i>
                       </Link>
                     </div>
                   ))}
                 </div>
               </Sidebar>
-              <Button
+              {/* <Button
                 className="p-2"
                 label={category}
                 icon="pi pi-chevron-down"
                 iconPos="right"
                 onClick={() => setVisible4(true)}
-              />
+              /> */}
             </div>
-            <div>
-              <Link to="/Pagepoint">{makroProPoint}</Link>
-              {/* <a href="/Pagepoint">จัดเต็มความคุ้ม แม็คโครโปรพอยท์</a> */}
-            </div>
+            {/* <div className="flex align-items-center">
+              <img src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FMakro_PRO_Points_GIF_fe64aa9600.gif&w=32&q=75" width={20} height={20} />
+              <Link to="/Pagepoint" className="ml-2">{makroProPoint}</Link>
+            </div> */}
             <div>
               <Sidebar
                 header={customHeader3}
@@ -614,10 +641,21 @@ function Appbar() {
                   </div>
                 </div>
               </Sidebar>
-              <Button className="p-2" label={makromail} onClick={() => setVisible3(true)} />
+              {/* <Button className="text-l ml-2" label={
+                <span>
+                  <img
+                    src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2Fmakromail_9348ebf95a.png&w=16&q=75"
+                    width={20}
+                    height={20}
+                    alt="Makromail"
+                    style={{ marginRight: '8px', verticalAlign: 'middle' }}
+                  />
+                  makromail
+                </span>}
+                onClick={() => setVisible3(true)} /> */}
             </div>
+            
           </div>
-
         </div >
       </div >
       <Outlet />
