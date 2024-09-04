@@ -123,7 +123,7 @@ function ListProductsPage() {
       url: `${apiUrl}/products`
     })
       .then((response) => {
-        const filtered = filterProducts(response.data, searchTerm, location.state.categoryName);
+        const filtered = filterProducts(response.data, searchTerm, location.state?.categoryName);
         setData(filtered);
         setFilteredData(filtered);
         setPaginatedData(filtered.slice(first, first + rows));

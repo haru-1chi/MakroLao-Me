@@ -165,7 +165,7 @@ function Pagepoint() {
   return (
     <>
       <div className="p-3 mb-4">
-        <h1 className="font-semibold">จัดเต็มความคุ้ม แม็คโครโปรพอยท์</h1>
+        <h1 className="font-semibold">จัดเต็มความคุ้ม แม็คโครลาว</h1>
         <div className="section-point-product w-full text-center gap-2">
           {categories.map((Item) => (
             <div className="flex flex-column bg-white border-round-xl p-2 justify-content-between h-full cursor-pointer" onClick={() => handleCategorySelect(Item.name)}>

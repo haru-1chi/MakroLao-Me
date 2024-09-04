@@ -19,10 +19,10 @@ function PaymentPage() {
 
     return (
         <>
-            <h2 className="flex justify-content-center px-8">เลือกช่องทางชำระเงิน</h2>
+            <h2 className="flex justify-content-center px-8 font-semibold">เลือกช่องทางชำระเงิน</h2>
             <div className='w-full px-8 flex justify-content-center'>
                 <div className="bg-section-product flex flex-column gap-2 border-1 surface-border border-round py-3 px-3 bg-white border-round-mb">
-                    <Link to="/QRPage" className="no-underline" >
+                    <Link to="/QRPage" className="no-underline text-900" >
                         <div className="border-1 surface-border border-round p-2 flex align-items-center justify-content-between" onClick={() => handleConfirmPayment('QRCode')}>
                             <div className="flex align-items-center">
                                 <i className="pi pi-mobile text-2xl mr-3"></i>
@@ -34,7 +34,7 @@ function PaymentPage() {
                             <i className="pi pi-angle-right text-2xl text-right"></i>
                         </div>
                     </Link>
-                    <Link to="/QRPage" className="no-underline" >
+                    <Link to="/QRPage" className="no-underline text-900" >
                         <div className="border-1 surface-border border-round p-2 flex align-items-center justify-content-between" onClick={() => handleConfirmPayment('bankCounter')}>
                             <div className="flex align-items-center">
                                 <i className="pi pi-building-columns text-2xl mr-3"></i>

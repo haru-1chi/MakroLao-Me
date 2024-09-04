@@ -159,7 +159,7 @@ function AccountPage() {
             )
         ) : (
             <div>
-                <h2 className="m-0 mb-2 p-0">ประวัติการสั่งซื้อ</h2>
+                <h1 className="m-0 mb-2 p-0 font-semibold">ประวัติการสั่งซื้อ</h1>
                 <StatusBar />
                 <div className='h-full text-center align-content-center'>
                     <img src="https://www.makro.pro/_next/image?url=%2F_next%2Fstatic%2Fmedia%2FemptyOrders.b84ad154.png&w=300&q=75" alt="" />

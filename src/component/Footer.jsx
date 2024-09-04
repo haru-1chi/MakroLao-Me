@@ -2,7 +2,7 @@ import React from "react";
 
 function Footer() {
   return (
-    <div className="footer-data-list bg-white mt-2">
+    <div className="footer-data-list bg-white mt-2 hidden">
       <div className="border-solid">
         <ul>
           <li>
@@ -12,7 +12,7 @@ function Footer() {
             <a href="#">ติดต่อเรา</a>
           </li>
           <li>
-            <a href="#">แม็คโครโปรพอยท์</a>
+            <a href="#">แม็คโครลาว</a>
           </li>
           <li>
             <a href="#">การตั้งค่าความเป็นส่วนตัว</a>

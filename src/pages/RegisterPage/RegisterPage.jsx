@@ -155,9 +155,9 @@ function RegisterPage() {
               disabled={loading}
               rounded
             />
-            <span className="text-center">หรือ</span>
-            <Button className="mt-3 mb-5" label="สร้างบัญชีธุรกิจ" outlined rounded />
-            <a href="#" className="text-center">บัญชีธุรกิจคืออะไร</a>
+            <span className="text-center hidden">หรือ</span>
+            <Button className="mt-3 mb-5 hidden" label="สร้างบัญชีธุรกิจ" outlined rounded />
+            <a href="#" className="text-center hidden">บัญชีธุรกิจคืออะไร</a>
             <p className="text-center">มีบัญชีของอยู่แล้วใช่ไหม <a href="/LoginPage">เข้าสู่ระบบที่นี่</a></p>
           </div>
         </div>

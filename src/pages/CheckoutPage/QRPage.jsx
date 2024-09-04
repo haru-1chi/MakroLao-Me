@@ -103,20 +103,11 @@ function QRPage() {
     const handleCreateOrder = async () => {
         setLoading(true);
         try {
-            // const totalBeforeDiscount = convertTHBtoLAK(cart.reduce((total, product) => total + product.product_price * product.quantity, 0));
-            // const CODCost = Math.max(totalBeforeDiscount * 0.03, 30);
-            // const totalPayable = totalBeforeDiscount + CODCost;
-
             const newOrder = {
                 _items: cart,
                 line_items: cart,
                 ...cartDetails,
-                // status: 1
                 status: cartDetails.paymentChannel === "bankCounter" ? 1 : 2,
-                // totalBeforeDiscount,
-                // CODCost,
-                // totalPayable,
-
             };
 
             const token = localStorage.getItem("token");
@@ -188,6 +179,7 @@ function QRPage() {
                     <p className="m-0 text-center">ธนาคาร: ไทยพานิชย์</p>
                     <p className="m-0 text-center">ชื่อบัญชี: บริษัท</p>
                     <p className="m-0 text-center">เลขบัญชี: 000-000000-0 (หรือรหัสอ้างอิง)</p>
+                    
                 </div>
                 <div className="w-full block flex-grow-1 flex flex-column text-center">
                     <p className="m-0">Amount (LAK)</p>
@@ -209,10 +201,9 @@ function QRPage() {
 
     return (
         <>
-            <div className='w-full sm:px-3 lg:px-8 pt-5 flex justify-content-center'>
-                <div className='bg-section-product flex flex-column border-1 surface-border border-round py-5 px-3 bg-white border-round-mb '>
-                    <h1 className="m-0 p-0">Makro</h1>
-                    <p>CP AXTRA PUBLIC COMPANY LIMITED</p>
+            <div className='w-full px-2 sm:px-2 lg:px-8 pt-5 flex justify-content-center'>
+                <div className='flex flex-column border-1 surface-border border-round py-5 px-3 bg-white border-round-mb '>
+                    <h1 className="m-0 p-0">MakroLao</h1>
 
                     {cartDetails.paymentChannel === 'QRCode' ? (
                         loading ? (
@@ -227,9 +218,7 @@ function QRPage() {
                     )}
 
                     <div className="flex align-items-center justify-content-center">
-                        {/* <Link to="/PaymentSuccessfully"> */}
                         <Button label="Return to Merchant" size="small" rounded onClick={handleCreateOrder} />
-                        {/* </Link> */}
                     </div>
                 </div>
             </div>

@@ -1,42 +1,42 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Sidebar } from "primereact/sidebar";
 import { Button } from "primereact/button";
-import { Toast } from 'primereact/toast';
+import { Toast } from "primereact/toast";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
-import { OverlayPanel } from 'primereact/overlaypanel';
-import { Badge } from 'primereact/badge';
-import { Menu } from 'primereact/menu';
+import { OverlayPanel } from "primereact/overlaypanel";
+import { Badge } from "primereact/badge";
+import { Menu } from "primereact/menu";
 import { Outlet, Link, useNavigate } from "react-router-dom";
 //
 import LanguageSelector from "./LanguageSelector";
 import { useTranslation } from "react-i18next";
-import { useCart } from '../router/CartContext';
+import { useCart } from "../router/CartContext";
 import axios from "axios";
 import ContactUs from "./ContactUs";
 import CategoriesIcon from "./CategoriesIcon";
-import LogoMakro from "../assets/macro-laos1.png"
+import LogoMakro from "../assets/macro-laos1.png";
 //
 function Appbar() {
   const op = useRef(null);
   const [isContactUsVisible, setContactUsVisible] = useState(false);
   const itemsMenu = [
     {
-      label: 'บัญชีของฉัน',
+      label: "บัญชีของฉัน",
       command: () => {
         setVisible1(false);
         op.current.hide();
-        navigate("/AccountPage", { state: { activeTab: 'account' } });
-      }
+        navigate("/AccountPage", { state: { activeTab: "account" } });
+      },
     },
     {
-      label: 'ประวัติการสั่งซื้อ',
+      label: "ประวัติการสั่งซื้อ",
       command: () => {
         setVisible1(false);
         op.current.hide();
-        navigate("/AccountPage", { state: { activeTab: 'orderHistory' } });
-      }
+        navigate("/AccountPage", { state: { activeTab: "orderHistory" } });
+      },
     },
     // {
     //   label: 'จัดการข้อมูลส่วนบุคคล',
@@ -47,17 +47,16 @@ function Appbar() {
     //   }
     // },
     {
-      label: 'ติดต่อเรา',
+      label: "ติดต่อเรา",
       command: () => {
         setContactUsVisible(true);
-        // navigate("/AccountPage", { state: { activeTab: 'contactUs' } });
-      }
+      },
     },
     {
-      label: 'ออกจากระบบ',
+      label: "ออกจากระบบ",
       command: () => {
         handleLogout();
-      }
+      },
     },
   ];
 
@@ -70,13 +69,15 @@ function Appbar() {
   const toast = useRef(null);
   const showToast = () => {
     toast.current.show({
-      severity: 'info', summary: 'สินค้าถูกนำออกจากตะกร้า', life: 2000
+      severity: "info",
+      summary: "สินค้าถูกนำออกจากตะกร้า",
+      life: 2000,
     });
   };
 
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const handleSearchKeyPress = (event) => {
-    if (event.key === 'Enter' && searchTerm.trim() !== "") {
+    if (event.key === "Enter" && searchTerm.trim() !== "") {
       window.location.href = `/List-Product?search=${searchTerm}`;
     }
   };
@@ -88,7 +89,10 @@ function Appbar() {
 
   const calculateTotalBeforeDiscount = () => {
     if (!Array.isArray(cart)) return 0;
-    return cart.reduce((total, product) => total + product.product_price * product.quantity, 0);
+    return cart.reduce(
+      (total, product) => total + product.product_price * product.quantity,
+      0
+    );
   };
 
   const calculateCODCost = (total) => {
@@ -111,11 +115,14 @@ function Appbar() {
         const token = localStorage.getItem("token");
         const user_id = localStorage.getItem("user_id");
         const res = await axios.get(`${apiUrl}/users/${user_id}`, {
-          headers: { "token": token },
+          headers: { token: token },
         });
         setUser(res.data.data);
       } catch (err) {
-        console.error("Error fetching user data", err.response?.data || err.message);
+        console.error(
+          "Error fetching user data",
+          err.response?.data || err.message
+        );
       }
     };
     getUserProfile();
@@ -127,19 +134,19 @@ function Appbar() {
         const response = await axios.post(`${apiUrl}/categories`);
         const dataWithImages = response.data.map((category) => ({
           ...category,
-          imgURL: CategoriesIcon[category.name] || 'default-image-url.png',
+          imgURL: CategoriesIcon[category.name] || "default-image-url.png",
         }));
 
         setCategories(dataWithImages);
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error("Error fetching categories:", error);
       }
     };
     fetchCategories();
   }, []);
 
   const handleCategorySelect = (categoryName) => {
-    navigate('/List-Product', { state: { categoryName } });
+    navigate("/List-Product", { state: { categoryName } });
   };
   const customIcons = (
     <React.Fragment>
@@ -152,11 +159,7 @@ function Appbar() {
   const customHeader = (
     <div className="flex align-items-center gap-2">
       <a href="/">
-        <img
-          src={LogoMakro}
-          alt="Logo"
-          className="w-7 p-0 m-0"
-        />
+        <img src={LogoMakro} alt="Logo" className="w-7 p-0 m-0" />
       </a>
     </div>
   );
@@ -170,11 +173,7 @@ function Appbar() {
   const customHeader3 = (
     <div className="flex align-items-center gap-2">
       <a href="/">
-        <img
-          src={LogoMakro}
-          alt="Logo"
-          className="w-7 p-0 m-0"
-        />
+        <img src={LogoMakro} alt="Logo" className="w-7 p-0 m-0" />
       </a>
     </div>
   );
@@ -182,22 +181,18 @@ function Appbar() {
   const customHeader4 = (
     <div className="flex align-items-center gap-2">
       <a href="/">
-        <img
-          src={LogoMakro}
-          alt="Logo"
-          className="w-7 p-0 m-0"
-        />
+        <img src={LogoMakro} alt="Logo" className="w-7 p-0 m-0" />
       </a>
     </div>
   );
 
-  const { t } = useTranslation()
-  const { zipcode, category, makroProPoint, makromail } = t("Appbar")
+  const { t } = useTranslation();
+  const { zipcode, category, makroProPoint, makromail } = t("Appbar");
 
   const handleLogout = () => {
-    localStorage.removeItem('user_id');
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem("user_id");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     navigate("/LoginPage");
   };
 
@@ -212,14 +207,15 @@ function Appbar() {
           <div className="card flex justify-content-between mb-2 border-solid align-items-center">
             <div className="flex justify-content-between align-items-center">
               <div className="block">
-                <Button icon="pi pi-bars" onClick={() => setVisible1(true)} rounded text />
+                <Button
+                  icon="pi pi-bars"
+                  onClick={() => setVisible1(true)}
+                  rounded
+                  text
+                />
               </div>
               <Link to="/">
-                <img
-                  src={LogoMakro}
-                  alt="Logo"
-                  height={40}
-                />
+                <img src={LogoMakro} alt="Logo" height={40} />
               </Link>
             </div>
             <div className="w-5 mx-4">
@@ -239,16 +235,29 @@ function Appbar() {
               {/* <Button icon="pi pi-heart" rounded text /> */}
               <Button
                 icon={
-                  <span style={{ position: 'relative', display: 'inline-block' }}>
-                    <i className="pi pi-shopping-cart" style={{ fontSize: '1.4rem' }}></i>
-                    <Badge value={cart.length} severity="danger"
-                      style={{ position: 'absolute', top: '-0.4rem', right: '-0.4rem', fontSize: '0.7rem' }} />
+                  <span
+                    style={{ position: "relative", display: "inline-block" }}
+                  >
+                    <i
+                      className="pi pi-shopping-cart"
+                      style={{ fontSize: "1.4rem" }}
+                    ></i>
+                    <Badge
+                      value={cart.length}
+                      severity="danger"
+                      style={{
+                        position: "absolute",
+                        top: "-0.4rem",
+                        right: "-0.4rem",
+                        fontSize: "0.7rem",
+                      }}
+                    />
                   </span>
                 }
-                rounded
                 text
                 onClick={() => setVisible2(true)}
-              />{user ? (
+              />
+              {user ? (
                 <>
                   <div>
                     <Button
@@ -266,22 +275,30 @@ function Appbar() {
                     />
                   </div>
                   <OverlayPanel ref={op} closeOnEscape>
-                    <div className='w-16rem'>
+                    <div className="w-16rem">
                       <div className="flex p-0 pb-2 border-bottom-1 surface-border align-items-center">
                         <div class="flex flex-wrap justify-content-center">
-                          <div class="border-circle w-4rem h-4rem m-2 bg-primary font-bold flex align-items-center justify-content-center">{user.name.charAt(0).toUpperCase()}</div>
+                          <div class="border-circle w-4rem h-4rem m-2 bg-primary font-bold flex align-items-center justify-content-center">
+                            {user.name.charAt(0).toUpperCase()}
+                          </div>
                         </div>
                         <h4 className="ml-3">{user.name}</h4>
                       </div>
                       <div className="flex flex-column">
                         <Menu model={itemsMenu} className="p-menu" />
-                        <ContactUs visible={isContactUsVisible} setVisible={setContactUsVisible} />
+                        <ContactUs
+                          visible={isContactUsVisible}
+                          setVisible={setContactUsVisible}
+                        />
                       </div>
                     </div>
                   </OverlayPanel>
                 </>
               ) : (
-                <Link to="/LoginPage"><Button icon="pi pi-user" rounded text /></Link>)}
+                <Link to="/LoginPage">
+                  <Button icon="pi pi-user" rounded text />
+                </Link>
+              )}
             </div>
           </div>
           <div className="navmenu w-full border-solid pb-1 text-l">
@@ -295,33 +312,42 @@ function Appbar() {
               />
             </div>
             <div className="flex align-items-center">
-              <img src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FMakro_PRO_Points_GIF_fe64aa9600.gif&w=32&q=75" width={20} height={20} />
-              <Link to="/Pagepoint" className="ml-2">{makroProPoint}</Link>
+              <img
+                src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FMakro_PRO_Points_GIF_fe64aa9600.gif&w=32&q=75"
+                width={20}
+                height={20}
+              />
+              <Link to="/Pagepoint" className="ml-2">
+                {makroProPoint}
+              </Link>
             </div>
             <div className="flex align-items-center">
-              <Button className="text-l ml-2" label={
-                <span>
-                  <img
-                    src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2Fmakromail_9348ebf95a.png&w=16&q=75"
-                    width={20}
-                    height={20}
-                    alt="Makromail"
-                    style={{ marginRight: '8px', verticalAlign: 'middle' }}
-                  />
-                  makromail
-                </span>}
-                onClick={() => setVisible3(true)} />
+              <Button
+                className="text-l ml-2 hidden"
+                label={
+                  <span>
+                    <img
+                      src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2Fmakromail_9348ebf95a.png&w=16&q=75"
+                      width={20}
+                      height={20}
+                      alt="Makromail"
+                      style={{ marginRight: "8px", verticalAlign: "middle" }}
+                    />
+                    makromail
+                  </span>
+                }
+                onClick={() => setVisible3(true)}
+              />
             </div>
           </div>
-        </div >
-      </div >
+        </div>
+      </div>
 
       {/* responsive */}
       <div className="block lg:hidden section-appbar">
         {/* <Toast ref={toast} position="top-center" /> */}
         <div className="pt-2 pr-3 pl-3">
           <div className="card flex justify-content-between mb-2 border-solid align-items-center">
-
             <div className="block flex">
               <Sidebar
                 header={customHeader}
@@ -334,12 +360,18 @@ function Appbar() {
                       <>
                         <div className="flex pt-0 pb-2 align-items-center">
                           <div class="flex flex-wrap justify-content-center">
-                            <div class="border-circle w-4rem h-4rem m-2 bg-primary font-bold flex align-items-center justify-content-center">{user.name.charAt(0).toUpperCase()}</div>
+                            <div class="border-circle w-4rem h-4rem m-2 bg-primary font-bold flex align-items-center justify-content-center">
+                              {user.name.charAt(0).toUpperCase()}
+                            </div>
                           </div>
                           <h4 className="ml-3">{user.name}</h4>
                         </div>
                         <div>
-                          <Button className="w-full flex justify-content-between" onClick={() => setVisible4(true)} text>
+                          <Button
+                            className="w-full flex justify-content-between"
+                            onClick={() => setVisible4(true)}
+                            text
+                          >
                             <span>ทั้งหมด</span>
                             <i className="pi pi-angle-right"></i>
                           </Button>
@@ -347,7 +379,10 @@ function Appbar() {
                         <hr />
                         <div className="flex flex-column">
                           <Menu model={itemsMenu} className="p-menu" />
-                          <ContactUs visible={isContactUsVisible} setVisible={setContactUsVisible} />
+                          <ContactUs
+                            visible={isContactUsVisible}
+                            setVisible={setContactUsVisible}
+                          />
                         </div>
                         <hr />
                         <div className="flex justify-content-between">
@@ -355,7 +390,7 @@ function Appbar() {
                           <LanguageSelector />
                         </div>
                         <br />
-                        <div className="mt-3">
+                        <div className="mt-3 hidden">
                           <div>
                             <i className="pi pi-mobile mr-2"></i>
                             <span>ติดตั้งแอปพลิเคชั่น</span>
@@ -373,7 +408,6 @@ function Appbar() {
                           <hr />
                         </div>
                       </>
-
                     ) : (
                       <div>
                         <div className="flex justify-content-between pt-2 pb-4">
@@ -385,17 +419,28 @@ function Appbar() {
                           </Link>
                         </div>
                         <div>
-                          <Button className="w-full flex justify-content-between" onClick={() => setVisible4(true)}>
+                          <Button
+                            className="w-full flex justify-content-between"
+                            onClick={() => setVisible4(true)}
+                          >
                             <span>ทั้งหมด</span>
                             <i className="pi pi-angle-right"></i>
                           </Button>
                         </div>
-                        <hr />
-                        <div className="flex align-items-start p-2">
-                          <img src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FMakro_PRO_Points_GIF_fe64aa9600.gif&w=32&q=75" width={20} height={20} />
-                          <div className="flex flex-column ml-2">
-                            <span className="font-semibold">แม็คโครโปรพอยท์</span>
-                            <span>เรียนรู้เพิ่มเติม</span>
+                        {/* <hr /> */}
+                        <div className="hidden">
+                          <div className="flex align-items-start p-2">
+                            <img
+                              src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FMakro_PRO_Points_GIF_fe64aa9600.gif&w=32&q=75"
+                              width={20}
+                              height={20}
+                            />
+                            <div className="flex flex-column ml-2">
+                              <span className="font-semibold">
+                                แม็คโครลาว
+                              </span>
+                              <span>เรียนรู้เพิ่มเติม</span>
+                            </div>
                           </div>
                         </div>
                         <hr />
@@ -404,7 +449,7 @@ function Appbar() {
                           <LanguageSelector />
                         </div>
                         <br />
-                        <div className="mt-3">
+                        <div className="mt-3 hidden">
                           <div>
                             <i className="pi pi-mobile mr-2"></i>
                             <span>ติดตั้งแอปพลิเคชั่น</span>
@@ -423,7 +468,6 @@ function Appbar() {
                         </div>
                       </div>
                     )}
-
                   </div>
                 </div>
               </Sidebar>
@@ -434,12 +478,18 @@ function Appbar() {
                 position="right"
                 onHide={() => setVisible2(false)}
               >
-
-                <div className={cart.length > 0 ? "cart-items w-full" : "cart flex gap-1"}>
+                <div
+                  className={
+                    cart.length > 0 ? "cart-items w-full" : "cart flex gap-1"
+                  }
+                >
                   {Array.isArray(cart) && cart.length > 0 ? (
                     <>
                       {cart.map((product, index) => (
-                        <div key={product.product_id || index} className="cart-items justify-content-between mb-2 border-bottom-1 surface-border">
+                        <div
+                          key={product.product_id || index}
+                          className="cart-items justify-content-between mb-2 border-bottom-1 surface-border"
+                        >
                           <div className="flex align-items-center">
                             <img
                               src={product.product_image}
@@ -448,8 +498,15 @@ function Appbar() {
                               height={70}
                             />
                             <div className="ml-3 flex flex-column">
-                              <span className="mb-3 font-bold">{product.product_name}</span>
-                              <span>{Number(product.product_price).toLocaleString('en-US')} ฿</span>
+                              <span className="mb-3 font-bold">
+                                {product.product_name}
+                              </span>
+                              <span>
+                                {Number(product.product_price).toLocaleString(
+                                  "en-US"
+                                )}{" "}
+                                ฿
+                              </span>
                             </div>
                           </div>
                           <div className="flex align-items-center justify-content-between mb-2">
@@ -468,16 +525,28 @@ function Appbar() {
                                 size="small"
                                 icon="pi pi-minus"
                                 className="btn-plus-product text-primary"
-                                onClick={() => updateQuantity(product.product_id, product.quantity - 1)}
+                                onClick={() =>
+                                  updateQuantity(
+                                    product.product_id,
+                                    product.quantity - 1
+                                  )
+                                }
                                 rounded
                                 text
                               />
-                              <p className="text-primary m-0 mx-3">{product.quantity}</p>
+                              <p className="text-primary m-0 mx-3">
+                                {product.quantity}
+                              </p>
                               <Button
                                 size="small"
                                 icon="pi pi-plus"
                                 className="btn-plus-product text-primary"
-                                onClick={() => updateQuantity(product.product_id, product.quantity + 1)}
+                                onClick={() =>
+                                  updateQuantity(
+                                    product.product_id,
+                                    product.quantity + 1
+                                  )
+                                }
                                 rounded
                                 text
                               />
@@ -487,21 +556,33 @@ function Appbar() {
                       ))}
                       <div>
                         <div className="flex align-items-center justify-content-between border-bottom-1 surface-border py-2">
-                          <p className='m-0'>ยอดสั่งซื้อ</p>
-                          <p className='m-0'>{totalBeforeDiscount.toFixed(2)} ฿</p>
+                          <p className="m-0">ยอดสั่งซื้อ</p>
+                          <p className="m-0">
+                            {totalBeforeDiscount.toFixed(2)} ฿
+                          </p>
                         </div>
                         <div className="flex align-items-center justify-content-between border-bottom-1 surface-border py-2">
-                          <p className='m-0'>ค่า COD 3%</p>
-                          <p className='m-0'>{CODCost.toFixed(2)} ฿</p>
+                          <p className="m-0">ค่า COD 3%</p>
+                          <p className="m-0">{CODCost.toFixed(2)} ฿</p>
                         </div>
                         <div className="flex align-items-center justify-content-between border-bottom-1 surface-border py-2">
-                          <p className='m-0'>ยอดชำระ</p>
-                          <p className='m-0'>{totalPayable.toFixed(2)} ฿</p>
+                          <p className="m-0">ยอดชำระ</p>
+                          <p className="m-0">{totalPayable.toFixed(2)} ฿</p>
                         </div>
                       </div>
                       <div className="filter-card-group bg-white flex justify-content-between align-items-center border-top-1 surface-border py-2 z-1 sticky">
-                        <p className='m-0 text-primary font-bold'>{totalPayable.toFixed(2)} ฿</p>
-                        <Link to="/CheckoutPage"><Button label="เช็คเอาท์" size="small" className="w-full" onClick={() => setVisible2(false)} rounded /></Link>
+                        <p className="m-0 text-primary font-bold">
+                          {totalPayable.toFixed(2)} ฿
+                        </p>
+                        <Link to="/CheckoutPage">
+                          <Button
+                            label="เช็คเอาท์"
+                            size="small"
+                            className="w-full"
+                            onClick={() => setVisible2(false)}
+                            rounded
+                          />
+                        </Link>
                       </div>
                     </>
                   ) : (
@@ -512,19 +593,22 @@ function Appbar() {
                       />
                       <h2 className="m-1">ไม่มีสินค้าในตะกร้า</h2>
                       <span className="mb-3">เริ่มเลือกสินค้าเลย!</span>
-                      <a href="/"><Button label="หาจากหมวดหมู่สินค้า" rounded /></a>
+                      <a href="/">
+                        <Button label="หาจากหมวดหมู่สินค้า" rounded />
+                      </a>
                     </>
                   )}
                 </div>
               </Sidebar>
-              <Button icon="pi pi-bars" onClick={() => setVisible1(true)} rounded text />
+              <Button
+                icon="pi pi-bars"
+                onClick={() => setVisible1(true)}
+                rounded
+                text
+              />
               <div className="flex justify-content-start">
                 <Link to="/">
-                  <img
-                    src={LogoMakro}
-                    alt="Logo"
-                    height={40}
-                  />
+                  <img src={LogoMakro} alt="Logo" height={40} />
                 </Link>
               </div>
             </div>
@@ -534,10 +618,22 @@ function Appbar() {
                 {/* <Button icon="pi pi-heart" rounded text /> */}
                 <Button
                   icon={
-                    <span style={{ position: 'relative', display: 'inline-block' }}>
-                      <i className="pi pi-shopping-cart" style={{ fontSize: '1.3rem' }}></i>
-                      <Badge value={cart.length} severity="danger"
-                        style={{ position: 'absolute', top: '-0.5rem', right: '-0.5rem' }} />
+                    <span
+                      style={{ position: "relative", display: "inline-block" }}
+                    >
+                      <i
+                        className="pi pi-shopping-cart"
+                        style={{ fontSize: "1.3rem" }}
+                      ></i>
+                      <Badge
+                        value={cart.length}
+                        severity="danger"
+                        style={{
+                          position: "absolute",
+                          top: "-0.5rem",
+                          right: "-0.5rem",
+                        }}
+                      />
                     </span>
                   }
                   text
@@ -580,22 +676,45 @@ function Appbar() {
                   <div className="box-menu mt-5">
                     <a href="#" onClick={() => setVisible4(false)}>
                       <i className="pi pi-angle-left mr-2"></i>
-                      <span><b>ย้อนกลับ</b></span>
+                      <span>
+                        <b>ย้อนกลับ</b>
+                      </span>
                     </a>
                   </div>
                   <div className="box-menu mt-2 py-3 hover:surface-hover">
-                    <Link to="List-Product" className="flex justify-content-between" onClick={() => setVisible4(false)}>
+                    <Link
+                      to="List-Product"
+                      className="flex justify-content-between"
+                      onClick={() => setVisible4(false)}
+                    >
                       <div className="flex align-items-center">
-                        <img src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FL1_Makro_House_Brand_4a70c6e25a.png&w=32&q=75" alt="สินค้าทุกหมวดหมู่" width={30} height={30} />
+                        <img
+                          src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FL1_Makro_House_Brand_4a70c6e25a.png&w=32&q=75"
+                          alt="สินค้าทุกหมวดหมู่"
+                          width={30}
+                          height={30}
+                        />
                         <span className="ml-3">สินค้าทุกหมวดหมู่</span>
                       </div>
-                      <i className="pi pi-angle-right mr-2"></i></Link>
+                      <i className="pi pi-angle-right mr-2"></i>
+                    </Link>
                   </div>
                   {categories.map((Item) => (
-                    <div className="box-menu py-3 hover:surface-hover" onClick={() => handleCategorySelect(Item.name)}>
-                      <Link className="flex justify-content-between align-items-center" onClick={() => setVisible4(false)}>
+                    <div
+                      className="box-menu py-3 hover:surface-hover"
+                      onClick={() => handleCategorySelect(Item.name)}
+                    >
+                      <Link
+                        className="flex justify-content-between align-items-center"
+                        onClick={() => setVisible4(false)}
+                      >
                         <div className="flex align-items-center">
-                          <img src={Item.imgURL} alt="Item.name" width={30} height={30} />
+                          <img
+                            src={Item.imgURL}
+                            alt="Item.name"
+                            width={30}
+                            height={30}
+                          />
                           <span className="ml-3">{Item.name}</span>
                         </div>
                         <i className="pi pi-angle-right mr-2"></i>
@@ -604,13 +723,13 @@ function Appbar() {
                   ))}
                 </div>
               </Sidebar>
-              {/* <Button
-                className="p-2"
+              <Button
+                className="p-2 hidden"
                 label={category}
                 icon="pi pi-chevron-down"
                 iconPos="right"
                 onClick={() => setVisible4(true)}
-              /> */}
+              />
             </div>
             {/* <div className="flex align-items-center">
               <img src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FMakro_PRO_Points_GIF_fe64aa9600.gif&w=32&q=75" width={20} height={20} />
@@ -641,7 +760,7 @@ function Appbar() {
                   </div>
                 </div>
               </Sidebar>
-              {/* <Button className="text-l ml-2" label={
+              <Button className="text-l ml-2 hidden" label={
                 <span>
                   <img
                     src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2Fmakromail_9348ebf95a.png&w=16&q=75"
@@ -652,12 +771,11 @@ function Appbar() {
                   />
                   makromail
                 </span>}
-                onClick={() => setVisible3(true)} /> */}
+                onClick={() => setVisible3(true)} />
             </div>
-            
           </div>
-        </div >
-      </div >
+        </div>
+      </div>
       <Outlet />
     </>
   );

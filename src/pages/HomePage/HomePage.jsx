@@ -135,7 +135,7 @@ function HomePage() {
         <div className="mt-5">
           <div className="flex align-items-center justify-content-between pl-3 pr-3">
             <span>
-              <>ไอเท็มฮิตแจกพอยท์พิเศษ</>
+              <>ไอเท็มฮิต</>
             </span>
             <Link to="/List-Product" className="no-underline text-900">ดูเพิ่มเติม <i className="pi pi-angle-right"></i></Link>
           </div>
@@ -167,7 +167,7 @@ function HomePage() {
         <div>
           <div className="flex align-items-center justify-content-between pl-3 pr-3">
             <span>
-              <b>ไอเท็มฮิตแจกพอยท์พิเศษ</b>
+              <b>ไอเท็มฮิต</b>
             </span>
             <Link to="/List-Product" className="no-underline text-900">ดูเพิ่มเติม <i className="pi pi-angle-right"></i></Link>
           </div>
@@ -184,7 +184,7 @@ function HomePage() {
         <div>
           <div className="flex align-items-center justify-content-between pl-3 pr-3">
             <span>
-              <b>ไอเท็มฮิตแจกพอยท์พิเศษ</b>
+              <b>ไอเท็มฮิต</b>
             </span>
             <Link to="/List-Product" className="no-underline text-900">ดูเพิ่มเติม <i className="pi pi-angle-right"></i></Link>
           </div>
