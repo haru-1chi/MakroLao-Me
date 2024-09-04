@@ -48,11 +48,15 @@ function ListProductsPage() {
     });
   };
 
-  const filterProducts = (products, searchTerm) => {
-    if (!searchTerm) return products;
-    return products.filter((product) =>
-      product.product_name.toLowerCase().includes(searchTerm.toLowerCase())   //search
-    );
+  const filterProducts = (products, searchTerm, categoryName) => {
+    return products.filter((product) => {
+      if (searchTerm) {
+        return product.product_name.toLowerCase().includes(searchTerm.toLowerCase());
+      } else if (categoryName) {
+        return product.category_name.includes(categoryName)
+      }
+      return products;
+    });
   };
 
   const sortProducts = (products, sortOption) => {   //sort
@@ -63,6 +67,7 @@ function ListProductsPage() {
     }
     return products;
   };
+
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -77,10 +82,7 @@ function ListProductsPage() {
     fetchCategories();
   }, []);
 
-  const getCategoryName = (categoryId) => {
-    const category = categories.find(cat => cat._id === categoryId);
-    return category ? category.name : categoryId;
-  };
+
 
   const applyFilters = useCallback((filters) => {
     let filtered = data;
@@ -90,7 +92,7 @@ function ListProductsPage() {
     }
 
     if (filters.selectedCategories.length > 0) {
-      filtered = filtered.filter(product => filters.selectedCategories.includes(getCategoryName(product.product_category)));
+      filtered = filtered.filter(product => filters.selectedCategories.includes(product.category_name));
     }
 
     if (filters.selectedBrands.length > 0) {
@@ -121,7 +123,7 @@ function ListProductsPage() {
       url: `${apiUrl}/products`
     })
       .then((response) => {
-        const filtered = filterProducts(response.data, searchTerm);
+        const filtered = filterProducts(response.data, searchTerm, location.state.categoryName);
         setData(filtered);
         setFilteredData(filtered);
         setPaginatedData(filtered.slice(first, first + rows));
@@ -136,7 +138,7 @@ function ListProductsPage() {
 
   useEffect(() => {
     fetchData();
-  }, [searchTerm]);
+  }, [searchTerm, location.state?.categoryName]);
 
   useEffect(() => {
     const categoryName = location.state?.categoryName;

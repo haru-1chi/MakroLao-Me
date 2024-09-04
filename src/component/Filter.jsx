@@ -29,11 +29,6 @@ function Filter({ onFilterChange, products, visible, setVisible, initialFilters,
         fetchCategories();
     }, []);
 
-    const getCategoryName = (categoryId) => {
-        const category = categories.find(cat => cat._id === categoryId);
-        return category ? category.name : categoryId;
-    };
-
     const generatePriceRanges = (products) => {
         const prices = products.map(product => product.product_price);
         const maxPrice = Math.max(...prices);
@@ -82,7 +77,7 @@ function Filter({ onFilterChange, products, visible, setVisible, initialFilters,
 
     const generateFiltersFromData = (products) => {
         const uniqueCategories = [
-            ...new Set(products.map(product => getCategoryName(product.product_category)))
+            ...new Set(products.map(product => product.category_name))
         ];
         const uniqueBrands = [...new Set(products.map(item => item.product_brand))];
 
