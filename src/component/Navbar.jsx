@@ -97,7 +97,7 @@ function Navbar() {
                   {categories.map((Item) => (
                     <div
                       className="box-menu py-3 hover:surface-hover"
-                      onClick={() => handleCategorySelect(Item.name)}
+                      onClick={() => handleCategorySelect([Item.name])}
                     >
                       <Link
                         className="flex justify-content-between align-items-center"

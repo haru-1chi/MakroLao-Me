@@ -30,8 +30,7 @@ function ListProductsPage() {
   const categoriesLocation = location.state?.categoryName ? location.state.categoryName : [];
   const defaultFilters = {
     priceRanges: { key: 'allRange', value: 'All' },
-    selectedCategories: [],
-    selectedBrands: []
+    selectedCategories: []
   };
   const [filters, setFilters] = useState(defaultFilters);
   const [sortOption, setSortOption] = useState('default'); //sort
@@ -53,7 +52,7 @@ function ListProductsPage() {
       if (searchTerm) {
         return product.product_name.toLowerCase().includes(searchTerm.toLowerCase());
       } else if (categoryName) {
-        return product.category_name.includes(categoryName)
+        return categoryName.includes(product.category_name);
       }
       return products;
     });
@@ -93,10 +92,6 @@ function ListProductsPage() {
 
     if (filters.selectedCategories.length > 0) {
       filtered = filtered.filter(product => filters.selectedCategories.includes(product.category_name));
-    }
-
-    if (filters.selectedBrands.length > 0) {
-      filtered = filtered.filter(product => filters.selectedBrands.includes(product.product_brand));
     }
 
     filtered = sortProducts(filtered, sortOption);
@@ -144,7 +139,7 @@ function ListProductsPage() {
     const categoryName = location.state?.categoryName;
     const updatedFilters = {
       ...filters,
-      selectedCategories: categoryName ? [categoryName, ...(filters.selectedCategories)] : filters.selectedCategories,
+      selectedCategories: categoryName ? [...categoryName, ...(filters.selectedCategories)] : filters.selectedCategories,
     };
     setFilters(updatedFilters);
     applyFilters(updatedFilters);

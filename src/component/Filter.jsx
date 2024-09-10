@@ -79,27 +79,22 @@ function Filter({ onFilterChange, products, visible, setVisible, initialFilters,
         const uniqueCategories = [
             ...new Set(products.map(product => product.category_name))
         ];
-        const uniqueBrands = [...new Set(products.map(item => item.product_brand))];
+
 
         return {
             categoryOptions: uniqueCategories.map(categoryName => ({
                 key: categoryName,
                 value: categoryName
-            })),
-            brandOptions: uniqueBrands.map(brand => ({
-                key: brand,
-                value: brand
             }))
         };
     };
 
     const priceRanges = generatePriceRanges(products);
-    const { categoryOptions, brandOptions } = generateFiltersFromData(products);
+    const { categoryOptions } = generateFiltersFromData(products);
 
     const [filters, setFilters] = useState(initialFilters || {
         priceRanges: { key: 'allRange', value: `${all}` },
-        selectedCategories: [],
-        selectedBrands: [],
+        selectedCategories: []
     });
 
     useEffect(() => {
@@ -109,8 +104,7 @@ function Filter({ onFilterChange, products, visible, setVisible, initialFilters,
     const clearFilters = () => {
         const clearedFilters = {
             priceRanges: { key: 'allRange', value: `${all}` },
-            selectedCategories: [],
-            selectedBrands: [],
+            selectedCategories: []
         };
         setFilters(clearedFilters);
         onFilterChange(clearedFilters);
@@ -127,26 +121,31 @@ function Filter({ onFilterChange, products, visible, setVisible, initialFilters,
         const updatedList = checked
             ? [...filters[key], value]
             : filters[key].filter(item => item !== value);
-    
+
         const updatedFilters = { ...filters, [key]: updatedList };
+
         setFilters(updatedFilters);
         onFilterChange(updatedFilters);
-        
-        if (!checked && value === categoriesLocation) {
-            navigate(location.pathname, { replace: true });
+
+        if (!checked && categoriesLocation.includes(value)) {
+            const updatedCategoriesLocation = categoriesLocation.filter(item => item !== value);
+
+            if (updatedCategoriesLocation.length === 0) {
+                navigate(location.pathname, { replace: true });
+            } else {
+                navigate(location.pathname, { state: { categoryName: updatedCategoriesLocation }, replace: true });
+            }
         }
     };
 
     const sectionLabels = {
         priceRanges: `${priceRange}`,
-        selectedCategories: `${category_name}`,
-        selectedBrands: `${brand}`,
+        selectedCategories: `${category_name}`
     };
 
     const [expandedSections, setExpandedSections] = useState({
         priceRanges: true,
-        selectedCategories: true,
-        selectedBrands: true,
+        selectedCategories: true
     });
 
     const toggleSection = (section) => {
@@ -178,7 +177,7 @@ function Filter({ onFilterChange, products, visible, setVisible, initialFilters,
                                 <p>{sectionLabels[section]}</p>
                                 <p><i className={`pi ${expanded ? 'pi-minus' : 'pi-plus'}`}></i></p>
                             </div>
-                            {expanded && (section === 'priceRanges' ? priceRanges : section === 'selectedCategories' ? categoryOptions : brandOptions).map((option) => (
+                            {expanded && (section === 'priceRanges' ? priceRanges : categoryOptions).map((option) => (
                                 <div className="mb-2" key={option.key}>
                                     {section === 'priceRanges' ? (
                                         <RadioButton
@@ -193,7 +192,7 @@ function Filter({ onFilterChange, products, visible, setVisible, initialFilters,
                                             inputId={option.key}
                                             value={option.key}
                                             onChange={(e) => handleCheckboxChange(section, option.key, e.target.checked)}
-                                            checked={filters[section].includes(option.key)} />
+                                            checked={filters[section].includes(option.key) || categoriesLocation.includes(option.key)} />
                                     )}
                                     <label htmlFor={option.key} className="ml-2">{option.value}</label>
                                 </div>
@@ -237,7 +236,7 @@ function Filter({ onFilterChange, products, visible, setVisible, initialFilters,
                             <p>{sectionLabels[section] || section}</p>
                             <p><i className={`pi ${expanded ? 'pi-minus' : 'pi-plus'}`}></i></p>
                         </div>
-                        {expanded && (section === 'priceRanges' ? priceRanges : section === 'selectedCategories' ? categoryOptions : brandOptions).map((option) => (
+                        {expanded && (section === 'priceRanges' ? priceRanges : categoryOptions).map((option) => (
                             <div className="mb-2" key={option.key}>
                                 {section === 'priceRanges' ? (
                                     <RadioButton

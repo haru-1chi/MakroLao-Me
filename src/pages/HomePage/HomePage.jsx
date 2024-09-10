@@ -8,6 +8,8 @@ import Brand from "../../component/Brand";
 import AllBrand from "../../component/AllBrand";
 import Products from "../../component/Products";
 import CategoriesIcon from "../../component/CategoriesIcon";
+import office from "../../assets/office_supplies.png";
+import electrical from "../../assets/electrical_machines.png";
 import axios from "axios";
 
 function HomePage() {
@@ -114,7 +116,7 @@ function HomePage() {
         <div className="block lg:hidden">
           <div className="section-all-brand px-2 text-center gap-2">
             {categories.map((item) => (
-              <div onClick={() => handleCategorySelect(item.name)}>
+              <div onClick={() => handleCategorySelect([item.name])}>
                 <Category data={item} />
               </div>
             ))}
@@ -124,9 +126,10 @@ function HomePage() {
         <div className="mx-0 lg:mx-2 mt-3">
           <div className="bg-section-product lg:border-round-2xl flex justify-content-center">
             <img
-              className="w-full lg:w-8"
-              src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FFlash_Sale_Middle_Banner_TH_Electro_0e168c_d08d74be82.png&w=1200&q=90"
+              className="w-full lg:w-8 cursor-pointer"
+              src={electrical}
               alt=""
+              onClick={() => navigate("/List-Product", { state: { categoryName: ['เครื่องใช้ไฟฟ้า (electrical appliance)'] } })}
             />
           </div>
           <Products data={data} startIndex={0} />
@@ -148,11 +151,12 @@ function HomePage() {
               className="w-full lg:w-8"
               src="https://www.makro.pro/_next/image?url=https%3A%2F%2Fstrapi-cdn.mango-prod.siammakro.cloud%2Fuploads%2FFlash_Sale_Fresh_Middle_TH_016100_8a83bd308a.png&w=1200&q=90"
               alt=""
+              onClick={() => navigate("/List-Product", { state: { categoryName: ['เครื่องดื่ม (Drinks & Beverages)', 'เครื่องปรุงรส-น้ำมัน (Seasoning-Oil)', 'ขนม (Appetizer)', 'อาหารกระป๋อง-อาหารแห้ง (Canned Food,Dry Food)', 'นม', 'กาแฟ เครื่องชง ครีมเทียม', 'เครื่องดื่มแอลกอล์ฮอล์', 'อาหารแช่แข็ง'] } })}
             />
           </div>
-          <Products data={data} startIndex={10} />
+          <Products data={data} startIndex={10} /> 
         </div>
-        <div className="mt-4 pl-3 pr-3">
+        <div className="hidden mt-4 pl-3 pr-3">
           <span>
             <b>เปิดตัวแบรนด์ใหม่</b>
           </span>
@@ -173,7 +177,7 @@ function HomePage() {
           </div>
           <Products data={data} startIndex={15} />
         </div>
-        <div className="pl-3 pr-3">
+        <div className="hidden pl-3 pr-3">
           <span>
             <b>รวมแบรนด์เด็ด</b>
           </span>
@@ -181,12 +185,15 @@ function HomePage() {
             <AllBrand />
           </div>
         </div>
-        <div>
-          <div className="flex align-items-center justify-content-between pl-3 pr-3">
-            <span>
-              <b>ไอเท็มฮิต</b>
-            </span>
-            <Link to="/List-Product" className="no-underline text-900">ดูเพิ่มเติม <i className="pi pi-angle-right"></i></Link>
+
+        <div className="mx-0 lg:mx-2 mt-3">
+          <div className="bg-section-product-office  lg:border-round-2xl flex justify-content-center">
+            <img
+              className="w-full lg:w-8 cursor-pointer"
+              src={office}
+              alt=""
+              onClick={() => navigate("/List-Product", { state: { categoryName: ['เครื่องเขียนและอุปกรณ์สำนักงาน','อุปกรณ์อ๊อฟฟิต (OFFICE)'] } })}
+            />
           </div>
           <Products data={data} startIndex={20} />
         </div>

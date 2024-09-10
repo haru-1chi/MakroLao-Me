@@ -50,6 +50,7 @@ function StatusShippingPage({ orderId }) {
 
                 if (response.data.status && response.data.data) {
                     setOrder(response.data.data);
+                    console.log(order.slipImageUrl);
                 } else {
                     console.error("Order failed:", error.response?.data || error.message);
                 }
@@ -78,7 +79,7 @@ function StatusShippingPage({ orderId }) {
                     user={user}
                 />
 
-                {order?.paymentChannel === "bankCounter" ? <SlipPayment /> : ""}
+                {order?.paymentChannel === "bankCounter" ? <SlipPayment orderId={orderId} slipPaymentUrl={order.slipImageUrl}/> : ""}
 
                 <div className="bg-section-product flex flex-column border-1 surface-border border-round py-2 px-2 bg-white border-round-mb justify-content-center">
                     <div className="p-2 lg:flex justify-content-between">

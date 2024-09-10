@@ -85,11 +85,11 @@ export const CartProvider = ({ children }) => {
 
   useEffect(() => {
     if (user && user._id) {
-      const storedCart = getLocalStorageItem(`cart_${user._id}`, '[]');
+      const storedCart = getLocalStorageItem(`cart_${user._id}`, []);
       setCart(Array.isArray(storedCart) ? storedCart : []);
-      const storedCartDetails = getLocalStorageItem(`cartDetails_${user._id}`, '{}');
+      const storedCartDetails = getLocalStorageItem(`cartDetails_${user._id}`, {});
       setCartDetails(storedCartDetails);
-      const storedOrders = getLocalStorageItem(`orders_${user._id}`, '[]');
+      const storedOrders = getLocalStorageItem(`orders_${user._id}`, []);
       setOrders(Array.isArray(storedOrders) ? storedOrders : []);
     }
   }, [user]);
